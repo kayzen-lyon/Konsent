@@ -102,6 +102,59 @@ export const SEVERITY_ORDER: Record<Severity, number> = {
   INFO: 4,
 };
 
+/**
+ * Regroupement des familles en quatre piliers de lecture.
+ *
+ * Les familles sont la bonne granularité pour le moteur ; elles sont trop
+ * fines pour un dirigeant. Les piliers donnent la structure du rapport.
+ */
+export type Pillar = "TRACKING" | "CONSENT_UX" | "DOCUMENTS" | "SOVEREIGNTY";
+
+export const PILLARS: readonly {
+  id: Pillar;
+  index: number;
+  title: string;
+  description: string;
+  families: readonly Family[];
+}[] = [
+  {
+    id: "TRACKING",
+    index: 1,
+    title: "Traceurs et dépôt",
+    description:
+      "Ce qui s'écrit dans le terminal de vos visiteurs, et à quel moment. C'est le premier motif de sanction en France.",
+    families: ["DEPOT", "REFUS", "STORAGE", "FP"],
+  },
+  {
+    id: "CONSENT_UX",
+    index: 2,
+    title: "Recueil du consentement",
+    description:
+      "La mécanique du bandeau : symétrie du refus, granularité, mémorisation du choix, signaux transmis à vos partenaires.",
+    families: ["BANNER", "CONSENT", "CMV2", "TCF", "EXEMPT"],
+  },
+  {
+    id: "DOCUMENTS",
+    index: 3,
+    title: "Information et documents",
+    description:
+      "Ce que vos visiteurs peuvent savoir, et ce qu'un contrôleur demandera en premier.",
+    families: ["DOC"],
+  },
+  {
+    id: "SOVEREIGNTY",
+    index: 4,
+    title: "Destinataires et souveraineté",
+    description:
+      "Où partent les données, sous quelle juridiction, et avec quelles garanties documentées.",
+    families: ["TRANSFER", "VENDOR", "SEC", "SPECIAL"],
+  },
+];
+
+export function pillarOfFamily(family: Family): Pillar {
+  return PILLARS.find((p) => p.families.includes(family))?.id ?? "TRACKING";
+}
+
 export const RULEPACK = {
   version: RULEPACK_VERSION,
   total: RULES.length,

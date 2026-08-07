@@ -43,23 +43,23 @@ export function ExposureBox({
   ];
 
   const toneClass = {
-    danger: "text-k-danger",
-    warn: "text-k-warn",
-    ok: "text-k-ok",
+    danger: "text-crit",
+    warn: "text-warn",
+    ok: "text-ok",
   } as const;
 
   return (
-    <div className="overflow-hidden rounded-xl border border-k-line bg-white">
-      <div className="border-b border-k-line bg-k-surface px-5 py-3">
-        <h3 className="text-sm font-semibold text-k-ink">Mise en perspective financière</h3>
+    <div className="overflow-hidden rounded-xl border border-line bg-white">
+      <div className="border-b border-line bg-paper px-5 py-3">
+        <h3 className="text-sm font-semibold text-ink-2">Mise en perspective financière</h3>
       </div>
 
-      <dl className="divide-y divide-k-line">
+      <dl className="divide-y divide-line">
         {rows.map((r) => (
           <div key={r.label} className="flex flex-wrap items-baseline justify-between gap-2 px-5 py-4">
             <div className="min-w-0 flex-1">
-              <dt className="text-[14px] font-medium text-k-ink">{r.label}</dt>
-              <p className="mt-0.5 text-xs leading-snug text-k-muted">{r.hint}</p>
+              <dt className="text-[14px] font-medium text-ink-2">{r.label}</dt>
+              <p className="mt-0.5 text-xs leading-snug text-muted">{r.hint}</p>
             </div>
             <dd className={`tabular shrink-0 text-lg font-semibold ${toneClass[r.tone]}`}>
               {r.value}
@@ -68,8 +68,8 @@ export function ExposureBox({
         ))}
       </dl>
 
-      <div className="border-t border-k-line bg-k-surface px-5 py-3">
-        <p className="text-xs leading-relaxed text-k-muted">{e.caveat}</p>
+      <div className="border-t border-line bg-paper px-5 py-3">
+        <p className="text-xs leading-relaxed text-muted">{e.caveat}</p>
       </div>
     </div>
   );

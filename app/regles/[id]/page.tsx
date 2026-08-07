@@ -33,7 +33,7 @@ export default async function RulePage({ params }: { params: Promise<{ id: strin
   return (
     <div className="mx-auto max-w-3xl px-5 py-12 sm:py-16">
       <nav className="mb-6 text-sm">
-        <Link href="/regles" className="text-k-primary hover:underline">
+        <Link href="/regles" className="text-flame hover:underline">
           ← Référentiel
         </Link>
       </nav>
@@ -41,52 +41,52 @@ export default async function RulePage({ params }: { params: Promise<{ id: strin
       <header>
         <div className="flex flex-wrap items-center gap-2.5">
           <SeverityBadge severity={rule.severity} />
-          <span className="font-mono text-sm text-k-muted">{rule.id}</span>
+          <span className="font-mono text-sm text-muted">{rule.id}</span>
           <span className="rounded-md bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600">
             {FAMILY_LABELS[rule.family]}
           </span>
         </div>
-        <h1 className="mt-3 text-2xl font-semibold leading-tight tracking-tight text-k-ink sm:text-3xl">
+        <h1 className="mt-3 text-2xl font-semibold leading-tight tracking-tight text-ink-2 sm:text-3xl">
           {rule.title}
         </h1>
       </header>
 
       <section className="mt-8">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-k-muted">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
           Ce que cela signifie
         </h2>
-        <p className="mt-2 text-[17px] leading-relaxed text-k-ink">{rule.messageExec}</p>
+        <p className="mt-2 text-[17px] leading-relaxed text-ink-2">{rule.messageExec}</p>
       </section>
 
       <section className="mt-8">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-k-muted">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
           Constat technique
         </h2>
-        <p className="mt-2 rounded-lg border border-k-line bg-white px-4 py-3 font-mono text-[13px] leading-relaxed text-k-ink">
+        <p className="mt-2 rounded-lg border border-line bg-white px-4 py-3 font-mono text-[13px] leading-relaxed text-ink-2">
           {rule.messageTech}
         </p>
       </section>
 
       <section className="mt-8">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-k-muted">Références</h2>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">Références</h2>
         <ul className="mt-2 space-y-1.5">
           {rule.references.map((r) => (
-            <li key={r} className="text-[15px] leading-relaxed text-k-ink">
+            <li key={r} className="text-[15px] leading-relaxed text-ink-2">
               · {r}
             </li>
           ))}
         </ul>
-        <p className="mt-3 rounded-lg bg-k-surface px-4 py-3 text-[13px] leading-relaxed text-k-muted">
+        <p className="mt-3 rounded-lg bg-paper px-4 py-3 text-[13px] leading-relaxed text-muted">
           {constatWording("la référence ci-dessus")}
         </p>
       </section>
 
       <section className="mt-8">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-k-muted">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
           Sous le projet « Digital Omnibus »
         </h2>
-        <p className="mt-2 text-[15px] leading-relaxed text-k-ink">{rule.omnibusStatus}</p>
-        <p className="mt-2 text-[13px] leading-relaxed text-k-muted">
+        <p className="mt-2 text-[15px] leading-relaxed text-ink-2">{rule.omnibusStatus}</p>
+        <p className="mt-2 text-[13px] leading-relaxed text-muted">
           La proposition COM(2025) 837 du 19 novembre 2025 n&apos;est pas adoptée. Elle fait
           l&apos;objet d&apos;un avis conjoint critique du CEPD et du CEPD-EDPS. Ce champ est
           prospectif et ne modifie pas le droit applicable aujourd&apos;hui.
@@ -94,17 +94,17 @@ export default async function RulePage({ params }: { params: Promise<{ id: strin
       </section>
 
       <section className="mt-8">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-k-muted">Correctif</h2>
-        <p className="mt-2 text-sm text-k-muted">
-          Effort estimé : <span className="font-medium text-k-ink">{effortLabel}</span>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">Correctif</h2>
+        <p className="mt-2 text-sm text-muted">
+          Effort estimé : <span className="font-medium text-ink-2">{effortLabel}</span>
           {rule.remediation.priceHintEur
             ? ` · fourchette indicative : ${rule.remediation.priceHintEur[0]} – ${rule.remediation.priceHintEur[1]} €`
             : ""}
         </p>
         <ol className="mt-3 space-y-2">
           {rule.remediation.steps.map((s, i) => (
-            <li key={s} className="flex gap-3 text-[15px] leading-relaxed text-k-ink">
-              <span className="tabular shrink-0 font-mono text-sm text-k-primary">
+            <li key={s} className="flex gap-3 text-[15px] leading-relaxed text-ink-2">
+              <span className="tabular shrink-0 font-mono text-sm text-flame">
                 {String(i + 1).padStart(2, "0")}
               </span>
               <span>{s}</span>
@@ -122,7 +122,7 @@ export default async function RulePage({ params }: { params: Promise<{ id: strin
         </section>
       ) : null}
 
-      <footer className="mt-10 border-t border-k-line pt-5 text-sm text-k-muted">
+      <footer className="mt-10 border-t border-line pt-5 text-sm text-muted">
         <p>
           Poids au score : {rule.weight} point{rule.weight > 1 ? "s" : ""} · phase(s){" "}
           {rule.phases.join(", ")} ·{" "}

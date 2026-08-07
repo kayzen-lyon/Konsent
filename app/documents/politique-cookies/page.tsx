@@ -22,9 +22,9 @@ export default async function CookiePolicyPage({
   if (!url) {
     return (
       <div className="mx-auto max-w-3xl px-5 py-16">
-        <p className="text-k-muted">
+        <p className="text-muted">
           Aucune adresse fournie.{" "}
-          <Link href="/" className="text-k-primary hover:underline">
+          <Link href="/" className="text-flame hover:underline">
             Lancer une analyse
           </Link>
         </p>
@@ -57,18 +57,18 @@ export default async function CookiePolicyPage({
       <nav className="mb-6 text-sm">
         <Link
           href={`/scan?url=${encodeURIComponent(url)}`}
-          className="text-k-primary hover:underline"
+          className="text-flame hover:underline"
         >
           ← Retour au rapport
         </Link>
       </nav>
 
       <header>
-        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-k-primary">
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-flame">
           Document généré · brouillon
         </p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-k-ink">{doc.title}</h1>
-        <p className="mt-1.5 text-[15px] text-k-muted">{doc.subtitle}</p>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-ink-2">{doc.title}</h1>
+        <p className="mt-1.5 text-[15px] text-muted">{doc.subtitle}</p>
       </header>
 
       {doc.todos.length > 0 ? (
@@ -93,10 +93,10 @@ export default async function CookiePolicyPage({
       <article className="mt-10 space-y-10">
         {doc.sections.map((s) => (
           <section key={s.id}>
-            <h2 className="text-lg font-semibold tracking-tight text-k-ink">{s.heading}</h2>
+            <h2 className="text-lg font-semibold tracking-tight text-ink-2">{s.heading}</h2>
             <div className="mt-3 space-y-3">
               {s.body.map((p, i) => (
-                <p key={i} className="text-[15px] leading-relaxed text-k-ink">
+                <p key={i} className="text-[15px] leading-relaxed text-ink-2">
                   {p.split(/(\[\[À COMPLÉTER[^\]]*\]\])/g).map((chunk, j) =>
                     chunk.startsWith("[[À COMPLÉTER") ? (
                       <mark
@@ -114,9 +114,9 @@ export default async function CookiePolicyPage({
             </div>
 
             {s.table ? (
-              <div className="mt-4 overflow-x-auto rounded-xl border border-k-line bg-white">
+              <div className="mt-4 overflow-x-auto rounded-xl border border-line bg-white">
                 <table className="w-full text-left text-sm">
-                  <thead className="border-b border-k-line bg-k-surface text-xs uppercase text-k-muted">
+                  <thead className="border-b border-line bg-paper text-xs uppercase text-muted">
                     <tr>
                       {s.table.columns.map((c) => (
                         <th key={c} scope="col" className="px-3 py-2 font-medium">
@@ -125,11 +125,11 @@ export default async function CookiePolicyPage({
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-k-line">
+                  <tbody className="divide-y divide-line">
                     {s.table.rows.map((row, i) => (
                       <tr key={i}>
                         {row.map((cell, j) => (
-                          <td key={j} className="px-3 py-2.5 text-k-ink">
+                          <td key={j} className="px-3 py-2.5 text-ink-2">
                             {cell}
                           </td>
                         ))}
@@ -141,7 +141,7 @@ export default async function CookiePolicyPage({
             ) : null}
 
             {s.clauseRef ? (
-              <p className="mt-3 border-l-2 border-k-line pl-3 text-xs text-k-muted">
+              <p className="mt-3 border-l-2 border-line pl-3 text-xs text-muted">
                 Fondement : {s.clauseRef}
               </p>
             ) : null}
@@ -149,8 +149,8 @@ export default async function CookiePolicyPage({
         ))}
       </article>
 
-      <footer className="mt-12 rounded-xl border border-k-line bg-white p-5">
-        <p className="text-[13px] leading-relaxed text-k-muted">{doc.footer}</p>
+      <footer className="mt-12 rounded-xl border border-line bg-white p-5">
+        <p className="text-[13px] leading-relaxed text-muted">{doc.footer}</p>
       </footer>
 
       <div className="mt-8">

@@ -30,7 +30,7 @@ export default async function TrackerPage({ params }: { params: Promise<{ slug: 
   return (
     <div className="mx-auto max-w-3xl px-5 py-12 sm:py-16">
       <nav className="mb-6 text-sm">
-        <Link href="/traceurs" className="text-k-primary hover:underline">
+        <Link href="/traceurs" className="text-flame hover:underline">
           ← Base des traceurs
         </Link>
       </nav>
@@ -41,55 +41,55 @@ export default async function TrackerPage({ params }: { params: Promise<{ slug: 
             <Pill key={c}>{CATEGORY_LABELS[c] ?? c}</Pill>
           ))}
         </div>
-        <h1 className="mt-3 text-3xl font-semibold tracking-tight text-k-ink">{t.name}</h1>
-        <p className="mt-1.5 text-[15px] text-k-muted">{t.entity}</p>
+        <h1 className="mt-3 text-3xl font-semibold tracking-tight text-ink-2">{t.name}</h1>
+        <p className="mt-1.5 text-[15px] text-muted">{t.entity}</p>
       </header>
 
       <section className="mt-8">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-k-muted">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
           À quoi cela sert
         </h2>
-        <p className="mt-2 text-[17px] leading-relaxed text-k-ink">{t.purposeFr}</p>
+        <p className="mt-2 text-[17px] leading-relaxed text-ink-2">{t.purposeFr}</p>
       </section>
 
       <section className="mt-8">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-k-muted">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
           Ce que cela implique
         </h2>
-        <p className="mt-2 text-[16px] leading-relaxed text-k-ink">{t.riskNotesFr}</p>
+        <p className="mt-2 text-[16px] leading-relaxed text-ink-2">{t.riskNotesFr}</p>
       </section>
 
-      <section className="mt-8 rounded-xl border border-k-line bg-white p-5">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-k-muted">
+      <section className="mt-8 rounded-xl border border-line bg-white p-5">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
           Rattachement et juridiction
         </h2>
         <dl className="mt-3 grid gap-3 sm:grid-cols-2">
           <div>
-            <dt className="text-xs text-k-muted">Entité contractante</dt>
-            <dd className="text-[15px] font-medium text-k-ink">{t.entity}</dd>
+            <dt className="text-xs text-muted">Entité contractante</dt>
+            <dd className="text-[15px] font-medium text-ink-2">{t.entity}</dd>
           </div>
           <div>
-            <dt className="text-xs text-k-muted">Siège</dt>
-            <dd className="text-[15px] font-medium text-k-ink">{t.hqJurisdiction}</dd>
+            <dt className="text-xs text-muted">Siège</dt>
+            <dd className="text-[15px] font-medium text-ink-2">{t.hqJurisdiction}</dd>
           </div>
           {t.ultimateParent ? (
             <div>
-              <dt className="text-xs text-k-muted">Société mère ultime</dt>
-              <dd className="text-[15px] font-medium text-k-ink">{t.ultimateParent}</dd>
+              <dt className="text-xs text-muted">Société mère ultime</dt>
+              <dd className="text-[15px] font-medium text-ink-2">{t.ultimateParent}</dd>
             </div>
           ) : null}
           <div>
-            <dt className="text-xs text-k-muted">Juridiction effective</dt>
-            <dd className="text-[15px] font-medium text-k-ink">{t.effectiveJurisdiction}</dd>
+            <dt className="text-xs text-muted">Juridiction effective</dt>
+            <dd className="text-[15px] font-medium text-ink-2">{t.effectiveJurisdiction}</dd>
           </div>
           <div className="sm:col-span-2">
-            <dt className="text-xs text-k-muted">Statut au regard du chapitre V du RGPD</dt>
-            <dd className="text-[15px] font-medium text-k-ink">{ADEQUACY_LABELS[t.adequacy]}</dd>
+            <dt className="text-xs text-muted">Statut au regard du chapitre V du RGPD</dt>
+            <dd className="text-[15px] font-medium text-ink-2">{ADEQUACY_LABELS[t.adequacy]}</dd>
           </div>
           {t.dpf ? (
             <div className="sm:col-span-2">
-              <dt className="text-xs text-k-muted">Data Privacy Framework</dt>
-              <dd className="text-[15px] text-k-ink">
+              <dt className="text-xs text-muted">Data Privacy Framework</dt>
+              <dd className="text-[15px] text-ink-2">
                 {t.dpf.certified ? "Certification relevée" : "Aucune certification relevée"} —
                 instantané du {new Date(t.dpf.checkedAt).toLocaleDateString("fr-FR")}. À
                 reverifier sur la liste officielle avant toute conclusion.
@@ -100,10 +100,10 @@ export default async function TrackerPage({ params }: { params: Promise<{ slug: 
       </section>
 
       <section className="mt-8">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-k-muted">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
           Consentement
         </h2>
-        <p className="mt-2 text-[15px] leading-relaxed text-k-ink">
+        <p className="mt-2 text-[15px] leading-relaxed text-ink-2">
           {t.exemptEligible
             ? "Ce service peut, selon sa configuration et son usage réel, relever du strictement nécessaire ou d'une exemption. Cette appréciation est à confirmer au cas par cas."
             : "Le dépôt ou la lecture opérés par ce service supposent en principe un consentement préalable au sens de l'article 82 de la loi n° 78-17 modifiée."}
@@ -112,24 +112,24 @@ export default async function TrackerPage({ params }: { params: Promise<{ slug: 
 
       {t.cookies && t.cookies.length > 0 ? (
         <section className="mt-8">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-k-muted">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
             Cookies connus
           </h2>
-          <div className="mt-3 overflow-x-auto rounded-xl border border-k-line bg-white">
+          <div className="mt-3 overflow-x-auto rounded-xl border border-line bg-white">
             <table className="w-full text-left text-sm">
-              <thead className="border-b border-k-line bg-k-surface text-xs uppercase text-k-muted">
+              <thead className="border-b border-line bg-paper text-xs uppercase text-muted">
                 <tr>
                   <th scope="col" className="px-4 py-2 font-medium">Nom</th>
                   <th scope="col" className="px-4 py-2 font-medium">Finalité</th>
                   <th scope="col" className="px-4 py-2 font-medium">Durée</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-k-line">
+              <tbody className="divide-y divide-line">
                 {t.cookies.map((c) => (
                   <tr key={c.name}>
-                    <td className="px-4 py-2.5 font-mono text-[13px] text-k-ink">{c.name}</td>
-                    <td className="px-4 py-2.5 text-k-muted">{c.purposeFr}</td>
-                    <td className="tabular px-4 py-2.5 text-k-muted">
+                    <td className="px-4 py-2.5 font-mono text-[13px] text-ink-2">{c.name}</td>
+                    <td className="px-4 py-2.5 text-muted">{c.purposeFr}</td>
+                    <td className="tabular px-4 py-2.5 text-muted">
                       {c.maxLifetimeDays === null ? "session" : `${c.maxLifetimeDays} j`}
                     </td>
                   </tr>
@@ -141,15 +141,15 @@ export default async function TrackerPage({ params }: { params: Promise<{ slug: 
       ) : null}
 
       {t.alternativesEu && t.alternativesEu.length > 0 ? (
-        <section className="mt-8 rounded-xl border border-teal-200 bg-teal-50 p-5">
-          <h2 className="text-sm font-semibold text-teal-900">Alternatives européennes</h2>
-          <p className="mt-1.5 text-[15px] leading-relaxed text-teal-900">
+        <section className="mt-8 rounded-xl border border-flame/30 bg-flame-bg p-5">
+          <h2 className="text-sm font-semibold text-flame-dark">Alternatives européennes</h2>
+          <p className="mt-1.5 text-[15px] leading-relaxed text-flame-dark">
             {t.alternativesEu.join(" · ")}
           </p>
         </section>
       ) : null}
 
-      <footer className="mt-10 border-t border-k-line pt-5 text-xs text-k-muted">
+      <footer className="mt-10 border-t border-line pt-5 text-xs text-muted">
         <p>Sources : {t.sources.join(" · ")}</p>
         <p className="mt-1">
           Domaines rattachés : <span className="font-mono">{t.domains.join(", ")}</span>

@@ -1,167 +1,400 @@
 import Link from "next/link";
+import { Faq } from "@/components/Faq";
+import { FineSimulator } from "@/components/FineSimulator";
 import { ScanForm } from "@/components/ScanForm";
-import { Disclaimer } from "@/components/primitives";
+import { ScanTerminal } from "@/components/ScanTerminal";
 import { RULEPACK } from "@/lib/rulepack";
 import { TRACKERS } from "@/lib/trackers/db";
 
-const PHASES = [
+const BLIND_SPOTS = [
   {
-    tag: "Phase A",
-    title: "Avant consentement",
-    body: "Contexte neuf, aucun cookie, aucune interaction. Tout traceur non exempté observé ici pose une question au regard de l'article 82.",
+    title: "Traceurs furtifs",
+    body: "Pixels et scripts injectés par vos prestataires, souvent à votre insu. Un bandeau ne les voit pas : il ne surveille que ce qu'on lui a déclaré.",
+    icon: "M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12Zm10 2.6a2.6 2.6 0 1 0 0-5.2 2.6 2.6 0 0 0 0 5.2Z",
   },
   {
-    tag: "Phase B",
-    title: "Après refus",
-    body: "On clique sur « refuser », puis on navigue. Tout traceur encore présent traduit un refus non respecté.",
+    title: "Dépôt avant consentement",
+    body: "Le manquement le plus sanctionné en France. Il se produit dans les deux secondes précédant l'affichage du bandeau — là où personne ne regarde.",
+    icon: "M12 2 3 7v6c0 5 3.8 8.9 9 10 5.2-1.1 9-5 9-10V7l-9-5Zm0 5.5v5m0 3.2v.2",
   },
   {
-    tag: "Phase C",
-    title: "Après acceptation",
-    body: "Sert d'inventaire exhaustif : c'est ce qui alimente la politique cookies, sans ressaisie.",
+    title: "Transferts hors UE",
+    body: "Chaque destinataire est ramené à son groupe capitalistique ultime. Un prestataire « européen » filiale d'un groupe américain est signalé comme tel.",
+    icon: "M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 0c3 3 3 17 0 20M2 12h20",
   },
 ];
 
-const DIFFERENTIATORS = [
+const ARSENAL = [
   {
-    title: "Indépendant de toute plateforme de consentement",
-    body: "Nous n'éditons ni ne revendons de bandeau cookies. Nous auditons les vôtres, quels qu'ils soient. Un éditeur de bandeau qui audite son propre produit ne peut pas vous dire la même chose.",
+    title: "Protocole en trois phases",
+    body: "Avant consentement, après refus, après acceptation. Le manquement ne se lit pas dans un instantané : il se lit dans l'écart entre trois moments.",
   },
   {
-    title: "Chaque constat porte sa référence",
-    body: "Article, délibération, point précis. Le référentiel complet est consultable publiquement, sans compte.",
+    title: "Référentiel public et versionné",
+    body: `${RULEPACK.total} règles, chacune avec son article, sa délibération et son point précis. Consultable sans compte, versionné pour rester explicable dans six mois.`,
   },
   {
-    title: "Nous disons ce que nous ne savons pas",
-    body: "Quand une vérification dépasse ce que le mode d'analyse permet, le rapport l'indique. Un scan qui admet ses limites vaut mieux qu'un scan qui invente.",
+    title: "Documents alimentés par le scan",
+    body: "La politique cookies est construite à partir des traceurs réellement observés. C'est structurellement impossible de la désynchroniser de la réalité du site.",
   },
   {
-    title: "Le droit bouge, le référentiel le dit",
-    body: "Chaque règle indique son statut sous le projet « Digital Omnibus », qui n'est pas adopté. Vous savez ce qui est acquis et ce qui est en discussion.",
+    title: "Destinataires traduits",
+    body: `${TRACKERS.length} entités décrites en français : quelle entreprise reçoit quoi, sous quel droit, et ce que cela implique concrètement pour vous.`,
+  },
+  {
+    title: "L'incertitude est affichée",
+    body: "Quand une vérification dépasse ce que le mode d'analyse permet, le rapport le dit. Aucune règle non vérifiée n'est comptée comme satisfaite.",
+  },
+  {
+    title: "Veille intégrée au référentiel",
+    body: "Chaque règle porte son statut sous le projet « Digital Omnibus », qui n'est pas adopté. Vous savez ce qui est acquis et ce qui se discute.",
+  },
+];
+
+const FAQ_ITEMS = [
+  {
+    q: "Pourquoi mon bandeau cookies ne suffit-il pas ?",
+    a: "Une plateforme de consentement recueille le consentement — elle ne vérifie pas que le reste du site le respecte. Si une balise se déclenche avant l'affichage du bandeau, ou continue après un refus, la plateforme n'en sait rien et ne vous alerte pas. C'est précisément l'écart que Konsent mesure.",
+  },
+  {
+    q: "Est-ce un conseil juridique ?",
+    a: "Non. Konsent est un outil d'analyse technique automatisée. Il produit des constats factuels et reproductibles, avec leur référence normative. La qualification juridique d'une situation relève de la CNIL ou d'un juge, et son appréciation d'un avocat. Nous ne remplaçons ni l'un ni l'autre.",
+  },
+  {
+    q: "Pourquoi n'affichez-vous pas seulement le plafond de 20 millions ?",
+    a: "Parce que ce serait trompeur. La très grande majorité des dossiers cookies passe en procédure simplifiée, dont le plafond légal est de 20 000 € par décision. Nous affichons toujours les deux chiffres ensemble, plus le coût de correction. L'écart entre les trois est déjà suffisamment parlant.",
+  },
+  {
+    q: "Vendez-vous une plateforme de consentement ?",
+    a: "Non, et c'est délibéré. Un éditeur de bandeau qui audite les bandeaux est juge et partie. Notre indépendance est notre seul actif défendable : elle nous autorise à auditer Axeptio, Didomi, OneTrust, Cookiebot ou tarteaucitron sans conflit d'intérêt.",
+  },
+  {
+    q: "Que se passe-t-il si un constat est faux ?",
+    a: "Chaque règle susceptible de produire un faux positif porte une note explicite décrivant sa limite, publiée sur sa fiche. Quand une page n'est pas exploitable — cas fréquent des sites rendus côté client — le moteur s'abstient de conclure plutôt que d'inventer un constat. Vous pouvez contester tout résultat.",
+  },
+  {
+    q: "Konsent dépose-t-il des traceurs ?",
+    a: "Aucun. Ce site ne dépose pas un seul cookie, ne charge aucune ressource externe — ni police, ni script, ni image — et n'utilise aucun outil de mesure tiers. C'est pourquoi vous n'y voyez pas de bandeau. Un outil qui reproche le chargement de Google Fonts ne peut pas en charger.",
   },
 ];
 
 export default function HomePage() {
-  const eeaCount = TRACKERS.filter((t) => t.adequacy === "EEA").length;
-
   return (
     <>
-      {/* ─────────────────────────── Héros ─────────────────────────── */}
-      <section className="border-b border-k-line bg-white">
-        <div className="mx-auto max-w-6xl px-5 py-16 sm:py-24">
-          <div className="max-w-3xl">
-            <p className="inline-flex items-center gap-2 rounded-full bg-teal-50 px-3 py-1 text-xs font-medium text-teal-800">
-              <span className="inline-block h-1.5 w-1.5 rounded-full bg-k-primary" aria-hidden="true" />
-              Référentiel {RULEPACK.version} · {RULEPACK.total} règles documentées
-            </p>
+      {/* ═══════════════════════ HÉROS ═══════════════════════ */}
+      <section className="grid-bg border-b border-line bg-paper">
+        <div className="mx-auto max-w-7xl px-5 py-16 sm:py-24">
+          <div className="grid items-center gap-12 lg:grid-cols-[1fr_1.05fr]">
+            <div className="rise">
+              <p className="tech inline-flex items-center gap-2 rounded border border-flame/35 bg-flame-bg px-3 py-1.5 text-[10px] text-flame-dark">
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-flame" />
+                Référentiel {RULEPACK.version} · {RULEPACK.total} règles publiques
+              </p>
 
-            <h1 className="mt-5 text-4xl font-semibold leading-[1.1] tracking-tight text-k-ink sm:text-5xl">
-              Que dépose votre site{" "}
-              <span className="text-k-primary">avant que vos visiteurs aient pu répondre</span> ?
-            </h1>
+              <h1 className="display mt-6 text-[2.6rem] text-ink-2 sm:text-[3.4rem]">
+                Votre bandeau gère le consentement.
+                <br />
+                <span className="underline-flame">Il ne vérifie pas</span> ce qui passe
+                derrière.
+              </h1>
 
-            <p className="mt-5 max-w-2xl text-lg leading-relaxed text-k-muted">
-              Konsent observe votre site comme le ferait un contrôleur : quels traceurs se
-              déposent, quelles entreprises reçoivent les données de vos visiteurs, et dans
-              quels pays elles partent. Sans interpréter à votre place.
-            </p>
+              <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted">
+                Konsent observe votre site comme le ferait un contrôleur : ce qui se dépose
+                avant que vos visiteurs aient pu répondre, qui reçoit leurs données, et sous
+                quelle juridiction. Constats factuels, références à l&apos;appui.
+              </p>
 
-            <div id="scan" className="mt-8 max-w-2xl scroll-mt-24">
-              <ScanForm autoFocus />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ───────────────────── Le protocole de scan ───────────────────── */}
-      <section className="mx-auto max-w-6xl px-5 py-16">
-        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-k-primary">
-          Le protocole
-        </p>
-        <h2 className="mt-2 max-w-2xl text-2xl font-semibold tracking-tight text-k-ink sm:text-3xl">
-          Trois états, pas un seul instantané
-        </h2>
-        <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-k-muted">
-          La plupart des scanners regardent une page une fois et s&apos;arrêtent là. Le
-          manquement, lui, se révèle dans l&apos;écart entre trois moments.
-        </p>
-
-        <div className="mt-8 grid gap-4 md:grid-cols-3">
-          {PHASES.map((p) => (
-            <div key={p.tag} className="rounded-xl border border-k-line bg-white p-5">
-              <p className="font-mono text-xs font-semibold text-k-primary">{p.tag}</p>
-              <h3 className="mt-1.5 text-[15px] font-semibold text-k-ink">{p.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-k-muted">{p.body}</p>
-            </div>
-          ))}
-        </div>
-
-        <p className="mt-5 max-w-3xl rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-[13px] leading-relaxed text-amber-900">
-          <span className="font-semibold">État actuel de cette instance : </span>
-          l&apos;analyse en ligne exécute le mode statique — elle observe le document servi, les
-          en-têtes, le DNS et vos pages légales, soit {RULEPACK.staticCount} des{" "}
-          {RULEPACK.total} règles. Le protocole complet en trois phases requiert le worker
-          navigateur fourni dans le dépôt. Chaque rapport indique précisément ce qui a été
-          évalué et ce qui ne l&apos;a pas été.
-        </p>
-      </section>
-
-      {/* ─────────────────────── Différenciateurs ─────────────────────── */}
-      <section className="border-y border-k-line bg-white">
-        <div className="mx-auto max-w-6xl px-5 py-16">
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-k-primary">
-            Notre position
-          </p>
-          <h2 className="mt-2 max-w-2xl text-2xl font-semibold tracking-tight text-k-ink sm:text-3xl">
-            Nous vendons le contrôle, pas la solution
-          </h2>
-
-          <div className="mt-8 grid gap-x-10 gap-y-8 sm:grid-cols-2">
-            {DIFFERENTIATORS.map((d) => (
-              <div key={d.title}>
-                <h3 className="text-[15px] font-semibold text-k-ink">{d.title}</h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-k-muted">{d.body}</p>
+              <div id="scan" className="mt-8 max-w-xl scroll-mt-24">
+                <ScanForm autoFocus />
               </div>
-            ))}
+
+              <div className="tech mt-7 flex flex-wrap gap-x-6 gap-y-2 text-[10px] text-muted">
+                <span>Indépendant de toute CMP</span>
+                <span>Sans inscription</span>
+                <span>Références normatives</span>
+              </div>
+            </div>
+
+            <div className="rise" style={{ animationDelay: "120ms" }}>
+              <ScanTerminal />
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ──────────────────────── Chiffres produit ───────────────────── */}
-      <section className="mx-auto max-w-6xl px-5 py-16">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {[
-            { v: String(RULEPACK.total), l: "règles documentées", h: "avec référence normative" },
-            { v: String(TRACKERS.length), l: "entités référencées", h: "décrites en français" },
-            { v: String(eeaCount), l: "établies dans l'EEE", h: "sur les entités référencées" },
-            { v: "0", l: "traceur sur ce site", h: "d'où l'absence de bandeau" },
-          ].map((s) => (
-            <div key={s.l} className="rounded-xl border border-k-line bg-white p-5">
-              <p className="tabular text-3xl font-semibold text-k-primary">{s.v}</p>
-              <p className="mt-1 text-sm font-medium text-k-ink">{s.l}</p>
-              <p className="mt-0.5 text-xs text-k-muted">{s.h}</p>
+      {/* ══════════════ CE QUE LES BANDEAUX NE VOIENT PAS ══════════════ */}
+      <section className="mx-auto max-w-7xl px-5 py-20">
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 className="display text-3xl text-ink-2 sm:text-4xl">
+            Ce que les bandeaux ne voient pas
+          </h2>
+          <p className="mt-4 text-[15px] leading-relaxed text-muted">
+            Votre plateforme de consentement — Axeptio, Didomi, OneTrust, Cookiebot,
+            tarteaucitron — gère le consentement de surface. Konsent regarde le comportement
+            réel du code.
+          </p>
+        </div>
+
+        <div className="mt-12 grid gap-5 md:grid-cols-3">
+          {BLIND_SPOTS.map((b) => (
+            <article
+              key={b.title}
+              className="border-l-2 border-flame bg-white p-6 shadow-sm ring-1 ring-line"
+            >
+              <svg viewBox="0 0 24 24" className="h-6 w-6 text-flame" fill="none" aria-hidden="true">
+                <path
+                  d={b.icon}
+                  stroke="currentColor"
+                  strokeWidth="1.7"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <h3 className="mt-4 text-lg font-bold text-ink-2">{b.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted">{b.body}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {/* ═══════════════════ SIMULATEUR ═══════════════════ */}
+      <section className="grid-bg-dark bg-ink">
+        <div className="mx-auto max-w-7xl px-5 py-20">
+          <div className="grid items-center gap-12 lg:grid-cols-2">
+            <div>
+              <p className="tech text-[10px] text-flame">Mise en perspective</p>
+              <h2 className="display mt-3 text-3xl text-white sm:text-[2.6rem]">
+                Combien coûte l&apos;écart,
+                <br />
+                et combien coûte de le combler ?
+              </h2>
+              <p className="mt-5 max-w-lg text-[15px] leading-relaxed text-white/65">
+                La plupart des outils vous montrent le plafond de 20 millions et s&apos;arrêtent
+                là. Nous affichons aussi ce qui est réellement prononcé en procédure simplifiée,
+                et ce que coûte la correction. Les trois chiffres ensemble, toujours.
+              </p>
+
+              <div className="mt-8 space-y-3">
+                {[
+                  ["Le plafond légal", "Article 83(5) du RGPD — jamais affiché seul"],
+                  ["La réalité observée", "Procédure simplifiée, plafond de 20 000 € par décision"],
+                  ["Le coût de sortie", "Estimation de mise en conformité, à comparer aux deux"],
+                ].map(([t, d], i) => (
+                  <div key={t} className="flex gap-4 border-l border-white/15 pl-4">
+                    <span className="tech shrink-0 text-[10px] text-flame">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span>
+                      <span className="block text-sm font-semibold text-white">{t}</span>
+                      <span className="block text-[13px] text-white/55">{d}</span>
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
+
+            <FineSimulator />
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════ ARSENAL ═══════════════════ */}
+      <section className="mx-auto max-w-7xl px-5 py-20">
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="tech text-[10px] text-flame">Le produit</p>
+          <h2 className="display mt-3 text-3xl text-ink-2 sm:text-4xl">
+            Ce qui distingue un audit d&apos;un scanner
+          </h2>
+        </div>
+
+        <div className="mt-12 grid gap-px overflow-hidden rounded-xl bg-line ring-1 ring-line sm:grid-cols-2 lg:grid-cols-3">
+          {ARSENAL.map((f, i) => (
+            <article key={f.title} className="bg-white p-7">
+              <span className="tech text-[10px] text-flame">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <h3 className="mt-3 text-[17px] font-bold leading-snug text-ink-2">{f.title}</h3>
+              <p className="mt-2.5 text-sm leading-relaxed text-muted">{f.body}</p>
+            </article>
           ))}
         </div>
 
-        <div className="mt-6 flex flex-wrap gap-3">
+        <div className="mt-8 flex flex-wrap justify-center gap-3">
           <Link
-            href="/regles"
-            className="rounded-lg border border-k-line bg-white px-4 py-2 text-sm font-medium text-k-ink transition hover:border-k-primary hover:text-k-primary"
+            href="/fonctionnalites"
+            className="tech rounded border border-ink/20 px-5 py-2.5 text-[11px] text-ink-2 transition hover:border-flame hover:text-flame"
           >
-            Consulter le référentiel
+            Toutes les fonctionnalités
           </Link>
           <Link
-            href="/methodologie"
-            className="rounded-lg border border-k-line bg-white px-4 py-2 text-sm font-medium text-k-ink transition hover:border-k-primary hover:text-k-primary"
+            href="/comparatif"
+            className="tech rounded border border-ink/20 px-5 py-2.5 text-[11px] text-ink-2 transition hover:border-flame hover:text-flame"
           >
-            Comment nous calculons le score
+            Comparatif face aux CMP
           </Link>
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-5 pb-16">
-        <Disclaimer />
+      {/* ═══════════════ POSITION / NEUTRALITÉ ═══════════════ */}
+      <section className="border-y border-line bg-white">
+        <div className="mx-auto max-w-4xl px-5 py-20 text-center">
+          <svg
+            viewBox="0 0 24 24"
+            className="mx-auto h-8 w-8 text-flame"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path d="M7.5 4.5c-2 1.6-3.2 3.8-3.5 6.6h3.6V19H4V13c0-3.7 1.2-6.5 3.5-8.5Zm9 0C14.5 6.1 13.3 8.3 13 11.1h3.6V19H13V13c0-3.7 1.2-6.5 3.5-8.5Z" />
+          </svg>
+          <p className="display mt-6 text-2xl leading-snug text-ink-2 sm:text-[2rem]">
+            Un éditeur de bandeau qui audite les bandeaux est juge et partie. Notre
+            indépendance n&apos;est pas une posture : c&apos;est la seule chose que nos
+            concurrents ne peuvent pas copier.
+          </p>
+          <p className="tech mt-8 text-[10px] text-muted">
+            Konsent n&apos;édite ni ne revend aucune plateforme de consentement
+          </p>
+        </div>
+      </section>
+
+      {/* ═══════════════════ TARIFS ═══════════════════ */}
+      <section className="mx-auto max-w-7xl px-5 py-20">
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 className="display text-3xl text-ink-2 sm:text-4xl">Tarifs</h2>
+          <p className="mt-4 text-[15px] leading-relaxed text-muted">
+            L&apos;audit est gratuit parce qu&apos;il coûte quelques millièmes d&apos;euro à
+            produire. Ce qui se facture, c&apos;est la surveillance dans le temps et la
+            correction.
+          </p>
+        </div>
+
+        <div className="mt-12 grid gap-5 lg:grid-cols-3">
+          {[
+            {
+              name: "Audit libre",
+              price: "0 €",
+              cadence: "",
+              features: [
+                "Analyse à la demande, sans inscription",
+                "Rapport complet à l'écran",
+                "Référentiel et base des traceurs",
+                "Brouillon de politique cookies",
+              ],
+              cta: "Lancer un audit",
+              href: "/#scan",
+              featured: false,
+            },
+            {
+              name: "Pro",
+              price: "89 €",
+              cadence: "/ mois",
+              features: [
+                "5 domaines · 250 pages par analyse",
+                "Protocole complet en trois phases",
+                "Analyse hebdomadaire et alertes de régression",
+                "Archive de preuve horodatée",
+                "24 documents générés · accès API",
+              ],
+              cta: "Nous écrire",
+              href: "mailto:contact@kayzen-lyon.fr",
+              featured: true,
+            },
+            {
+              name: "Agence",
+              price: "249 €",
+              cadence: "/ mois",
+              features: [
+                "25 domaines · vue portefeuille",
+                "Rapports à votre marque",
+                "Sous-comptes clients cloisonnés",
+                "Devis à votre grille tarifaire",
+              ],
+              cta: "Nous écrire",
+              href: "mailto:contact@kayzen-lyon.fr",
+              featured: false,
+            },
+          ].map((p) => (
+            <div
+              key={p.name}
+              className={`relative flex flex-col rounded-xl bg-white p-7 ${
+                p.featured ? "ring-2 ring-flame" : "ring-1 ring-line"
+              }`}
+            >
+              {p.featured ? (
+                <span className="tech absolute -top-2.5 left-7 rounded bg-flame px-2.5 py-1 text-[9px] text-white">
+                  Recommandé
+                </span>
+              ) : null}
+              <h3 className="text-lg font-bold text-ink-2">{p.name}</h3>
+              <p className="mt-3">
+                <span className="tabular display text-4xl text-ink-2">{p.price}</span>
+                <span className="text-sm text-muted">{p.cadence}</span>
+              </p>
+              <ul className="mt-6 flex-1 space-y-2.5">
+                {p.features.map((f) => (
+                  <li key={f} className="flex gap-2.5 text-[13px] leading-snug text-ink-2">
+                    <svg
+                      viewBox="0 0 16 16"
+                      className="mt-0.5 h-4 w-4 shrink-0 text-flame"
+                      fill="none"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="m3.5 8.5 3 3 6-7"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href={p.href}
+                className={`tech mt-7 rounded px-5 py-3 text-center text-[11px] transition ${
+                  p.featured
+                    ? "bg-flame text-white hover:bg-flame-dark"
+                    : "border border-ink/20 text-ink-2 hover:border-flame hover:text-flame"
+                }`}
+              >
+                {p.cta}
+              </Link>
+            </div>
+          ))}
+        </div>
+
+        <p className="mt-6 text-center text-sm text-muted">
+          <Link href="/tarifs" className="text-flame hover:underline">
+            Voir la grille complète et les prestations de correction
+          </Link>
+        </p>
+      </section>
+
+      {/* ═══════════════════ FAQ ═══════════════════ */}
+      <section className="border-t border-line bg-white">
+        <div className="mx-auto max-w-7xl px-5 py-20">
+          <div className="mx-auto mb-12 max-w-2xl text-center">
+            <h2 className="display text-3xl text-ink-2 sm:text-4xl">Questions fréquentes</h2>
+          </div>
+          <Faq items={FAQ_ITEMS} />
+        </div>
+      </section>
+
+      {/* ═══════════════════ APPEL FINAL ═══════════════════ */}
+      <section className="bg-ink-2">
+        <div className="mx-auto max-w-3xl px-5 py-20 text-center">
+          <h2 className="display text-3xl text-white sm:text-4xl">
+            Vous saurez en moins d&apos;une minute.
+          </h2>
+          <p className="mt-4 text-[15px] leading-relaxed text-white/60">
+            Aucune inscription, aucune adresse e-mail. Le rapport s&apos;affiche directement.
+          </p>
+          <div className="mx-auto mt-8 max-w-lg">
+            <ScanForm tone="dark" />
+          </div>
+        </div>
       </section>
     </>
   );

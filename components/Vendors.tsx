@@ -14,7 +14,7 @@ function adequacyTone(a: TrackerEntity["adequacy"]) {
     case "EEA":
       return "ok" as const;
     case "ADEQUATE":
-      return "primary" as const;
+      return "flame" as const;
     case "DPF_CONDITIONAL":
       return "warn" as const;
     default:
@@ -30,7 +30,7 @@ function adequacyTone(a: TrackerEntity["adequacy"]) {
 export function VendorTable({ vendors }: { vendors: readonly TrackerEntity[] }) {
   if (vendors.length === 0) {
     return (
-      <p className="rounded-lg border border-k-line bg-white p-5 text-sm text-k-muted">
+      <p className="rounded-lg border border-line bg-white p-5 text-sm text-muted">
         Aucun destinataire tiers connu n&apos;a été identifié dans le document servi.
       </p>
     );
@@ -45,13 +45,13 @@ export function VendorTable({ vendors }: { vendors: readonly TrackerEntity[] }) 
   return (
     <div className="space-y-3">
       {sorted.map((v) => (
-        <article key={v.slug} className="rounded-xl border border-k-line bg-white p-5">
+        <article key={v.slug} className="rounded-xl border border-line bg-white p-5">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
                 <Link
                   href={`/traceurs/${v.slug}`}
-                  className="text-[15px] font-semibold text-k-ink hover:text-k-primary hover:underline"
+                  className="text-[15px] font-semibold text-ink-2 hover:text-flame hover:underline"
                 >
                   {v.name}
                 </Link>
@@ -59,11 +59,11 @@ export function VendorTable({ vendors }: { vendors: readonly TrackerEntity[] }) 
                   <Pill key={c}>{CATEGORY_LABELS[c] ?? c}</Pill>
                 ))}
               </div>
-              <p className="mt-1 text-sm text-k-muted">{v.entity}</p>
+              <p className="mt-1 text-sm text-muted">{v.entity}</p>
             </div>
 
             <div className="text-right">
-              <p className="text-sm font-medium text-k-ink">
+              <p className="text-sm font-medium text-ink-2">
                 <span aria-hidden="true">{FLAGS[v.effectiveJurisdiction] ?? "🌐"}</span>{" "}
                 {v.effectiveJurisdiction}
               </p>
@@ -83,19 +83,19 @@ export function VendorTable({ vendors }: { vendors: readonly TrackerEntity[] }) 
             </div>
           </div>
 
-          <p className="mt-3 text-[14px] leading-relaxed text-k-ink">{v.purposeFr}</p>
-          <p className="mt-2 text-[13px] leading-relaxed text-k-muted">{v.riskNotesFr}</p>
+          <p className="mt-3 text-[14px] leading-relaxed text-ink-2">{v.purposeFr}</p>
+          <p className="mt-2 text-[13px] leading-relaxed text-muted">{v.riskNotesFr}</p>
 
           {v.ultimateParent && v.ultimateParent !== v.entity ? (
-            <p className="mt-2 text-xs text-k-muted">
+            <p className="mt-2 text-xs text-muted">
               Société mère ultime : <span className="font-medium">{v.ultimateParent}</span>
             </p>
           ) : null}
 
-          <p className="mt-2 text-xs text-k-muted">{ADEQUACY_LABELS[v.adequacy]}</p>
+          <p className="mt-2 text-xs text-muted">{ADEQUACY_LABELS[v.adequacy]}</p>
 
           {v.alternativesEu && v.alternativesEu.length > 0 ? (
-            <p className="mt-3 rounded-md bg-teal-50 px-3 py-2 text-[13px] text-teal-900">
+            <p className="mt-3 rounded-md bg-flame-bg px-3 py-2 text-[13px] text-flame-dark">
               <span className="font-semibold">Alternatives européennes : </span>
               {v.alternativesEu.join(", ")}.
             </p>
@@ -118,8 +118,8 @@ export function JurisdictionBreakdown({ vendors }: { vendors: readonly TrackerEn
   const total = vendors.length;
 
   return (
-    <div className="rounded-xl border border-k-line bg-white p-5">
-      <p className="text-sm font-semibold text-k-ink">Où partent les données</p>
+    <div className="rounded-xl border border-line bg-white p-5">
+      <p className="text-sm font-semibold text-ink-2">Où partent les données</p>
       <ul className="mt-3 space-y-2.5">
         {entries.map(([jur, n]) => {
           const pct = Math.round((n / total) * 100);
@@ -129,16 +129,16 @@ export function JurisdictionBreakdown({ vendors }: { vendors: readonly TrackerEn
           return (
             <li key={jur}>
               <div className="flex items-baseline justify-between text-[13px]">
-                <span className="font-medium text-k-ink">
+                <span className="font-medium text-ink-2">
                   <span aria-hidden="true">{FLAGS[jur] ?? "🌐"}</span> {jur}
                 </span>
-                <span className="tabular text-k-muted">
+                <span className="tabular text-muted">
                   {n} destinataire{n > 1 ? "s" : ""}
                 </span>
               </div>
-              <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-k-line">
+              <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-line">
                 <div
-                  className={`h-full rounded-full ${isEea ? "bg-k-ok" : "bg-k-danger"}`}
+                  className={`h-full rounded-full ${isEea ? "bg-ok" : "bg-crit"}`}
                   style={{ width: `${pct}%` }}
                 />
               </div>

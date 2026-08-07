@@ -11,33 +11,33 @@ export default function SourcesPage() {
   return (
     <div className="mx-auto max-w-3xl px-5 py-12 sm:py-16">
       <header>
-        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-k-primary">
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-flame">
           Transparence
         </p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-k-ink sm:text-4xl">
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-ink-2 sm:text-4xl">
           Nos sources
         </h1>
-        <p className="mt-4 text-[15px] leading-relaxed text-k-muted">
+        <p className="mt-4 text-[15px] leading-relaxed text-muted">
           Un outil qui fait peur avec des chiffres doit pouvoir les sourcer. Chaque affirmation
           chiffrée du produit est enregistrée ici avec sa source et sa date de vérification.
         </p>
-        <p className="mt-3 text-[15px] leading-relaxed text-k-muted">
+        <p className="mt-3 text-[15px] leading-relaxed text-muted">
           Les chiffres qui n&apos;ont pas encore été confrontés à leur source officielle{" "}
-          <strong className="text-k-ink">ne sont pas affichés</strong> dans les écrans de
+          <strong className="text-ink-2">ne sont pas affichés</strong> dans les écrans de
           résultat. Ils sont listés ci-dessous en attente de contrôle, plutôt que dissimulés.
         </p>
       </header>
 
       <section className="mt-10">
-        <h2 className="text-lg font-semibold text-k-ink">
+        <h2 className="text-lg font-semibold text-ink-2">
           Vérifiés ({PUBLIC_FACTS.length}/{FACTS.length})
         </h2>
         <ul className="mt-4 space-y-3">
           {PUBLIC_FACTS.map((f) => (
-            <li key={f.id} className="rounded-xl border border-k-line bg-white p-4">
-              <p className="text-[15px] font-medium text-k-ink">{f.claim}</p>
-              <p className="mt-1 text-[15px] text-k-ink">{f.value}</p>
-              <p className="mt-2 text-xs text-k-muted">
+            <li key={f.id} className="rounded-xl border border-line bg-white p-4">
+              <p className="text-[15px] font-medium text-ink-2">{f.claim}</p>
+              <p className="mt-1 text-[15px] text-ink-2">{f.value}</p>
+              <p className="mt-2 text-xs text-muted">
                 {f.sourceName} · vérifié le{" "}
                 {f.verifiedAt
                   ? new Date(f.verifiedAt).toLocaleDateString("fr-FR", { dateStyle: "long" })
@@ -45,7 +45,7 @@ export default function SourcesPage() {
                 ·{" "}
                 <a
                   href={f.sourceUrl}
-                  className="text-k-primary hover:underline"
+                  className="text-flame hover:underline"
                   rel="noopener noreferrer nofollow"
                   target="_blank"
                 >
@@ -58,10 +58,10 @@ export default function SourcesPage() {
       </section>
 
       <section className="mt-10">
-        <h2 className="text-lg font-semibold text-k-ink">
+        <h2 className="text-lg font-semibold text-ink-2">
           En attente de vérification ({PENDING_FACTS.length})
         </h2>
-        <p className="mt-2 text-[15px] leading-relaxed text-k-muted">
+        <p className="mt-2 text-[15px] leading-relaxed text-muted">
           Ces chiffres proviennent de synthèses et n&apos;ont pas encore été confrontés à la
           publication officielle. Ils sont donc absents des rapports.
         </p>

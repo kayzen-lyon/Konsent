@@ -19,13 +19,13 @@ export default function TrackersPage() {
   return (
     <div className="mx-auto max-w-6xl px-5 py-12 sm:py-16">
       <header className="max-w-3xl">
-        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-k-primary">
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-flame">
           Base de connaissance
         </p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-k-ink sm:text-4xl">
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-ink-2 sm:text-4xl">
           {TRACKERS.length} services tiers, décrits en français
         </h1>
-        <p className="mt-4 text-[15px] leading-relaxed text-k-muted">
+        <p className="mt-4 text-[15px] leading-relaxed text-muted">
           Les autres outils affichent « <code className="font-mono text-[13px]">_fbp</code> —
           advertising ». Nous écrivons ce que cela veut dire pour un dirigeant : quelle
           entreprise reçoit quoi, sous quel droit, et ce que cela implique concrètement.
@@ -41,10 +41,10 @@ export default function TrackersPage() {
           <li key={t.slug}>
             <Link
               href={`/traceurs/${t.slug}`}
-              className="group flex h-full flex-col rounded-xl border border-k-line bg-white p-4 transition hover:border-k-primary"
+              className="group flex h-full flex-col rounded-xl border border-line bg-white p-4 transition hover:border-flame"
             >
               <div className="flex items-start justify-between gap-2">
-                <span className="text-[15px] font-semibold leading-snug text-k-ink group-hover:text-k-primary">
+                <span className="text-[15px] font-semibold leading-snug text-ink-2 group-hover:text-flame">
                   {t.name}
                 </span>
                 <span
@@ -52,7 +52,7 @@ export default function TrackersPage() {
                     t.adequacy === "EEA"
                       ? "bg-green-50 text-green-800"
                       : t.adequacy === "ADEQUATE"
-                        ? "bg-teal-50 text-teal-800"
+                        ? "bg-flame-bg text-flame-dark"
                         : t.adequacy === "DPF_CONDITIONAL"
                           ? "bg-amber-50 text-amber-800"
                           : "bg-red-50 text-red-800"
@@ -61,8 +61,8 @@ export default function TrackersPage() {
                   {t.effectiveJurisdiction}
                 </span>
               </div>
-              <p className="mt-1 text-xs text-k-muted">{t.entity}</p>
-              <p className="mt-2 line-clamp-3 text-[13px] leading-relaxed text-k-muted">
+              <p className="mt-1 text-xs text-muted">{t.entity}</p>
+              <p className="mt-2 line-clamp-3 text-[13px] leading-relaxed text-muted">
                 {t.purposeFr}
               </p>
               <div className="mt-3 flex flex-wrap gap-1">

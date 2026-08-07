@@ -82,8 +82,8 @@ export default function PricingPage() {
   return (
     <div className="mx-auto max-w-6xl px-5 py-12 sm:py-16">
       <header className="max-w-2xl">
-        <h1 className="text-3xl font-semibold tracking-tight text-k-ink sm:text-4xl">Tarifs</h1>
-        <p className="mt-4 text-[15px] leading-relaxed text-k-muted">
+        <h1 className="text-3xl font-semibold tracking-tight text-ink-2 sm:text-4xl">Tarifs</h1>
+        <p className="mt-4 text-[15px] leading-relaxed text-muted">
           L&apos;analyse est gratuite parce qu&apos;elle coûte quelques millièmes d&apos;euro à
           produire. Ce qui se facture, c&apos;est la surveillance dans le temps et la correction.
         </p>
@@ -94,23 +94,23 @@ export default function PricingPage() {
           <div
             key={p.name}
             className={`flex flex-col rounded-xl border bg-white p-5 ${
-              p.highlighted ? "border-k-primary ring-1 ring-k-primary" : "border-k-line"
+              p.highlighted ? "border-flame ring-1 ring-flame" : "border-line"
             }`}
           >
             {p.highlighted ? (
-              <span className="mb-2 inline-flex w-fit rounded-full bg-teal-50 px-2 py-0.5 text-[11px] font-semibold text-teal-800">
+              <span className="mb-2 inline-flex w-fit rounded-full bg-flame-bg px-2 py-0.5 text-[11px] font-semibold text-flame-dark">
                 Le plus demandé
               </span>
             ) : null}
-            <h2 className="text-[15px] font-semibold text-k-ink">{p.name}</h2>
+            <h2 className="text-[15px] font-semibold text-ink-2">{p.name}</h2>
             <p className="mt-2">
-              <span className="tabular text-3xl font-semibold text-k-ink">{p.price}</span>
-              <span className="text-sm text-k-muted">{p.cadence}</span>
+              <span className="tabular text-3xl font-semibold text-ink-2">{p.price}</span>
+              <span className="text-sm text-muted">{p.cadence}</span>
             </p>
-            <p className="mt-1.5 text-[13px] text-k-muted">{p.pitch}</p>
+            <p className="mt-1.5 text-[13px] text-muted">{p.pitch}</p>
             <ul className="mt-4 flex-1 space-y-1.5">
               {p.features.map((f) => (
-                <li key={f} className="text-[13px] leading-snug text-k-ink">
+                <li key={f} className="text-[13px] leading-snug text-ink-2">
                   · {f}
                 </li>
               ))}
@@ -119,8 +119,8 @@ export default function PricingPage() {
               href={p.cta.href}
               className={`mt-5 rounded-lg px-4 py-2 text-center text-sm font-semibold transition ${
                 p.highlighted
-                  ? "bg-k-primary text-white hover:bg-k-primary-dark"
-                  : "border border-k-line text-k-ink hover:border-k-primary hover:text-k-primary"
+                  ? "bg-flame text-white hover:bg-flame-dark"
+                  : "border border-line text-ink-2 hover:border-flame hover:text-flame"
               }`}
             >
               {p.cta.label}
@@ -130,20 +130,20 @@ export default function PricingPage() {
       </div>
 
       <section className="mt-14">
-        <h2 className="text-xl font-semibold tracking-tight text-k-ink">
+        <h2 className="text-xl font-semibold tracking-tight text-ink-2">
           Prestations de correction
         </h2>
-        <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-k-muted">
+        <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-muted">
           Constater un écart ne le corrige pas. Ces prestations sont réalisées par l&apos;équipe
           technique de KAYZEN LYON, puis validées par une nouvelle analyse.
         </p>
-        <div className="mt-5 overflow-hidden rounded-xl border border-k-line bg-white">
+        <div className="mt-5 overflow-hidden rounded-xl border border-line bg-white">
           <table className="w-full text-left text-sm">
-            <tbody className="divide-y divide-k-line">
+            <tbody className="divide-y divide-line">
               {SERVICES.map(([label, price]) => (
                 <tr key={label}>
-                  <td className="px-5 py-3 text-k-ink">{label}</td>
-                  <td className="tabular px-5 py-3 text-right font-semibold text-k-ink">
+                  <td className="px-5 py-3 text-ink-2">{label}</td>
+                  <td className="tabular px-5 py-3 text-right font-semibold text-ink-2">
                     {price}
                   </td>
                 </tr>
@@ -151,7 +151,7 @@ export default function PricingPage() {
             </tbody>
           </table>
         </div>
-        <p className="mt-3 text-xs text-k-muted">
+        <p className="mt-3 text-xs text-muted">
           Tarifs indicatifs hors taxes, susceptibles d&apos;évoluer selon le périmètre réel.
         </p>
       </section>

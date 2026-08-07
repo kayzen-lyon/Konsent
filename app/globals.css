@@ -1,41 +1,44 @@
 @import "tailwindcss";
 
 /**
- * Jetons de design Konsent (§14.4 du PRD).
+ * Système de design Konsent.
  *
- * Le teal est délibéré : le rouge est réservé aux constats, jamais à la
- * marque. Une marque rouge sur un produit qui affiche du rouge partout
+ * Navy d'autorité + orange d'alerte. Le rouge reste réservé aux constats
+ * critiques : une marque rouge sur un produit qui affiche du rouge partout
  * devient illisible.
  *
- * Aucune police n'est chargée depuis un tiers : Konsent signale le
- * chargement de Google Fonts comme un écart, il ne peut pas le pratiquer.
- * On s'appuie donc sur les piles système.
+ * Les polices sont auto-hébergées au moment du build (next/font) : aucune
+ * requête vers un serveur tiers à l'exécution. Konsent signale le
+ * chargement de Google Fonts comme un écart — il ne peut pas le pratiquer.
  */
 @theme {
-  --color-k-primary: #0f766e;
-  --color-k-primary-dark: #134e4a;
-  --color-k-primary-light: #14b8a6;
-  --color-k-danger: #b91c1c;
-  --color-k-warn: #b45309;
-  --color-k-ok: #15803d;
-  --color-k-ink: #0b1220;
-  --color-k-muted: #475569;
-  --color-k-surface: #f8fafc;
-  --color-k-line: #e2e8f0;
+  /* Navy — autorité, fonds sombres, texte principal */
+  --color-ink: #001629;
+  --color-ink-2: #0f172a;
+  --color-ink-3: #1e293b;
 
-  --font-sans:
-    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
-    "Noto Sans", sans-serif;
-  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-  --font-mono:
-    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
-}
+  /* Orange — accent de marque et signal d'action */
+  --color-flame: #fd761a;
+  --color-flame-dark: #9d4300;
+  --color-flame-soft: #ffdcc6;
+  --color-flame-bg: #fff7ed;
 
-:root {
-  --k-primary: #0f766e;
-  --k-danger: #b91c1c;
-  --k-warn: #b45309;
-  --k-ok: #15803d;
+  /* Constats */
+  --color-crit: #ba1a1a;
+  --color-crit-bg: #ffdad6;
+  --color-warn: #b45309;
+  --color-warn-bg: #fef3c7;
+  --color-ok: #15803d;
+  --color-ok-bg: #dcfce7;
+
+  /* Surfaces */
+  --color-paper: #faf9fc;
+  --color-line: #e2e8f0;
+  --color-line-2: #cbd5e1;
+  --color-muted: #4f5b6b;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono-jb), ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 html {
@@ -44,20 +47,110 @@ html {
 }
 
 body {
-  background: var(--color-k-surface);
-  color: var(--color-k-ink);
+  background: var(--color-paper);
+  color: var(--color-ink-2);
   font-family: var(--font-sans);
-  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-  text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-/* Repère de focus visible partout : le produit contrôle l'accessibilité
-   des bandeaux, il l'applique à lui-même. */
+/* Titres très serrés, à la manière des maquettes. */
+.display {
+  font-weight: 800;
+  letter-spacing: -0.033em;
+  line-height: 1.03;
+}
+
+/* Petites capitales techniques : libellés, statuts, en-têtes de tableau. */
+.tech {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
 :focus-visible {
-  outline: 2px solid var(--color-k-primary);
+  outline: 2px solid var(--color-flame);
   outline-offset: 2px;
   border-radius: 2px;
+}
+
+/* Trame de fond discrète du héros. */
+.grid-bg {
+  background-image:
+    linear-gradient(to right, rgba(15, 23, 42, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.045) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+.grid-bg-dark {
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+/* Bande d'avertissement en diagonale, en tête des cartes critiques. */
+.hazard-top {
+  background: repeating-linear-gradient(
+    45deg,
+    var(--color-crit) 0 10px,
+    transparent 10px 20px
+  );
+}
+
+/* Soulignement orange peint à la main sous un mot clé du titre. */
+.underline-flame {
+  background-image: linear-gradient(transparent 62%, rgba(253, 118, 26, 0.42) 62%);
+  background-repeat: no-repeat;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.rise {
+  animation: rise 0.5s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
+@keyframes blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.caret {
+  animation: blink 1s steps(1) infinite;
+}
+
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+.pulse-soft {
+  animation: pulse-soft 1.5s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -71,37 +164,34 @@ body {
   }
 }
 
-/* Chiffres alignés dans les tableaux de données. */
-.tabular {
-  font-variant-numeric: tabular-nums;
+/* Curseur de plage, stylé de façon cohérente sur les deux moteurs. */
+.range-flame {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--color-line-2);
+  outline-offset: 6px;
 }
 
-/* Animation d'entrée du score, discrète. */
-@keyframes k-rise {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
+.range-flame::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--color-flame);
+  border: 3px solid #fff;
+  box-shadow: 0 1px 6px rgba(0, 22, 41, 0.35);
+  cursor: pointer;
 }
 
-.k-rise {
-  animation: k-rise 0.45s cubic-bezier(0.2, 0.7, 0.3, 1) both;
-}
-
-@keyframes k-pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.45;
-  }
-}
-
-.k-pulse {
-  animation: k-pulse 1.4s ease-in-out infinite;
+.range-flame::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--color-flame);
+  border: 3px solid #fff;
+  box-shadow: 0 1px 6px rgba(0, 22, 41, 0.35);
+  cursor: pointer;
 }

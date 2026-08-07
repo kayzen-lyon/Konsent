@@ -93,15 +93,15 @@ export function computeScore(findings: readonly Finding[]): ScoreResult {
 export function gradeColor(grade: string): string {
   switch (grade) {
     case "A":
-      return "var(--k-ok)";
+      return "#15803d";
     case "B":
       return "#4d7c0f";
     case "C":
-      return "var(--k-warn)";
+      return "#b45309";
     case "D":
       return "#c2410c";
     case "E":
-      return "var(--k-danger)";
+      return "#ba1a1a";
     default:
       return "#7f1d1d";
   }

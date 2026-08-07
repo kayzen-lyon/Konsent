@@ -4,10 +4,17 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
 /**
- * Formulaire d'analyse. Aucune inscription, aucune carte bancaire (§16, n°101).
- * La navigation vers /scan déclenche l'exécution côté serveur.
+ * Formulaire d'analyse. Aucune inscription, aucune adresse e-mail exigée
+ * pour voir le résultat — contrairement à l'usage du marché, qui place le
+ * rapport derrière un formulaire de capture.
  */
-export function ScanForm({ autoFocus = false }: { autoFocus?: boolean }) {
+export function ScanForm({
+  autoFocus = false,
+  tone = "light",
+}: {
+  autoFocus?: boolean;
+  tone?: "light" | "dark";
+}) {
   const [value, setValue] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -25,50 +32,60 @@ export function ScanForm({ autoFocus = false }: { autoFocus?: boolean }) {
       return;
     }
     setError(null);
-    startTransition(() => {
-      router.push(`/scan?url=${encodeURIComponent(raw)}`);
-    });
+    startTransition(() => router.push(`/scan?url=${encodeURIComponent(raw)}`));
   }
+
+  const dark = tone === "dark";
 
   return (
     <form onSubmit={submit} className="w-full" noValidate>
-      <div className="flex flex-col gap-2.5 sm:flex-row">
-        <div className="relative flex-1">
-          <label htmlFor="scan-url" className="sr-only">
-            Adresse du site à analyser
-          </label>
-          <input
-            id="scan-url"
-            name="url"
-            type="text"
-            inputMode="url"
-            autoComplete="url"
-            autoFocus={autoFocus}
-            spellCheck={false}
-            placeholder="exemple.fr"
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            aria-invalid={error ? true : undefined}
-            aria-describedby={error ? "scan-error" : undefined}
-            className="w-full rounded-lg border border-k-line bg-white px-4 py-3 text-[15px] text-k-ink shadow-sm outline-none transition placeholder:text-slate-400 focus:border-k-primary focus:ring-2 focus:ring-k-primary/20"
-          />
-        </div>
+      <div
+        className={`flex flex-col gap-2 sm:flex-row sm:gap-0 sm:rounded-lg sm:p-1.5 ${
+          dark ? "sm:bg-white/10" : "sm:bg-white sm:shadow-lg sm:ring-1 sm:ring-ink/10"
+        }`}
+      >
+        <label htmlFor="scan-url" className="sr-only">
+          Adresse du site à analyser
+        </label>
+        <input
+          id="scan-url"
+          name="url"
+          type="text"
+          inputMode="url"
+          autoComplete="url"
+          autoFocus={autoFocus}
+          spellCheck={false}
+          placeholder="exemple.fr"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? "scan-error" : undefined}
+          className={`min-w-0 flex-1 rounded-lg px-4 py-3.5 font-mono text-[15px] outline-none transition sm:rounded-md ${
+            dark
+              ? "bg-white/5 text-white placeholder:text-white/35 focus:bg-white/10"
+              : "bg-white text-ink-2 placeholder:text-slate-400"
+          }`}
+        />
         <button
           type="submit"
           disabled={pending}
-          className="shrink-0 rounded-lg bg-k-primary px-6 py-3 text-[15px] font-semibold text-white shadow-sm transition hover:bg-k-primary-dark disabled:cursor-wait disabled:opacity-70"
+          className="tech shrink-0 rounded-lg bg-flame px-6 py-3.5 text-[11px] text-white transition hover:bg-flame-dark disabled:cursor-wait disabled:opacity-70 sm:rounded-md"
         >
-          {pending ? "Analyse en cours…" : "Analyser gratuitement"}
+          {pending ? "Analyse…" : "Lancer l'audit gratuit"}
         </button>
       </div>
 
       {error ? (
-        <p id="scan-error" role="alert" className="mt-2 text-sm text-k-danger">
+        <p
+          id="scan-error"
+          role="alert"
+          className={`mt-2 text-sm ${dark ? "text-red-300" : "text-crit"}`}
+        >
           {error}
         </p>
       ) : (
-        <p className="mt-2 text-[13px] text-k-muted">
-          Sans inscription, sans carte bancaire. Résultat en une trentaine de secondes.
+        <p className={`mt-2.5 text-[13px] ${dark ? "text-white/50" : "text-muted"}`}>
+          Sans inscription, sans e-mail, sans carte bancaire. Résultat immédiat à l&apos;écran.
         </p>
       )}
     </form>
