@@ -12,6 +12,12 @@ const BASE = "https://konsent.fr";
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages = [
     "",
+    "/fonctionnalites",
+    "/comparatif",
+    "/simulateur",
+    "/surveillance",
+    "/veille",
+    "/agence",
     "/regles",
     "/traceurs",
     "/methodologie",

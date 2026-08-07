@@ -7,7 +7,7 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       // Les pages de résultat sont propres à une requête et n'ont pas
       // vocation à être indexées.
-      disallow: ["/scan", "/api/", "/documents/"],
+      disallow: ["/scan", "/api/", "/documents/", "/devis"],
     },
     sitemap: "https://konsent.fr/sitemap.xml",
   };

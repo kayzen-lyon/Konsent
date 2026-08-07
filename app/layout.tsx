@@ -45,8 +45,9 @@ export const metadata: Metadata = {
 
 const NAV = [
   { href: "/fonctionnalites", label: "Fonctionnalités" },
-  { href: "/simulateur", label: "Simulateur" },
-  { href: "/comparatif", label: "Comparatif" },
+  { href: "/surveillance", label: "Surveillance" },
+  { href: "/veille", label: "Veille" },
+  { href: "/agence", label: "Agences" },
   { href: "/regles", label: "Référentiel" },
   { href: "/tarifs", label: "Tarifs" },
 ];
@@ -117,6 +118,8 @@ function Footer() {
             <ul className="mt-3 space-y-2 text-sm">
               {[
                 ["/fonctionnalites", "Fonctionnalités"],
+                ["/surveillance", "Surveillance"],
+                ["/agence", "Vue portefeuille"],
                 ["/simulateur", "Simulateur d'exposition"],
                 ["/tarifs", "Tarifs"],
                 ["/comparatif", "Comparatif CMP"],
@@ -135,6 +138,7 @@ function Footer() {
             <ul className="mt-3 space-y-2 text-sm">
               {[
                 ["/regles", "Référentiel des règles"],
+                ["/veille", "Veille réglementaire"],
                 ["/traceurs", "Base des traceurs"],
                 ["/methodologie", "Méthodologie"],
                 ["/sources", "Nos sources"],

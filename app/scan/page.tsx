@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import { BaselineExport } from "@/components/BaselineInput";
 import { ExposureBox } from "@/components/ExposureBox";
 import { FindingsByPillar } from "@/components/Findings";
 import { ScanForm } from "@/components/ScanForm";
@@ -9,6 +10,7 @@ import { Timeline } from "@/components/Timeline";
 import { JurisdictionBreakdown, VendorTable } from "@/components/Vendors";
 import { Disclaimer, SectionTitle, Stat } from "@/components/primitives";
 import { ScanError, runScan } from "@/lib/engine/scan";
+import { createBaseline, encodeBaseline } from "@/lib/monitoring/baseline";
 import { RULEPACK, getRule } from "@/lib/rulepack";
 
 export const dynamic = "force-dynamic";
@@ -273,18 +275,54 @@ async function ScanReport({ target }: { target: string }) {
 
           <div className="rounded-xl bg-white p-6 ring-1 ring-line">
             <p className="tech text-[10px] text-flame">Correction</p>
-            <h3 className="display mt-2 text-xl text-ink-2">Faire corriger ces écarts</h3>
+            <h3 className="display mt-2 text-xl text-ink-2">Estimer la remise en conformité</h3>
             <p className="mt-2 text-sm leading-relaxed text-muted">
-              Constater ne corrige pas. L&apos;équipe technique de KAYZEN LYON prend en charge
-              la remise en conformité, validée par une nouvelle analyse.
+              Le devis se calcule à partir des constats ci-dessus, sans saisie commerciale : il
+              ne peut pas diverger du rapport.
             </p>
             <Link
-              href="/tarifs"
+              href={`/devis?url=${encodeURIComponent(target)}`}
               className="tech mt-5 inline-block rounded border border-ink/20 px-5 py-2.5 text-[11px] text-ink-2 transition hover:border-flame hover:text-flame"
             >
-              Voir les prestations
+              Voir l&apos;estimation
             </Link>
           </div>
+
+          <div className="rounded-xl bg-white p-6 ring-1 ring-line">
+            <p className="tech text-[10px] text-flame">Preuve</p>
+            <h3 className="display mt-2 text-xl text-ink-2">Archive signée</h3>
+            <p className="mt-2 text-sm leading-relaxed text-muted">
+              Constats, observation brute, empreintes SHA-256 et signature Ed25519. Le vrai
+              besoin d&apos;un DPO n&apos;est pas de savoir, c&apos;est de pouvoir prouver
+              qu&apos;il a contrôlé.
+            </p>
+            <a
+              href={`/api/evidence?url=${encodeURIComponent(target)}`}
+              className="tech mt-5 inline-block rounded border border-ink/20 px-5 py-2.5 text-[11px] text-ink-2 transition hover:border-flame hover:text-flame"
+            >
+              Télécharger l&apos;archive
+            </a>
+          </div>
+
+          <div className="rounded-xl bg-white p-6 ring-1 ring-line">
+            <p className="tech text-[10px] text-flame">Surveillance</p>
+            <h3 className="display mt-2 text-xl text-ink-2">Détecter les régressions</h3>
+            <p className="mt-2 text-sm leading-relaxed text-muted">
+              Conservez le jeton ci-dessous. En le représentant plus tard, vous obtiendrez
+              uniquement ce qui a changé — nouveau traceur, page légale disparue, juridiction
+              inédite.
+            </p>
+            <Link
+              href="/surveillance"
+              className="tech mt-5 inline-block rounded border border-ink/20 px-5 py-2.5 text-[11px] text-ink-2 transition hover:border-flame hover:text-flame"
+            >
+              Ouvrir la surveillance
+            </Link>
+          </div>
+        </section>
+
+        <section className="mt-5">
+          <BaselineExport token={encodeBaseline(createBaseline(result))} />
         </section>
 
         <section className="mt-10">

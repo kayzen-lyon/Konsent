@@ -20,17 +20,40 @@ ne revend de bandeau cookies — il audite les vôtres, y compris ceux des
 
 | Module | État |
 |---|---|
-| **M01 — Moteur de scan** | Moteur statique complet (serverless) + worker navigateur trois phases |
+| **M01 — Moteur de scan** | Moteur statique (serverless) + worker navigateur trois phases |
 | **M02 — Référentiel** | 96 règles versionnées, publiques, avec référence normative et statut « Digital Omnibus » |
 | **M03 — Base des destinataires** | 69 entités décrites en français : entreprise, juridiction effective, implications |
 | **M04 — Moteur de risque** | Score 0–100 avec plafonds durs, notes A–F, exposition théorique encadrée |
-| **M08 — Doc Factory** | Politique cookies générée depuis le scan, avec champs `[[À COMPLÉTER]]` visibles |
-| **API** | `GET /api/scan?url=…`, avertissement non désactivable dans chaque réponse |
-| **SEO programmatique** | 179 pages générées depuis la base (règles, traceurs, institutionnel) |
+| **M08 — Doc Factory** | Politique cookies générée depuis le scan, champs `[[À COMPLÉTER]]` visibles |
+| **M09 — Archive de preuve** | ZIP signé Ed25519, empreintes SHA-256, vérifiable hors ligne |
+| **M10 — Surveillance** | Moteur de diff, jeton de référence infalsifiable, alerte nominative |
+| **M11 — Devis** | Calculé depuis les constats, mutualisation et coefficient de pile |
+| **M12 — Reg Watch** | Veille rattachée aux règles, statut en vigueur / projet / retiré |
+| **M13 — Serveur MCP** | Six outils, deux ressources, avertissement non désactivable |
+| **M14 — Couche agence** | Portefeuille multi-domaines, marque blanche par URL |
+| **API** | `/api/scan` · `/api/diff` · `/api/evidence` · `/api/rulepack` · `/api/regwatch` |
+| **SEO programmatique** | 185 pages générées depuis la base |
 
-Modules du PRD non encore implémentés : Evidence Vault (M09), Monitoring
-(M10), Remediation chiffrée (M11), Reg Watch (M12), serveur MCP (M13),
-couche agence (M14).
+### Ce qui suppose une base de données
+
+Cette instance ne conserve **aucun** résultat d'analyse, conformément à sa
+politique de confidentialité. Trois fonctions en dépendent et ne sont donc
+pas actives : la surveillance *planifiée* (les moteurs de comparaison et
+d'alerte, eux, fonctionnent), l'historique de score, et les sous-comptes
+clients cloisonnés de l'offre Agence.
+
+### Vérifier une archive de preuve
+
+```bash
+unzip konsent-preuve-*.zip -d preuve && cd preuve
+sha256sum -c SHA256SUMS
+base64 -d SHA256SUMS.sig > sig.bin
+openssl pkeyutl -verify -pubin -inkey public-key.pem -rawin -in SHA256SUMS -sigfile sig.bin
+```
+
+En production, définissez `KONSENT_SIGNING_KEY` (clé Ed25519 PKCS#8 PEM
+encodée en base64). Sans elle, une clé éphémère est générée et le manifeste
+indique explicitement que l'archive n'a aucune valeur d'opposabilité.
 
 ## Les deux moteurs
 

@@ -94,6 +94,100 @@ const MODULES = [
     status: "Politique cookies disponible",
   },
   {
+    tag: "M09",
+    title: "Archive de preuve",
+    lead: "Le besoin d'un DPO n'est pas de savoir : c'est de pouvoir prouver qu'il a contrôlé.",
+    body: [
+      "Chaque audit peut produire une archive contenant les constats structurés, l'observation brute, l'inventaire des destinataires, un rapport lisible, les empreintes SHA-256 de chaque fichier et une signature Ed25519 détachée.",
+      "La portée est écrite noir sur blanc dans l'archive : la signature atteste de l'origine et de l'intégrité, pas de la date au sens d'un horodatage qualifié eIDAS — lequel suppose un prestataire de services de confiance tiers.",
+    ],
+    bullets: [
+      "Vérifiable hors ligne : sha256sum -c SHA256SUMS",
+      "Signature contrôlable avec openssl et la clé publique jointe",
+      "Manifeste portant la version du référentiel et le mode du moteur",
+      "Construite à la volée : rien n'est conservé côté serveur",
+    ],
+    status: "Disponible depuis chaque rapport",
+  },
+  {
+    tag: "M10",
+    title: "Surveillance et régressions",
+    lead: "Être conforme un jour ne sert à rien si personne ne regarde le lendemain.",
+    body: [
+      "Le moteur compare l'état actuel d'un site à une analyse de référence et ne remonte que ce qui a changé : nouvel écart, nouveau destinataire, juridiction inédite, page légale disparue lors d'une refonte.",
+      "La référence est un jeton que vous conservez, protégé contre l'altération. Nous ne stockons rien : notre politique de confidentialité annonce qu'aucun résultat n'est conservé, et nous nous y tenons.",
+    ],
+    bullets: [
+      "Message d'alerte nominatif prêt à l'envoi",
+      "Comparaison refusée entre deux domaines différents",
+      "Signalement d'un changement de version du référentiel",
+      "Surveillance planifiée et historique sur abonnement Pro",
+    ],
+    status: "Disponible sur /surveillance",
+  },
+  {
+    tag: "M11",
+    title: "Devis de correction",
+    lead: "Le devis se calcule depuis les constats, sans saisie commerciale.",
+    body: [
+      "Chaque écart facturable porte sa fourchette. Les corrections se mutualisent — corriger dix balises ne coûte pas dix fois le prix d'une seule — et un coefficient de pile technique s'applique.",
+      "Conséquence : le devis ne peut pas diverger du rapport. Les constats corrigeables en autonomie sont explicitement exclus de la facturation.",
+    ],
+    bullets: [
+      "Détection automatique de la pile (WordPress, Shopify, Webflow…)",
+      "Écarts non facturables signalés comme tels",
+      "Validité datée, mentions et limites explicites",
+      "Estimation, pas devis contractuel — c'est écrit",
+    ],
+    status: "Disponible sur /devis",
+  },
+  {
+    tag: "M12",
+    title: "Veille réglementaire",
+    lead: "Ce qui s'applique, ce qui se discute, et ce qui n'existe plus.",
+    body: [
+      "Le marché entretient la confusion entre le droit en vigueur et les projets de réforme, parce que l'incertitude fait vendre. Chaque entrée porte son statut, sa source et les règles du référentiel qu'elle impacte.",
+      "Le projet « Digital Omnibus » y figure comme ce qu'il est : une proposition non adoptée, faisant l'objet d'un avis conjoint critique du CEPD.",
+    ],
+    bullets: [
+      "Statuts distincts : en vigueur, jurisprudence, projet, retiré",
+      "Rattachement de chaque texte aux règles concernées",
+      "Recommandation d'action, volontairement prudente",
+      "Exposée par API pour les intégrateurs",
+    ],
+    status: "Disponible sur /veille",
+  },
+  {
+    tag: "M13",
+    title: "Serveur MCP",
+    lead: "L'audit devient appelable par un agent.",
+    body: [
+      "Six outils exposés : audit d'un site, filtrage des écarts, destinataires, analyse des transferts, portefeuille multi-domaines et détection de régression. Deux ressources : le référentiel et la veille.",
+      "L'avertissement transite par une fonction unique et n'est pas désactivable, et la couverture est toujours renvoyée : un agent qui relaie un constat relaie sa portée et ses limites en même temps.",
+    ],
+    bullets: [
+      "Paquet fourni dans mcp/, transport stdio",
+      "Pointe sur l'instance publique ou la vôtre",
+      "« Scanne les huit domaines de ce client et dis-moi lesquels ont régressé »",
+    ],
+    status: "Fourni dans le dépôt",
+  },
+  {
+    tag: "M14",
+    title: "Couche agence",
+    lead: "Vos clients sur un seul écran, à votre marque.",
+    body: [
+      "La vue portefeuille analyse plusieurs domaines par vagues et les classe par exposition, en désignant celui à traiter en premier.",
+      "Le nom et la couleur de l'agence se transmettent par l'adresse : l'en-tête du rapport reprend votre identité, sans compte à créer.",
+    ],
+    bullets: [
+      "Analyse concurrente, tri par score croissant",
+      "Domaine le plus exposé mis en avant, avec accès direct au devis",
+      "Sous-comptes et portefeuille persistant : nécessitent une base de données",
+    ],
+    status: "Disponible sur /agence",
+  },
+  {
     tag: "API",
     title: "Interface programmable",
     lead: "Un audit appelable depuis vos outils.",
@@ -102,9 +196,10 @@ const MODULES = [
       "L'avertissement est embarqué dans chaque réponse et n'est pas désactivable : un consommateur d'API doit le recevoir en même temps que le constat.",
     ],
     bullets: [
-      "GET /api/scan?url=…",
+      "GET /api/scan · /api/diff · /api/evidence",
+      "GET /api/rulepack · /api/regwatch",
       "Champ « coverage.notEvaluated » systématique",
-      "Aucune mise en cache des résultats",
+      "Aucune mise en cache des résultats d'analyse",
     ],
     status: "Disponible",
   },
@@ -182,16 +277,25 @@ export default function FeaturesPage() {
         </div>
       </section>
 
-      {/* ── À venir, annoncé honnêtement ── */}
+      {/* ── Ce qui reste conditionné à une infrastructure ── */}
       <section className="mx-auto max-w-7xl px-5 pb-14">
         <div className="rounded-xl border-l-2 border-warn bg-white p-6 ring-1 ring-line">
-          <p className="tech text-[10px] text-warn">Feuille de route</p>
-          <h2 className="display mt-2 text-xl text-ink-2">Ce qui n&apos;existe pas encore</h2>
+          <p className="tech text-[10px] text-warn">Limites assumées</p>
+          <h2 className="display mt-2 text-xl text-ink-2">
+            Ce qui suppose une base de données
+          </h2>
           <p className="mt-2 max-w-3xl text-[14px] leading-relaxed text-muted">
-            Nous préférons l&apos;annoncer plutôt que de le laisser croire. Ne sont pas encore
-            livrés : l&apos;archive de preuve signée et horodatée, la surveillance planifiée avec
-            détection de régression, le devis de correction automatisé, la veille réglementaire
-            en tableau, le serveur MCP et la couche agence en marque blanche.
+            Cette instance ne conserve aucun résultat d&apos;analyse — c&apos;est ce
+            qu&apos;annonce notre politique de confidentialité, et nous nous y tenons. Trois
+            fonctions en dépendent donc et ne sont pas actives ici : la surveillance{" "}
+            <em>planifiée</em> (les moteurs de comparaison et d&apos;alerte, eux, fonctionnent
+            et sont utilisables dès maintenant avec un jeton de référence), l&apos;historique de
+            score dans le temps, et les sous-comptes clients cloisonnés de l&apos;offre Agence.
+          </p>
+          <p className="mt-3 max-w-3xl text-[14px] leading-relaxed text-muted">
+            Les activer suppose de stocker des données pour votre compte, donc un contrat de
+            sous-traitance et votre consentement explicite. C&apos;est le périmètre des
+            abonnements Pro et Agence, pas celui de l&apos;audit libre.
           </p>
         </div>
       </section>
