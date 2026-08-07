@@ -1,0 +1,17 @@
+{
+  "name": "konsent-worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Worker d'analyse en navigateur — protocole en trois phases (avant consentement / après refus / après acceptation).",
+  "scripts": {
+    "scan": "node --experimental-strip-types src/index.ts",
+    "postinstall": "playwright install chromium"
+  },
+  "dependencies": {
+    "playwright": "^1.49.1"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

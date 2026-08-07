@@ -1,0 +1,107 @@
+@import "tailwindcss";
+
+/**
+ * Jetons de design Konsent (§14.4 du PRD).
+ *
+ * Le teal est délibéré : le rouge est réservé aux constats, jamais à la
+ * marque. Une marque rouge sur un produit qui affiche du rouge partout
+ * devient illisible.
+ *
+ * Aucune police n'est chargée depuis un tiers : Konsent signale le
+ * chargement de Google Fonts comme un écart, il ne peut pas le pratiquer.
+ * On s'appuie donc sur les piles système.
+ */
+@theme {
+  --color-k-primary: #0f766e;
+  --color-k-primary-dark: #134e4a;
+  --color-k-primary-light: #14b8a6;
+  --color-k-danger: #b91c1c;
+  --color-k-warn: #b45309;
+  --color-k-ok: #15803d;
+  --color-k-ink: #0b1220;
+  --color-k-muted: #475569;
+  --color-k-surface: #f8fafc;
+  --color-k-line: #e2e8f0;
+
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    "Noto Sans", sans-serif;
+  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+:root {
+  --k-primary: #0f766e;
+  --k-danger: #b91c1c;
+  --k-warn: #b45309;
+  --k-ok: #15803d;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--color-k-surface);
+  color: var(--color-k-ink);
+  font-family: var(--font-sans);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Repère de focus visible partout : le produit contrôle l'accessibilité
+   des bandeaux, il l'applique à lui-même. */
+:focus-visible {
+  outline: 2px solid var(--color-k-primary);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Chiffres alignés dans les tableaux de données. */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Animation d'entrée du score, discrète. */
+@keyframes k-rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.k-rise {
+  animation: k-rise 0.45s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
+@keyframes k-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+.k-pulse {
+  animation: k-pulse 1.4s ease-in-out infinite;
+}
