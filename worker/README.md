@@ -39,8 +39,43 @@ node --experimental-strip-types src/index.ts https://exemple.fr
 ```
 
 Le worker écrit sur la sortie standard un objet JSON contenant les trois
-instantanés et la résolution du bandeau. Ce JSON est destiné à alimenter le
-même évaluateur que le moteur statique (`lib/engine/evaluate.ts`).
+instantanés et la résolution du bandeau.
+
+## Faire évaluer l'observation
+
+Ce JSON alimente le même évaluateur que le moteur statique. Il suffit de le
+transmettre à l'application :
+
+```bash
+node --experimental-strip-types src/index.ts https://exemple.fr \
+  | curl -s -X POST https://konsent-zeta.vercel.app/api/ingest \
+      -H 'Content-Type: application/json' --data-binary @- \
+  | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{
+      const j=JSON.parse(d);
+      console.log(j.scan.score+'/100 ('+j.scan.grade+')');
+      for (const f of j.findings) console.log(' ',f.severity,f.ruleId,f.title);
+    })"
+```
+
+L'application ne fait tourner aucun navigateur : elle applique le
+référentiel à ce que le worker a observé. Cette séparation permet
+d'exécuter le worker là où c'est possible — poste de développement,
+conteneur, intégration continue — sans contrainte d'hébergement.
+
+## Ce que le protocole complet apporte
+
+Le mode statique laisse 49 règles non évaluées. Le protocole en trois phases
+ramène ce nombre à 34, en couvrant notamment :
+
+- le dépôt effectif de cookies par JavaScript (KZC-DEPOT-001 à 003) ;
+- le comportement après refus (KZC-REFUS-001, 002, 006) ;
+- la symétrie réelle du bandeau, clics à l'appui (KZC-BANNER-002, 003) ;
+- le stockage alternatif (KZC-STORAGE-001, 003) ;
+- l'empreinte du terminal, y compris maintenue après refus (KZC-FP-001 à 008).
+
+Les 34 règles restantes supposent une vérification manuelle ou la phase D de
+persistance du refus, non implémentée. Elles restent déclarées comme non
+évaluées — jamais comptées comme satisfaites.
 
 ## Éthique du crawl
 

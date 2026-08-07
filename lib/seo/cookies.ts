@@ -355,6 +355,41 @@ export function getCookie(slug: string): CookieEntry | undefined {
   return COOKIES.find((c) => c.slug === slug);
 }
 
+/**
+ * Rapproche un cookie observé de son éditeur, PAR SON NOM.
+ *
+ * C'est le seul rapprochement qui fonctionne en pratique : `_fbp`, `_ga` ou
+ * `_gcl_au` sont posés par des scripts tiers mais sur le domaine du site
+ * lui-même. Les chercher par domaine ne donne jamais rien, alors que ce sont
+ * précisément les cookies qui portent les constats les plus lourds.
+ *
+ * Les motifs à joker (`_ga_*`, `_hjSessionUser_*`) sont pris en charge.
+ */
+export function matchCookieName(name: string): CookieEntry | undefined {
+  const exact = COOKIES.find((c) => c.name === name);
+  if (exact) return exact;
+
+  for (const cookie of COOKIES) {
+    if (!cookie.name.includes("*")) continue;
+    const pattern = new RegExp(
+      `^${cookie.name.split("*").map(escapeRegex).join(".*")}$`,
+      "i",
+    );
+    if (pattern.test(name)) return cookie;
+  }
+  return undefined;
+}
+
+function escapeRegex(part: string): string {
+  return part.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/** Éditeur d'un cookie observé, résolu par son nom. */
+export function trackerForCookieName(name: string): TrackerEntity | undefined {
+  const entry = matchCookieName(name);
+  return entry?.vendorSlug ? getTrackerBySlug(entry.vendorSlug) : undefined;
+}
+
 export function vendorOf(cookie: CookieEntry): TrackerEntity | undefined {
   return cookie.vendorSlug ? getTrackerBySlug(cookie.vendorSlug) : undefined;
 }

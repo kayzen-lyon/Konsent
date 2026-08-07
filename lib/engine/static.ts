@@ -17,6 +17,7 @@ import {
   TERMS_LEXICON,
 } from "./lexicons";
 import { matchHostname, matchUrl, TRACKERS } from "../trackers/db";
+import { trackerForCookieName } from "../seo/cookies";
 import type { TrackerEntity } from "../trackers/types";
 import type {
   CmpDetection,
@@ -130,6 +131,10 @@ function parseSetCookies(headers: Headers, pageHost: string): ObservedCookie[] {
       }
     }
 
+    // Rapprochement par nom d'abord : un cookie posé par un script tiers
+    // l'est sur le domaine du site, jamais sur celui du tiers.
+    const tracker = trackerForCookieName(name) ?? matchHostname(domain);
+
     cookies.push({
       name,
       domain,
@@ -139,7 +144,7 @@ function parseSetCookies(headers: Headers, pageHost: string): ObservedCookie[] {
       httpOnly,
       sameSite,
       source: "http",
-      tracker: matchHostname(domain),
+      ...(tracker ? { tracker } : {}),
       phase: "A",
     });
   }
