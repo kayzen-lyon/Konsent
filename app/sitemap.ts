@@ -1,6 +1,9 @@
 import type { MetadataRoute } from "next";
 import { RULES } from "@/lib/rulepack";
 import { TRACKERS } from "@/lib/trackers/db";
+import { COOKIES } from "@/lib/seo/cookies";
+import { GLOSSARY } from "@/lib/seo/glossary";
+import { GUIDES } from "@/lib/seo/guides";
 
 const BASE = "https://konsent.fr";
 
@@ -20,6 +23,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/agence",
     "/regles",
     "/traceurs",
+    "/cookies",
+    "/guides",
+    "/glossaire",
     "/methodologie",
     "/tarifs",
     "/bot",
@@ -47,5 +53,33 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
-  return [...staticPages, ...rulePages, ...trackerPages];
+  const cookiePages = COOKIES.map((c) => ({
+    url: `${BASE}/cookies/${c.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.5,
+  }));
+
+  const guidePages = GUIDES.map((g) => ({
+    url: `${BASE}/guides/${g.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+
+  const glossaryPages = GLOSSARY.map((t) => ({
+    url: `${BASE}/glossaire/${t.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "yearly" as const,
+    priority: 0.5,
+  }));
+
+  return [
+    ...staticPages,
+    ...rulePages,
+    ...trackerPages,
+    ...cookiePages,
+    ...guidePages,
+    ...glossaryPages,
+  ];
 }

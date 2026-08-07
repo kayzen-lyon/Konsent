@@ -47,7 +47,7 @@ const NAV = [
   { href: "/fonctionnalites", label: "Fonctionnalités" },
   { href: "/surveillance", label: "Surveillance" },
   { href: "/veille", label: "Veille" },
-  { href: "/agence", label: "Agences" },
+  { href: "/guides", label: "Guides" },
   { href: "/regles", label: "Référentiel" },
   { href: "/tarifs", label: "Tarifs" },
 ];
@@ -140,6 +140,9 @@ function Footer() {
                 ["/regles", "Référentiel des règles"],
                 ["/veille", "Veille réglementaire"],
                 ["/traceurs", "Base des traceurs"],
+                ["/cookies", "Index des cookies"],
+                ["/guides", "Guides de correction"],
+                ["/glossaire", "Glossaire"],
                 ["/methodologie", "Méthodologie"],
                 ["/sources", "Nos sources"],
                 ["/bot", "Notre robot"],
