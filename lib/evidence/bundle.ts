@@ -1,4 +1,10 @@
-import { createHash, createPrivateKey, generateKeyPairSync, sign } from "node:crypto";
+import {
+  createHash,
+  createPrivateKey,
+  createPublicKey,
+  generateKeyPairSync,
+  sign,
+} from "node:crypto";
 import { DISCLAIMER_LONG, EDITOR } from "../disclaimer";
 import type { ScanResult } from "../engine/types";
 import { getRule } from "../rulepack";
@@ -45,13 +51,12 @@ function getSigningKey(): SigningKey {
     try {
       const pem = Buffer.from(fromEnv, "base64").toString("utf8");
       const privateKey = createPrivateKey(pem);
-      cached = {
-        privateKey,
-        publicKeyPem: privateKey
-          .export({ format: "pem", type: "spki" } as never)
-          .toString(),
-        production: true,
-      };
+      // La clé publique se DÉRIVE de la privée : une clé privée ne
+      // s'exporte pas au format SPKI, qui est réservé aux clés publiques.
+      const publicKeyPem = createPublicKey(privateKey)
+        .export({ format: "pem", type: "spki" })
+        .toString();
+      cached = { privateKey, publicKeyPem, production: true };
       return cached;
     } catch {
       // Clé illisible : on retombe volontairement sur l'éphémère plutôt que
