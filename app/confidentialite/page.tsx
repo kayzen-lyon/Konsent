@@ -52,9 +52,58 @@ export default function PrivacyPage() {
       <section className="mt-8">
         <h2 className="text-lg font-semibold text-ink-2">Durées de conservation</h2>
         <p className="mt-2 text-[15px] leading-relaxed text-ink-2">
-          Les résultats d&apos;analyse ne sont pas conservés : ils sont calculés à la demande et
-          disparaissent à la fermeture de la page. Les journaux techniques de l&apos;hébergeur
-          sont conservés selon la politique de rétention de celui-ci.
+          <strong>Audit à la demande :</strong> les résultats ne sont pas conservés. Ils sont
+          calculés à la demande et disparaissent à la fermeture de la page. Les journaux
+          techniques de l&apos;hébergeur sont conservés selon la politique de rétention de
+          celui-ci.
+        </p>
+        <p className="mt-3 text-[15px] leading-relaxed text-ink-2">
+          <strong>Surveillance planifiée :</strong> si — et seulement si — vous inscrivez
+          explicitement un domaine à la surveillance, nous conservons un historique de ses
+          analyses successives. C&apos;est indispensable pour vous signaler ce qui a changé.
+        </p>
+      </section>
+
+      <section className="mt-8">
+        <h2 className="text-lg font-semibold text-ink-2">
+          Ce que la surveillance planifiée conserve
+        </h2>
+        <p className="mt-2 text-[15px] leading-relaxed text-ink-2">
+          L&apos;inscription est volontaire, domaine par domaine, et suppose de prouver que vous
+          maîtrisez ce domaine — nous ne surveillons pas le site d&apos;autrui.
+        </p>
+        <ul className="mt-3 space-y-2 text-[15px] leading-relaxed text-ink-2">
+          <li>
+            · <strong>Le domaine inscrit</strong> et l&apos;adresse de courriel destinataire des
+            alertes. C&apos;est la seule donnée personnelle traitée à ce titre.
+          </li>
+          <li>
+            · <strong>L&apos;historique des analyses</strong> : date, score, nombre d&apos;écarts,
+            identifiants des règles déclenchées, destinataires identifiés et leur juridiction.
+          </li>
+          <li>
+            · <strong>Les alertes émises</strong> et leur contenu.
+          </li>
+        </ul>
+        <p className="mt-3 text-[15px] leading-relaxed text-ink-2">
+          Ces données décrivent <strong>un site</strong>, pas ses visiteurs. Un audit observe le
+          comportement d&apos;un serveur : il ne collecte aucune donnée relative aux personnes qui
+          fréquentent le site analysé.
+        </p>
+        <p className="mt-3 text-[15px] leading-relaxed text-ink-2">
+          <strong>Durée de conservation :</strong> 395 jours par défaut, soit treize mois —
+          la durée que nous recommandons nous-mêmes pour les traceurs. Elle est paramétrable et
+          appliquée par une purge automatique quotidienne. Une durée annoncée mais non appliquée
+          serait un manquement de notre part.
+        </p>
+        <p className="mt-3 text-[15px] leading-relaxed text-ink-2">
+          <strong>Base légale :</strong> exécution du service que vous avez demandé
+          (article 6(1)(b) du RGPD) pour l&apos;historique, et votre consentement pour l&apos;envoi
+          des alertes. Vous pouvez résilier à tout moment ; l&apos;historique est alors supprimé.
+        </p>
+        <p className="mt-3 text-[15px] leading-relaxed text-ink-2">
+          <strong>Hébergement des données :</strong> Supabase, région Paris (eu-west-3), au sein
+          de l&apos;Union européenne.
         </p>
       </section>
 

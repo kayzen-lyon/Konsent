@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { BaselineInput } from "@/components/BaselineInput";
+import { MonitorSignup } from "@/components/MonitorSignup";
+import { getStorage } from "@/lib/storage";
 import { Disclaimer, SeverityBadge } from "@/components/primitives";
 import { ScanError, runScan } from "@/lib/engine/scan";
 import { decodeBaseline } from "@/lib/monitoring/baseline";
@@ -221,6 +223,18 @@ export default async function MonitoringPage({
           <DiffReport url={url} token={ref} />
         ) : (
           <>
+            {getStorage().available ? (
+              <>
+                <MonitorSignup />
+
+                <div className="my-10 flex items-center gap-4">
+                  <span className="h-px flex-1 bg-line" />
+                  <span className="tech text-[9px] text-muted">ou, sans rien conserver</span>
+                  <span className="h-px flex-1 bg-line" />
+                </div>
+              </>
+            ) : null}
+
             <BaselineInput initialUrl={url ?? ""} />
 
             <section className="mt-12 rounded-xl bg-white p-6 ring-1 ring-line">
