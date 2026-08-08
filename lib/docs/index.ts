@@ -2,6 +2,7 @@ import type { ScanResult } from "../engine/types";
 import { generatePrivacyPolicy } from "./confidentialite";
 import { generateDpa, generateLegalNotice } from "./mentions-dpa";
 import { generateCookiePolicy } from "./politique-cookies";
+import { generateRetentionPolicy, generateTransferImpactAssessment } from "./conservation-tia";
 import { generateBreachProcedure, generateRightsProcedure } from "./procedures";
 import { generateRegistre } from "./registre";
 import type { GeneratedDoc } from "./types";
@@ -22,6 +23,8 @@ const GENERATORS: Record<string, (scan: ScanResult) => GeneratedDoc> = {
   "contrat-sous-traitance": generateDpa,
   "procedure-violation": generateBreachProcedure,
   "procedure-droits": generateRightsProcedure,
+  "politique-conservation": generateRetentionPolicy,
+  "tia": generateTransferImpactAssessment,
 };
 
 /**
