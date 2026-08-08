@@ -118,7 +118,14 @@ export const TOOLS: readonly ToolDefinition[] = [
     handler: async (a) => {
       const scan = await scanOf(need(a, "url"));
       const coverage = scan["coverage"] as Record<string, unknown>;
-      return { hostname: scan["scan"], coverage, ...coverageNote(scan) };
+      const s = scan["scan"] as Record<string, unknown>;
+      return {
+        hostname: s["hostname"],
+        mode: s["mode"],
+        rulepackVersion: s["rulepackVersion"],
+        coverage,
+        ...coverageNote(scan),
+      };
     },
   },
   {
