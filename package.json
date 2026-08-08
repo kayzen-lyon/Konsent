@@ -11,10 +11,11 @@
     "typecheck": "tsc --noEmit",
     "check:rulepack": "node scripts/check-rulepack.mjs",
     "check:csp": "node scripts/check-csp.mjs",
+    "check:sovereignty": "node scripts/check-sovereignty.mjs",
     "test:fixtures": "tsx scripts/test-fixtures.mjs",
     "test:tcf": "tsx scripts/test-tcf.mjs",
     "test:jurisdictions": "tsx scripts/test-jurisdictions.mjs",
-    "check": "npm run check:rulepack && npm run check:csp && npm run typecheck && npm run test:fixtures && npm run test:tcf && npm run test:jurisdictions"
+    "check": "npm run check:rulepack && npm run check:csp && npm run check:sovereignty && npm run typecheck && npm run test:fixtures && npm run test:tcf && npm run test:jurisdictions"
   },
   "dependencies": {
     "next": "15.5.23",

@@ -33,6 +33,11 @@ jobs:
       - name: Contrôle de la CSP
         run: npm run check:csp
 
+      # Le produit fait de l'hébergement européen un argument commercial. Il
+      # doit donc s'y tenir lui-même.
+      - name: Cohérence de souveraineté
+        run: npm run check:sovereignty
+
       - name: Typage
         run: npm run typecheck
 
