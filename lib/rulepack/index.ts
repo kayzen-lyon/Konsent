@@ -12,24 +12,64 @@ import {
   STORAGE_RULES,
   VENDOR_RULES,
 } from "./families/misc";
+import { TCF_RULES } from "./families/tcf";
+import {
+  CMV2_EXTRA_RULES,
+  CONSENT_EXTRA_RULES,
+  DOC_EXTRA_RULES,
+  EXEMPT_EXTRA_RULES,
+  FP_EXTRA_RULES,
+  SEC_EXTRA_RULES,
+  SPECIAL_EXTRA_RULES,
+  STORAGE_EXTRA_RULES,
+  TRANSFER_EXTRA_RULES,
+  VENDOR_EXTRA_RULES,
+} from "./families/completions";
 
 export * from "./types";
 
-export const RULES: readonly Rule[] = [
+/**
+ * L'ordre de ce tableau ne porte aucune sémantique : le rapport trie par
+ * pilier puis par sévérité. Les règles sont groupées par famille pour que
+ * l'ajout d'une règle reste une opération locale.
+ */
+const ALL: readonly Rule[] = [
   ...DEPOT_RULES,
   ...REFUS_RULES,
   ...BANNER_RULES,
   ...EXEMPT_RULES,
+  ...EXEMPT_EXTRA_RULES,
   ...STORAGE_RULES,
+  ...STORAGE_EXTRA_RULES,
   ...FP_RULES,
+  ...FP_EXTRA_RULES,
   ...CONSENT_RULES,
+  ...CONSENT_EXTRA_RULES,
   ...TRANSFER_RULES,
+  ...TRANSFER_EXTRA_RULES,
   ...VENDOR_RULES,
+  ...VENDOR_EXTRA_RULES,
+  ...TCF_RULES,
   ...CMV2_RULES,
+  ...CMV2_EXTRA_RULES,
   ...DOC_RULES,
+  ...DOC_EXTRA_RULES,
   ...SPECIAL_RULES,
+  ...SPECIAL_EXTRA_RULES,
   ...SEC_RULES,
+  ...SEC_EXTRA_RULES,
 ];
+
+/**
+ * Un identifiant en double signifierait qu'un rapport peut compter deux fois
+ * le même manquement, donc fausser le score. On préfère refuser de démarrer.
+ */
+const DUPLICATES = ALL.map((r) => r.id).filter((id, i, a) => a.indexOf(id) !== i);
+if (DUPLICATES.length > 0) {
+  throw new Error(`Rulepack : identifiants en double — ${[...new Set(DUPLICATES)].join(", ")}`);
+}
+
+export const RULES: readonly Rule[] = ALL;
 
 const BY_ID = new Map<string, Rule>(RULES.map((r) => [r.id, r]));
 

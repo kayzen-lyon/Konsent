@@ -31,4 +31,7 @@ console.log(`constats (${r.findings.length}) :`);
 for (const f of r.findings) {
   console.log(`  [${f.severity.padEnd(8)}] ${f.ruleId} x${f.occurrences} — ${f.title}`);
 }
-console.log(`non évalué : ${r.notEvaluatedRuleIds.length} règles (moteur headless requis)`);
+console.log(
+  `non évalué : ${r.notEvaluatedRuleIds.length} règles ` +
+    `(navigateur requis, ou détecteur statique non encore écrit — voir lib/engine/coverage.ts)`,
+);

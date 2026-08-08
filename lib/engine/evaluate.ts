@@ -1,4 +1,5 @@
 import { RULES, requireRule } from "../rulepack";
+import { STATIC_UNDECIDABLE_SET } from "./coverage";
 import type { Evidence, Finding } from "../rulepack/types";
 import { CONSENT_REQUIRED_CATEGORIES } from "../trackers/db";
 import type { TrackerEntity } from "../trackers/types";
@@ -524,7 +525,16 @@ export function evaluate(obs: Observation): {
   // Elle n'est jamais comptée comme satisfaite.
   const raised = new Set(findings.map((f) => f.ruleId));
   const notEvaluated = new Set(
-    RULES.filter((r) => r.engine === "headless" && !raised.has(r.id)).map((r) => r.id),
+    RULES.filter(
+      (r) =>
+        !raised.has(r.id) &&
+        // Le moteur headless n'a pas tourné : tout ce qui en dépend est inconnu.
+        (r.engine === "headless" ||
+          // Et parmi les règles statiques, celles que ce moteur ne sait pas
+          // encore décider. Sans cette branche, elles passeraient pour
+          // satisfaites — le seul défaut que le produit ne peut pas se permettre.
+          STATIC_UNDECIDABLE_SET.has(r.id)),
+    ).map((r) => r.id),
   );
 
   // Les règles de contenu documentaire rejoignent cette liste lorsque la page

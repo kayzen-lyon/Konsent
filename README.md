@@ -21,7 +21,7 @@ ne revend de bandeau cookies — il audite les vôtres, y compris ceux des
 | Module | État |
 |---|---|
 | **M01 — Moteur de scan** | Moteur statique (serverless) + worker navigateur trois phases |
-| **M02 — Référentiel** | 96 règles versionnées, publiques, avec référence normative et statut « Digital Omnibus » |
+| **M02 — Référentiel** | 139 règles versionnées, publiques, avec référence normative et statut « Digital Omnibus » |
 | **M03 — Base des destinataires** | 69 entités décrites en français : entreprise, juridiction effective, implications |
 | **M04 — Moteur de risque** | Score 0–100 avec plafonds durs, notes A–F, exposition théorique encadrée |
 | **M08 — Doc Factory** | Politique cookies générée depuis le scan, champs `[[À COMPLÉTER]]` visibles |
@@ -59,7 +59,13 @@ indique explicitement que l'archive n'a aucune valeur d'opposabilité.
 
 L'application déployée exécute le **moteur statique** : elle observe le
 document servi, les en-têtes HTTP, les chaînes DNS et les pages légales.
-Elle couvre 47 des 96 règles.
+Elle décide 43 des 139 règles.
+
+Les 96 autres sont reportées en « non évalué » : 76 exigent un navigateur,
+20 sont des règles statiques dont le détecteur n'est pas encore écrit. Cette
+seconde liste est déclarée dans [`lib/engine/coverage.ts`](lib/engine/coverage.ts)
+et `npm run check` refuse toute règle statique qui n'y figurerait pas sans
+avoir de détecteur — sans quoi elle passerait pour satisfaite.
 
 Elle **n'exécute aucun JavaScript**. Le dépôt effectif d'un cookie posé par
 script, le comportement après refus ou l'ergonomie réelle du bandeau ne sont

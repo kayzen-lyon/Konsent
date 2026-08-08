@@ -99,4 +99,4 @@ export interface Evidence {
   url?: string;
 }
 
-export const RULEPACK_VERSION = "2026.08.1";
+export const RULEPACK_VERSION = "2026.08.2";

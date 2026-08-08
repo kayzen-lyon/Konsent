@@ -1,0 +1,40 @@
+name: CI
+
+# Le PRD §20 classe « faux positifs décrédibilisants » en probabilité élevée et
+# impact fort, et désigne les fixtures en CI comme mitigation n°1. Le dépôt a
+# vécu neuf commits sans aucune CI : cette mitigation n'existait pas.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verifier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      # Intégrité du référentiel : unicité des identifiants, effectifs par
+      # famille conformes au PRD, et surtout — aucune règle statique sans
+      # détecteur ni déclaration explicite d'indécidabilité.
+      - name: Contrôles du rulepack
+        run: npm run check:rulepack
+
+      - name: Typage
+        run: npm run typecheck
+
+      # Chaque règle doit avoir un cas positif et un cas négatif reproductibles
+      # (PRD §6.1 et différenciateur n°27).
+      - name: Fixtures du moteur
+        run: npm run test:fixtures
+
+      - name: Build
+        run: npm run build

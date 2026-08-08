@@ -8,7 +8,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "check:rulepack": "node scripts/check-rulepack.mjs",
+    "test:fixtures": "tsx scripts/test-fixtures.mjs",
+    "check": "npm run check:rulepack && npm run typecheck && npm run test:fixtures"
   },
   "dependencies": {
     "next": "15.5.23",
