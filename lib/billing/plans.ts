@@ -25,6 +25,16 @@ export interface PlanFeature {
   delivered: boolean;
   /** Ce qui manque, quand la promesse n'est pas tenue. Affiché en interne. */
   gap?: string;
+  /**
+   * Variables d'environnement sans lesquelles la promesse ne tient pas, même
+   * si le code existe.
+   *
+   * Distinction qui compte : « l'envoi d'alerte est écrit » et « l'alerte
+   * part » sont deux choses différentes. La surveillance a enregistré ses
+   * alertes en base pendant des semaines sans jamais en envoyer une seule.
+   * Le code seul ne suffit donc pas à tenir une promesse.
+   */
+  requiresEnv?: readonly string[];
 }
 
 export interface Plan {
@@ -67,7 +77,11 @@ export const PLANS: readonly Plan[] = [
     features: [
       { label: "1 domaine, propriété vérifiée", delivered: true },
       { label: "Analyse mensuelle automatique", delivered: true },
-      { label: "Alerte en cas de nouveau traceur", delivered: true },
+      {
+        label: "Alerte en cas de nouveau traceur",
+        delivered: true,
+        requiresEnv: ["RESEND_API_KEY", "KONSENT_MAIL_FROM"],
+      },
       { label: "Historique de score conservé 13 mois", delivered: true },
       {
         label: "Protocole complet en trois phases",

@@ -35,6 +35,24 @@ export function readiness(plan: Plan): PlanReadiness {
   return { plan, sellable: unmet.length === 0, unmet };
 }
 
+/**
+ * Promesses que le code tient mais que la CONFIGURATION ne tient pas.
+ *
+ * Séparé de `unmet` à dessein : ce n'est pas une dette de développement mais
+ * un déploiement incomplet, et cela se corrige en posant une variable, pas en
+ * écrivant du code. Les deux bloquent la vente ; ils ne se règlent pas au
+ * même endroit ni par les mêmes personnes.
+ */
+export function misconfigured(plan: Plan): readonly { label: string; missing: readonly string[] }[] {
+  return plan.features
+    .filter((f) => f.delivered && f.requiresEnv?.length)
+    .map((f) => ({
+      label: f.label,
+      missing: (f.requiresEnv ?? []).filter((key) => !process.env[key]),
+    }))
+    .filter((f) => f.missing.length > 0);
+}
+
 export function allReadiness(): readonly PlanReadiness[] {
   return PLANS.map(readiness);
 }
@@ -55,6 +73,9 @@ export function purchasablePlans(): readonly Plan[] {
   return PLANS.filter((plan) => {
     if (plan.amountCents === null || !plan.priceEnvVar) return false;
     if (!readiness(plan).sellable) return false;
+    // Une promesse tenue par le code mais pas par le déploiement reste une
+    // promesse non tenue du point de vue du client qui paie.
+    if (misconfigured(plan).length > 0) return false;
     return Boolean(process.env[plan.priceEnvVar]);
   });
 }

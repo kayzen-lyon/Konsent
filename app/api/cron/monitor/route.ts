@@ -1,5 +1,6 @@
 import { timingSafeEqual } from "node:crypto";
 import { DISCLAIMER_SHORT } from "@/lib/disclaimer";
+import { alertEmail, sendEmail } from "@/lib/email";
 import { ScanError, runScan } from "@/lib/engine/scan";
 import { createBaseline } from "@/lib/monitoring/baseline";
 import { alertSummary, diffAgainstBaseline } from "@/lib/monitoring/diff";
@@ -45,6 +46,7 @@ export async function GET(request: Request) {
     );
   }
 
+  const origin = new URL(request.url).origin;
   const due = await storage.dueDomains(BATCH_SIZE);
   const results: unknown[] = [];
 
@@ -70,18 +72,40 @@ export async function GET(request: Request) {
       });
 
       let regressions = 0;
+      let delivered = false;
       if (previous) {
         const diff = diffAgainstBaseline(previous.baseline, scan);
         regressions = diff.regressions;
 
         if (diff.regressions > 0) {
+          const summary = alertSummary(diff) ?? "Régressions détectées.";
+
           await storage.recordAlert({
             domainId: domain.id,
             kind: "regression",
             regressionCount: diff.regressions,
-            summary: alertSummary(diff) ?? "Régressions détectées.",
+            summary,
             changes: diff.changes.filter((c) => c.regression),
           });
+
+          // L'alerte était jusqu'ici enregistrée en base et jamais envoyée :
+          // le client payait pour être prévenu et ne l'était pas. L'envoi est
+          // tenté ici, et son ÉCHEC est journalisé plutôt que tu — une alerte
+          // réputée partie mais jamais envoyée donne une fausse assurance,
+          // ce qui est pire que pas d'alerte.
+          const message = alertEmail({
+            hostname: domain.hostname,
+            summary,
+            observedAt: new Date().toLocaleDateString("fr-FR"),
+            reportUrl: `${origin}/surveillance?domaine=${encodeURIComponent(domain.hostname)}`,
+          });
+          const delivery = await sendEmail({ ...message, to: domain.alertEmail });
+          if (!delivery.sent) {
+            console.error(
+              `Alerte non délivrée pour ${domain.hostname} : ${delivery.reason ?? "motif inconnu"}.`,
+            );
+          }
+          delivered = delivery.sent;
         }
       }
 
@@ -93,6 +117,7 @@ export async function GET(request: Request) {
         score: scan.score,
         grade: scan.grade,
         regressions,
+        alertDelivered: delivered,
         firstRun: previous === null,
       });
     } catch (error) {

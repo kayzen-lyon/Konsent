@@ -61,5 +61,10 @@ jobs:
       - name: Facturation
         run: npm run test:billing
 
+      # Jetons stockés en empreinte seulement, RLS sans politique permissive,
+      # fonction SECURITY DEFINER hors de portée du rôle anonyme.
+      - name: Comptes
+        run: npm run test:accounts
+
       - name: Build
         run: npm run build
