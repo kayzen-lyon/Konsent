@@ -46,5 +46,10 @@ jobs:
       - name: Décodeur TCF
         run: npm run test:tcf
 
+      # La couche multi-juridiction ne doit jamais faire disparaître une règle
+      # sans motif, ni annoncer comme qualifié ce qui ne l'est pas.
+      - name: Couche multi-juridiction
+        run: npm run test:jurisdictions
+
       - name: Build
         run: npm run build
