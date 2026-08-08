@@ -66,5 +66,10 @@ jobs:
       - name: Comptes
         run: npm run test:accounts
 
+      # Schemas exploitables par un agent, refus explicites, et garde-fous
+      # transmis par les prompts.
+      - name: Serveur MCP
+        run: npm run test:mcp
+
       - name: Build
         run: npm run build
