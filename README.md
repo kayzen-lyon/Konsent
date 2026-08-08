@@ -22,25 +22,35 @@ ne revend de bandeau cookies — il audite les vôtres, y compris ceux des
 |---|---|
 | **M01 — Moteur de scan** | Moteur statique (serverless) + worker navigateur trois phases |
 | **M02 — Référentiel** | 139 règles versionnées, publiques, avec référence normative et statut « Digital Omnibus » |
-| **M03 — Base des destinataires** | 69 entités décrites en français : entreprise, juridiction effective, implications |
+| **M03 — Base des destinataires** | 69 entités décrites en français, exposées sur `/api/vendors` |
 | **M04 — Moteur de risque** | Score 0–100 avec plafonds durs, notes A–F, exposition théorique encadrée |
-| **M08 — Doc Factory** | Politique cookies générée depuis le scan, champs `[[À COMPLÉTER]]` visibles |
+| **M08 — Doc Factory** | 9 documents sur 24, dont conservation et analyse d'impact des transferts alimentées par le scan |
 | **M09 — Archive de preuve** | ZIP signé Ed25519, empreintes SHA-256, vérifiable hors ligne |
 | **M10 — Surveillance** | Moteur de diff, jeton de référence infalsifiable, alerte nominative |
 | **M11 — Devis** | Calculé depuis les constats, mutualisation et coefficient de pile |
 | **M12 — Reg Watch** | Veille rattachée aux règles, statut en vigueur / projet / retiré |
-| **M13 — Serveur MCP** | Six outils, deux ressources, avertissement non désactivable |
+| **M13 — Serveur MCP** | 28 outils, 5 ressources, 5 prompts métier portant les garde-fous |
 | **M14 — Couche agence** | Portefeuille multi-domaines, marque blanche par URL |
-| **API** | `/api/scan` · `/api/diff` · `/api/evidence` · `/api/rulepack` · `/api/regwatch` |
-| **SEO programmatique** | 185 pages générées depuis la base |
+| **API** | 16 points d'entrée, dont `/api/remediation`, `/api/documents`, `/api/vendors`, `/api/juridictions`, `/api/tcf` |
+| **SEO programmatique** | 322 pages générées depuis la base |
+| **Juridictions** | FR et UE qualifiées ; QC, CA, CH, US_CA indicatives, marquées comme telles |
+| **Comptes** | Connexion par lien à usage unique, jetons stockés en empreinte seule |
+| **Facturation** | Stripe branché, souscription fermée tant qu'une promesse d'offre n'est pas tenue |
 
-### Ce qui suppose une base de données
+### Ce qui attend une variable d'environnement
 
-Cette instance ne conserve **aucun** résultat d'analyse, conformément à sa
-politique de confidentialité. Trois fonctions en dépendent et ne sont donc
-pas actives : la surveillance *planifiée* (les moteurs de comparaison et
-d'alerte, eux, fonctionnent), l'historique de score, et les sous-comptes
-clients cloisonnés de l'offre Agence.
+L'analyse à la demande ne conserve **aucun** résultat, conformément à la
+politique de confidentialité. Trois fonctions supposent une configuration, et
+restent inertes sans elle — le produit le dit à l'écran plutôt que d'échouer
+en silence :
+
+| Fonction | Variables | Sans elles |
+|---|---|---|
+| Surveillance planifiée, comptes | `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `CRON_SECRET` | Analyse sans trace, comptes désactivés |
+| Alertes et liens de connexion | `RESEND_API_KEY`, `KONSENT_MAIL_FROM` | Aucun message ne part |
+| Souscription en ligne | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_*` | Paiement fermé |
+
+Voir [`.env.example`](.env.example). Aucune clé n'entre dans le dépôt.
 
 ### Vérifier une archive de preuve
 
