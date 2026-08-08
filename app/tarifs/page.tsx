@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { PLANS, formatAmount } from "@/lib/billing/plans";
+import { readiness } from "@/lib/billing/readiness";
 import type { Metadata } from "next";
 import { Disclaimer } from "@/components/primitives";
 
@@ -8,66 +10,12 @@ export const metadata: Metadata = {
     "Analyse gratuite sans inscription. Abonnements de surveillance et prestations de mise en conformité.",
 };
 
-const PLANS = [
-  {
-    name: "Analyse libre",
-    price: "0 €",
-    cadence: "",
-    pitch: "Pour savoir où vous en êtes.",
-    features: [
-      "Analyse à la demande, sans inscription",
-      "Rapport complet à l'écran",
-      "Référentiel et base des traceurs en accès libre",
-      "Brouillon de politique cookies",
-    ],
-    cta: { label: "Analyser un site", href: "/#scan" },
-    highlighted: false,
-  },
-  {
-    name: "Starter",
-    price: "29 €",
-    cadence: "/ mois",
-    pitch: "Pour un site unique à surveiller.",
-    features: [
-      "1 domaine · 25 pages par analyse",
-      "Protocole complet en trois phases",
-      "Analyse mensuelle automatique",
-      "Alerte en cas de nouveau traceur",
-      "6 documents générés",
-    ],
-    cta: { label: "Nous écrire", href: "mailto:contact@kayzen-lyon.fr" },
-    highlighted: false,
-  },
-  {
-    name: "Pro",
-    price: "89 €",
-    cadence: "/ mois",
-    pitch: "Pour un site marchand ou plusieurs marques.",
-    features: [
-      "5 domaines · 250 pages par analyse",
-      "Analyse hebdomadaire et détection de régression",
-      "Archive de preuve horodatée",
-      "24 documents générés",
-      "Accès API",
-    ],
-    cta: { label: "Nous écrire", href: "mailto:contact@kayzen-lyon.fr" },
-    highlighted: true,
-  },
-  {
-    name: "Agence",
-    price: "249 €",
-    cadence: "/ mois",
-    pitch: "Pour gérer un portefeuille de clients.",
-    features: [
-      "25 domaines · vue portefeuille",
-      "Rapports à votre marque",
-      "Sous-comptes clients cloisonnés",
-      "Devis générés à votre grille tarifaire",
-    ],
-    cta: { label: "Nous écrire", href: "mailto:contact@kayzen-lyon.fr" },
-    highlighted: false,
-  },
-];
+/**
+ * La grille n'est plus définie ici : elle vient de `lib/billing/plans.ts`, que
+ * lisent aussi le paiement et le contrôle de sincérité. Deux définitions
+ * auraient fini par diverger, et l'écart ne se serait vu qu'au premier litige.
+ */
+
 
 const SERVICES = [
   ["Mise en conformité technique standard", "1 490 €"],
@@ -87,46 +35,91 @@ export default function PricingPage() {
           L&apos;analyse est gratuite parce qu&apos;elle coûte quelques millièmes d&apos;euro à
           produire. Ce qui se facture, c&apos;est la surveillance dans le temps et la correction.
         </p>
+        <p className="mt-4 text-[15px] leading-relaxed text-muted">
+          Le prix ne dépend pas de votre trafic. Une entreprise de vingt personnes encourt les
+          mêmes sanctions qu&apos;un site à fort trafic ; lui facturer le contrôle au nombre de
+          pages vues reviendrait à vendre un outil, pas un contrôle.
+        </p>
       </header>
 
+      <div className="mt-8 max-w-3xl rounded-lg border border-line bg-slate-50 p-5 text-[14px] leading-relaxed text-muted">
+        <p className="text-ink-2">
+          <strong>Ce que nous ne facturons pas encore.</strong>
+        </p>
+        <p className="mt-2">
+          Chaque offre indique en clair ce qui n&apos;est pas encore livré, et la souscription en
+          ligne reste fermée tant qu&apos;une promesse n&apos;est pas tenue. Nous préférons
+          l&apos;écrire que le découvrir avec vous après le premier prélèvement. Écrivez-nous si
+          une offre vous intéresse : nous vous dirons où elle en est.
+        </p>
+      </div>
+
       <div className="mt-10 grid gap-4 lg:grid-cols-4">
-        {PLANS.map((p) => (
-          <div
-            key={p.name}
-            className={`flex flex-col rounded-xl border bg-white p-5 ${
-              p.highlighted ? "border-flame ring-1 ring-flame" : "border-line"
-            }`}
-          >
-            {p.highlighted ? (
-              <span className="mb-2 inline-flex w-fit rounded-full bg-flame-bg px-2 py-0.5 text-[11px] font-semibold text-flame-dark">
-                Le plus demandé
-              </span>
-            ) : null}
-            <h2 className="text-[15px] font-semibold text-ink-2">{p.name}</h2>
-            <p className="mt-2">
-              <span className="tabular text-3xl font-semibold text-ink-2">{p.price}</span>
-              <span className="text-sm text-muted">{p.cadence}</span>
-            </p>
-            <p className="mt-1.5 text-[13px] text-muted">{p.pitch}</p>
-            <ul className="mt-4 flex-1 space-y-1.5">
-              {p.features.map((f) => (
-                <li key={f} className="text-[13px] leading-snug text-ink-2">
-                  · {f}
-                </li>
-              ))}
-            </ul>
-            <Link
-              href={p.cta.href}
-              className={`mt-5 rounded-lg px-4 py-2 text-center text-sm font-semibold transition ${
-                p.highlighted
-                  ? "bg-flame text-white hover:bg-flame-dark"
-                  : "border border-line text-ink-2 hover:border-flame hover:text-flame"
+        {PLANS.map((p) => {
+          const state = readiness(p);
+          const delivered = p.features.filter((f) => f.delivered);
+          const upcoming = p.features.filter((f) => !f.delivered);
+          return (
+            <div
+              key={p.id}
+              className={`flex flex-col rounded-xl border bg-white p-5 ${
+                p.highlighted ? "border-flame ring-1 ring-flame" : "border-line"
               }`}
             >
-              {p.cta.label}
-            </Link>
-          </div>
-        ))}
+              {p.highlighted ? (
+                <span className="mb-2 inline-flex w-fit rounded-full bg-flame-bg px-2 py-0.5 text-[11px] font-semibold text-flame-dark">
+                  Le plus demandé
+                </span>
+              ) : null}
+              <h2 className="text-[15px] font-semibold text-ink-2">{p.name}</h2>
+              <p className="mt-2">
+                <span className="tabular text-3xl font-semibold text-ink-2">
+                  {formatAmount(p.amountCents)}
+                </span>
+                <span className="text-sm text-muted">{p.amountCents === null ? "" : " / mois"}</span>
+              </p>
+              <p className="mt-1.5 text-[13px] text-muted">{p.pitch}</p>
+
+              <ul className="mt-4 space-y-1.5">
+                {delivered.map((f) => (
+                  <li key={f.label} className="text-[13px] leading-snug text-ink-2">
+                    · {f.label}
+                  </li>
+                ))}
+              </ul>
+
+              {upcoming.length > 0 ? (
+                <div className="mt-4 flex-1 rounded-lg bg-slate-50 p-3">
+                  <p className="tech text-[10px] text-muted">Pas encore livré</p>
+                  <ul className="mt-1.5 space-y-1">
+                    {upcoming.map((f) => (
+                      <li key={f.label} className="text-[13px] leading-snug text-muted">
+                        · {f.label}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : (
+                <div className="flex-1" />
+              )}
+
+              <Link
+                href={p.amountCents === null ? "/#scan" : "mailto:contact@kayzen-lyon.fr"}
+                className={`mt-5 rounded-lg px-4 py-2 text-center text-sm font-semibold transition ${
+                  p.highlighted
+                    ? "bg-flame text-white hover:bg-flame-dark"
+                    : "border border-line text-ink-2 hover:border-flame hover:text-flame"
+                }`}
+              >
+                {p.amountCents === null
+                  ? "Analyser un site"
+                  : state.sellable
+                    ? "Souscrire"
+                    : "Nous écrire"}
+              </Link>
+            </div>
+          );
+        })}
       </div>
 
       <section className="mt-14">

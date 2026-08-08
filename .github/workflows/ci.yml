@@ -56,5 +56,10 @@ jobs:
       - name: Couche multi-juridiction
         run: npm run test:jurisdictions
 
+      # Signature du webhook — le seul endroit du produit où une erreur de
+      # comparaison de chaînes coûte de l'argent — et sincérité de la grille.
+      - name: Facturation
+        run: npm run test:billing
+
       - name: Build
         run: npm run build
