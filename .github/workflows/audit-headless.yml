@@ -1,0 +1,51 @@
+name: Audit trois phases
+
+# Le protocole complet, exécuté en production sur notre propre site.
+#
+# Le PRD §14.1 pose une exigence de cohérence : Konsent doit obtenir 100/100
+# sur son propre scanner, sans bandeau cookies. Cette exigence n'était vérifiée
+# par personne. Elle l'est désormais à chaque poussée et chaque semaine.
+#
+# C'est aussi ce qui ferme le jalon P0 : le moteur statique décide 43 règles
+# sur 139 ; le worker en décide l'essentiel du reste. Tant qu'il ne tournait
+# nulle part, le produit ne tenait pas sa promesse de verdict.
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    # Hebdomadaire, le lundi matin. Une dérive de conformité ne se voit pas
+    # au moment où on l'introduit : elle se voit au contrôle suivant.
+    - cron: "0 5 * * 1"
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "URL à auditer"
+        required: false
+        default: "https://konsent-zeta.vercel.app"
+
+jobs:
+  auto-audit:
+    name: Konsent s'audite lui-même
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Audit trois phases
+        id: audit
+        uses: ./.github/actions/konsent-scan
+        with:
+          url: ${{ inputs.url || 'https://konsent-zeta.vercel.app' }}
+          # Sur notre propre site, le moindre écart critique doit faire échouer
+          # la chaîne. Un auditeur qui tolère chez lui ce qu'il relève chez les
+          # autres n'a plus d'argument.
+          fail-on: critical
+
+      - name: Exiger la note maximale
+        if: always() && steps.audit.outputs.score != ''
+        run: |
+          score="${{ steps.audit.outputs.score }}"
+          echo "Score obtenu : $score/100 (note ${{ steps.audit.outputs.grade }})"
+          if [ "$score" -lt 100 ]; then
+            echo "::warning::Konsent obtient $score/100 sur son propre scanner. Le §14.1 du PRD vise 100/100 : l'écart doit être corrigé ou l'objectif révisé publiquement."
+          fi

@@ -119,6 +119,24 @@ export default function PrivacyPage() {
       </section>
 
       <section className="mt-8">
+        <h2 className="text-lg font-semibold text-ink-2">Référent RGPD</h2>
+        <p className="mt-2 text-[15px] leading-relaxed text-ink-2">
+          KAYZEN LYON SASU n&apos;est pas tenue de désigner un délégué à la protection des données
+          au sens de l&apos;article 37 du RGPD : elle n&apos;est pas un organisme public, son
+          activité de base ne consiste pas en un suivi systématique à grande échelle, et elle ne
+          traite pas de données sensibles à grande échelle.
+        </p>
+        <p className="mt-3 text-[15px] leading-relaxed text-ink-2">
+          Un <strong>référent RGPD</strong> est néanmoins désigné et joignable à{" "}
+          <a href={`mailto:${EDITOR.email}`} className="text-flame hover:underline">
+            {EDITOR.email}
+          </a>
+          . Notre propre scanner relevait cette absence — nous préférons la corriger que la
+          justifier.
+        </p>
+      </section>
+
+      <section className="mt-8">
         <h2 className="text-lg font-semibold text-ink-2">Vos droits</h2>
         <p className="mt-2 text-[15px] leading-relaxed text-ink-2">
           Vous disposez d&apos;un droit d&apos;accès, de rectification, d&apos;effacement, de

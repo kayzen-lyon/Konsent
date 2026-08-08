@@ -95,18 +95,97 @@ export function extractLinks(html: string, baseUrl: string): readonly ExtractedL
   return links;
 }
 
-export function stripTags(html: string): string {
-  return html
-    .replace(/<script[\s\S]*?<\/script>/gi, " ")
-    .replace(/<style[\s\S]*?<\/style>/gi, " ")
-    .replace(/<[^>]+>/g, " ")
+/**
+ * Décodage des références de caractères numériques, décimales et
+ * HEXADÉCIMALES.
+ *
+ * L'oubli de la forme hexadécimale a coûté cher : React encode les apostrophes
+ * en `&#x27;`, si bien que « droit d'accès » arrivait au lexique sous la forme
+ * « droit d&#x27;acces » et n'y correspondait jamais. Conséquence, tout site
+ * rendu par React — une part considérable du web — se voyait reprocher de ne
+ * pas énumérer les droits des personnes alors qu'il le faisait.
+ *
+ * C'est exactement le faux positif décrédibilisant que le §20 classe en
+ * risque n°1, et il visait la majorité du marché.
+ */
+/**
+ * Entités nommées courantes, accents francais compris.
+ *
+ * Beaucoup de gestionnaires de contenu produisent `&eacute;` plutot que le
+ * caractere. Sans cette table, « duree de conservation » arrive au lexique
+ * sous la forme « dur&eacute;e » et n'y correspond pas : le site se voit
+ * reprocher de ne pas indiquer ses durees alors qu'il les indique.
+ */
+const NAMED_ENTITIES: Record<string, string> = {
+  agrave: "a", aacute: "a", acirc: "a", auml: "a", atilde: "a", aring: "a", aelig: "ae",
+  egrave: "e", eacute: "e", ecirc: "e", euml: "e",
+  igrave: "i", iacute: "i", icirc: "i", iuml: "i",
+  ograve: "o", oacute: "o", ocirc: "o", ouml: "o", otilde: "o", oslash: "o", oelig: "oe",
+  ugrave: "u", uacute: "u", ucirc: "u", uuml: "u",
+  ccedil: "c", ntilde: "n", yacute: "y", yuml: "y",
+  laquo: '"', raquo: '"', ldquo: '"', rdquo: '"', lsquo: "'", rsquo: "'",
+  rsquor: "'", sbquo: "'", bdquo: '"',
+  ndash: "-", mdash: "-", hellip: "...", middot: "-", bull: "-",
+  euro: "EUR", copy: "(c)", reg: "(r)", trade: "(tm)", deg: "deg",
+  eur: "EUR", sect: "art.", para: "par.",
+};
+
+function decodeEntities(text: string): string {
+  return text
+    .replace(/&#x([0-9a-f]+);/gi, (_, hex: string) => safeCodePoint(parseInt(hex, 16)))
+    .replace(/&#(\d+);/g, (_, dec: string) => safeCodePoint(parseInt(dec, 10)))
+    .replace(/&([a-z]+);/gi, (match, name: string) => {
+      const lower = name.toLowerCase();
+      // Les entités structurelles sont traitées plus bas, dans l'ordre voulu.
+      if (["amp", "lt", "gt", "quot", "apos", "nbsp"].includes(lower)) return match;
+      return NAMED_ENTITIES[lower] ?? match;
+    })
     .replace(/&nbsp;/gi, " ")
-    .replace(/&amp;/gi, "&")
-    .replace(/&#39;|&apos;/gi, "'")
+    .replace(/&apos;/gi, "'")
     .replace(/&quot;/gi, '"')
     .replace(/&lt;/gi, "<")
     .replace(/&gt;/gi, ">")
-    .replace(/\s+/g, " ");
+    // `&amp;` en dernier : le décoder avant transformerait `&amp;#x27;` en
+    // apostrophe, alors que le texte d'origine affichait « &#x27; ».
+    .replace(/&amp;/gi, "&");
+}
+
+function safeCodePoint(code: number): string {
+  if (!Number.isFinite(code) || code < 0 || code > 0x10ffff) return " ";
+  try {
+    return String.fromCodePoint(code);
+  } catch {
+    return " ";
+  }
+}
+
+export function stripTags(html: string): string {
+  return decodeEntities(
+    html
+      .replace(/<script[\s\S]*?<\/script>/gi, " ")
+      .replace(/<style[\s\S]*?<\/style>/gi, " ")
+      .replace(/<[^>]+>/g, " "),
+  ).replace(/\s+/g, " ");
+}
+
+/**
+ * Ne conserve que la STRUCTURE d'un document : balises, attributs, scripts —
+ * et jette tout le texte visible.
+ *
+ * Sert à chercher la trace d'un service tiers. Chercher « Cookiebot » dans le
+ * HTML entier revient à signaler comme utilisatrice d'une plateforme de
+ * consentement toute page qui en parle : un article de blog, un comparatif,
+ * la documentation d'un cabinet d'avocats. Konsent se détectait ainsi
+ * lui-même comme utilisant Cookiebot, Didomi et OneTrust, sur un site qui ne
+ * charge aucun script tiers.
+ */
+export function structureOnly(html: string): string {
+  return html.replace(/>([^<]*)</g, (_, text: string) =>
+    // Le texte visible est remplacé par du vide ; les balises et leurs
+    // attributs, où figurent les vrais marqueurs (`id="onetrust-banner"`,
+    // `data-cookieconsent`), sont conservés.
+    text.trim() === "" ? "><" : "> <",
+  );
 }
 
 /**
@@ -126,4 +205,61 @@ export function normalize(text: string): string {
     .replace(/ /g, " ")
     .normalize("NFD")
     .replace(/\p{Diacritic}/gu, "");
+}
+
+/**
+ * Un marqueur est-il UTILISÉ comme identifiant JavaScript, ou seulement cité ?
+ *
+ * La distinction est vitale sur les sites rendus par React : Next.js embarque
+ * le contenu textuel des pages dans des scripts inline (`self.__next_f.push`).
+ * Le texte visible se retrouve donc dans le JavaScript, et une recherche par
+ * simple inclusion signale comme UTILISATRICE d'une plateforme de consentement
+ * toute page qui en PARLE — un comparatif, un guide, un article de blog.
+ *
+ * Konsent s'est lui-même détecté comme utilisant Cookiebot, Didomi, OneTrust
+ * et tarteaucitron, alors qu'il ne charge aucun script tiers. Un scanner qui
+ * se trompe sur son propre site n'a rien à reprocher à personne.
+ *
+ * On exige donc une forme d'emploi : accès membre (`window.X`, `X.propriete`),
+ * appel (`X(`), affectation (`X =`) ou indexation (`X[`).
+ */
+export function usedAsIdentifier(source: string, marker: string): boolean {
+  let index = source.indexOf(marker);
+  while (index !== -1) {
+    const before = source.slice(Math.max(0, index - 8), index);
+    const after = source.slice(index + marker.length);
+
+    // Le caractère précédent ne doit pas prolonger un identifiant plus long,
+    // sauf s'il s'agit précisément d'un accès membre.
+    const prevChar = source[index - 1] ?? " ";
+    const isMemberAccess = before.endsWith("window.") || before.endsWith(".");
+    const boundaryOk = isMemberAccess || !/[A-Za-z0-9_$]/.test(prevChar);
+
+    const used =
+      isMemberAccess ||
+      /^\s*\(/.test(after) ||
+      /^\.[A-Za-z_$]/.test(after) ||
+      /^\s*=[^=]/.test(after) ||
+      /^\[/.test(after);
+
+    if (boundaryOk && used) return true;
+    index = source.indexOf(marker, index + 1);
+  }
+  return false;
+}
+
+/**
+ * Certains marqueurs ne sont pas des identifiants : fragments d'URL
+ * (`googletagmanager.com/gtm.js`), motifs d'appel (`gtag(`), préfixes
+ * (`UA-`). Pour ceux-là, l'inclusion simple reste le bon critère.
+ */
+export function isIdentifierMarker(marker: string): boolean {
+  return /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(marker);
+}
+
+/** Recherche d'un marqueur, avec le critère adapté à sa nature. */
+export function markerPresent(source: string, marker: string): boolean {
+  return isIdentifierMarker(marker)
+    ? usedAsIdentifier(source, marker)
+    : source.includes(marker);
 }

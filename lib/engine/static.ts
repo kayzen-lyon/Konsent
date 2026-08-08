@@ -4,7 +4,9 @@ import {
   extractLinks,
   extractRefs,
   normalize,
+  markerPresent,
   stripTags,
+  structureOnly,
 } from "./html";
 import {
   CMP_API_SIGNATURES,
@@ -168,11 +170,29 @@ function readSecurityHeaders(headers: Headers): SecurityHeaders {
  * Lorsque rien ne permet de conclure, on renvoie `unresolved` plutôt qu'un
  * faux négatif silencieux.
  */
-function detectCmp(html: string, inlineJs: string, refs: readonly string[]): CmpDetection {
-  const haystack = html + "\n" + inlineJs + "\n" + refs.join("\n");
+function detectCmp(
+  html: string,
+  inlineJs: string,
+  refs: readonly string[],
+  /**
+   * Y a-t-il seulement quelque chose à consentir ?
+   *
+   * L'heuristique générique — lexique cookies plus deux boutons — se déclenche
+   * sur toute page qui explique ce qu'est un cookie. Sur un site sans aucun
+   * traceur soumis à consentement, annoncer un « bandeau probable » est un
+   * faux positif sans objet : il n'y a rien à recueillir. Konsent, qui n'a pas
+   * de bandeau parce qu'il n'a pas de traceur, s'en attribuait un.
+   */
+  hasConsentRequiredTrackers: boolean,
+): CmpDetection {
+  // La STRUCTURE du document, jamais son texte visible. Une page qui PARLE de
+  // Cookiebot ne l'utilise pas. Konsent se détectait ainsi lui-même comme
+  // utilisateur de Cookiebot, Didomi et OneTrust — parce que ses pages de
+  // comparatif les nomment.
+  const haystack = structureOnly(html) + "\n" + inlineJs + "\n" + refs.join("\n");
 
   for (const sig of CMP_API_SIGNATURES) {
-    if (haystack.includes(sig.marker)) {
+    if (markerPresent(haystack, sig.marker)) {
       return {
         detected: true,
         name: sig.name,
@@ -196,7 +216,7 @@ function detectCmp(html: string, inlineJs: string, refs: readonly string[]): Cmp
   const mentionsCookies =
     text.includes("cookie") || text.includes("traceur") || text.includes("consentement");
   const hasButtons = (html.match(/<button\b/gi) ?? []).length >= 2;
-  if (mentionsCookies && hasButtons) {
+  if (mentionsCookies && hasButtons && hasConsentRequiredTrackers) {
     return {
       detected: true,
       name: "Bandeau probable (heuristique générique)",
@@ -507,10 +527,13 @@ export async function runStaticScan(
 
   // Marqueurs dans le JS inline : révèle des services chargés dynamiquement,
   // que la seule lecture des balises <script src> manquerait.
-  const haystack = main.html + "\n" + inlineJs;
+  // Même précaution : le texte visible est écarté, les attributs conservés.
+  // C'est dans les attributs que se trouvent les vrais marqueurs
+  // (`id="onetrust-banner"`, `data-cookieconsent`), jamais dans la prose.
+  const haystack = structureOnly(main.html) + "\n" + inlineJs;
   for (const tracker of TRACKERS) {
     if (!tracker.markers) continue;
-    if (!tracker.markers.some((m) => haystack.includes(m))) continue;
+    if (!tracker.markers.some((m) => markerPresent(haystack, m))) continue;
     const already = requests.some((r) => r.tracker?.slug === tracker.slug);
     if (already) continue;
     requests.push({
@@ -543,7 +566,12 @@ export async function runStaticScan(
     durationMs: Date.now() - started,
     requests,
     cookies,
-    cmp: detectCmp(main.html, inlineJs, refs.map((r) => r.url)),
+    cmp: detectCmp(
+      main.html,
+      inlineJs,
+      refs.map((r) => r.url),
+      requests.some((r) => r.tracker && !r.tracker.exemptEligible),
+    ),
     legalPages,
     dns: dnsResolutions,
     headers: readSecurityHeaders(main.headers),

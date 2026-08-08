@@ -43,6 +43,10 @@ jobs:
 
       # Chaque règle doit avoir un cas positif et un cas négatif reproductibles
       # (PRD §6.1 et différenciateur n°27).
+      # Deux faux positifs trouves en auditant Konsent avec Konsent.
+      - name: Extraction HTML
+        run: npm run test:html
+
       - name: Fixtures du moteur
         run: npm run test:fixtures
 

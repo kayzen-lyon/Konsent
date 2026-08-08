@@ -1,0 +1,131 @@
+name: "Audit Konsent — protocole trois phases"
+description: >
+  Exécute le protocole complet avant consentement / après refus / après
+  acceptation avec un navigateur réel, puis évalue le résultat contre les
+  139 règles du référentiel. Échoue si un écart critique apparaît.
+
+# Pourquoi une action, et pas un service hébergé.
+#
+# Vercel ne convient pas à un navigateur headless de longue durée, et louer
+# un parc de machines pour faire tourner Chromium avant d'avoir un seul
+# client payant serait une dépense difficile à défendre. Une action fait
+# tourner le navigateur là où il y en a déjà un : dans la chaîne
+# d'intégration continue.
+#
+# Effet de bord heureux : le client garde la main. Ses pages de
+# préproduction ne sont jamais exposées à un tiers, ce qui répond à
+# l'objection principale des équipes qui refusent de donner accès à leurs
+# environnements internes.
+
+inputs:
+  url:
+    description: "URL à auditer. Une préproduction ou un aperçu de déploiement fait l'affaire."
+    required: true
+  fail-on:
+    description: >
+      Seuil de blocage : `critical` bloque sur tout écart critique,
+      `major` bloque aussi sur les écarts majeurs, `never` n'échoue jamais.
+    required: false
+    default: "critical"
+  api-url:
+    description: "Instance Konsent à interroger."
+    required: false
+    default: "https://konsent-zeta.vercel.app"
+
+outputs:
+  score:
+    description: "Score de conformité sur 100."
+    value: ${{ steps.evaluate.outputs.score }}
+  grade:
+    description: "Note de A à F."
+    value: ${{ steps.evaluate.outputs.grade }}
+  critical:
+    description: "Nombre d'écarts critiques."
+    value: ${{ steps.evaluate.outputs.critical }}
+  report:
+    description: "Rapport complet au format JSON."
+    value: ${{ steps.evaluate.outputs.report }}
+
+runs:
+  using: composite
+  steps:
+    - name: Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+
+    - name: Installer le worker
+      shell: bash
+      working-directory: ${{ github.action_path }}/../../../worker
+      run: npm ci
+
+    - name: Observer le site en trois phases
+      shell: bash
+      working-directory: ${{ github.action_path }}/../../../worker
+      run: |
+        # --silent : sans lui, le bandeau de npm part sur la sortie standard et
+        # rend le JSON de l observation inanalysable. Trouve a l usage.
+        npm run --silent scan -- "${{ inputs.url }}" > "$RUNNER_TEMP/observation.json"
+
+    - name: Évaluer contre le référentiel
+      id: evaluate
+      shell: bash
+      run: |
+        report=$(curl -sS -X POST "${{ inputs.api-url }}/api/ingest" \
+          -H "Content-Type: application/json" \
+          --data-binary "@$RUNNER_TEMP/observation.json")
+
+        echo "$report" > "$RUNNER_TEMP/rapport.json"
+
+        score=$(node -e "console.log(JSON.parse(require('fs').readFileSync(process.argv[1],'utf8')).scan?.score ?? '')" "$RUNNER_TEMP/rapport.json")
+        grade=$(node -e "console.log(JSON.parse(require('fs').readFileSync(process.argv[1],'utf8')).scan?.grade ?? '')" "$RUNNER_TEMP/rapport.json")
+        critical=$(node -e "const r=JSON.parse(require('fs').readFileSync(process.argv[1],'utf8'));console.log((r.findings??[]).filter(f=>f.severity==='CRITICAL').length)" "$RUNNER_TEMP/rapport.json")
+        major=$(node -e "const r=JSON.parse(require('fs').readFileSync(process.argv[1],'utf8'));console.log((r.findings??[]).filter(f=>f.severity==='MAJOR').length)" "$RUNNER_TEMP/rapport.json")
+
+        echo "score=$score"       >> "$GITHUB_OUTPUT"
+        echo "grade=$grade"       >> "$GITHUB_OUTPUT"
+        echo "critical=$critical" >> "$GITHUB_OUTPUT"
+        {
+          echo "report<<KONSENT_EOF"
+          cat "$RUNNER_TEMP/rapport.json"
+          echo "KONSENT_EOF"
+        } >> "$GITHUB_OUTPUT"
+
+        {
+          echo "## Audit Konsent — ${{ inputs.url }}"
+          echo
+          echo "Score **$score/100** (note $grade) · $critical écart(s) critique(s) · $major majeur(s)"
+          echo
+          node -e "
+            const r = JSON.parse(require('fs').readFileSync(process.argv[1],'utf8'));
+            const n = (r.coverage?.notEvaluated ?? []).length;
+            if (n) console.log('> ' + n + \" règles n'ont PAS été évaluées. Elles ne sont pas pour autant satisfaites.\");
+            console.log();
+            for (const f of (r.findings ?? []).slice(0, 15)) {
+              console.log('- **' + f.severity + '** \`' + f.ruleId + '\` — ' + f.title);
+            }
+          " "$RUNNER_TEMP/rapport.json"
+          echo
+          echo "_Analyse technique automatisée — résultat indicatif, non juridique._"
+        } >> "$GITHUB_STEP_SUMMARY"
+
+    - name: Verdict
+      shell: bash
+      run: |
+        critical="${{ steps.evaluate.outputs.critical }}"
+        case "${{ inputs.fail-on }}" in
+          never)
+            echo "Seuil « never » : aucun blocage." ;;
+          major)
+            major=$(node -e "const r=JSON.parse(require('fs').readFileSync(process.argv[1],'utf8'));console.log((r.findings??[]).filter(f=>['CRITICAL','MAJOR'].includes(f.severity)).length)" "$RUNNER_TEMP/rapport.json")
+            if [ "$major" -gt 0 ]; then
+              echo "::error::$major écart(s) critique(s) ou majeur(s). Le comportement observé présente un écart avec le référentiel."
+              exit 1
+            fi ;;
+          *)
+            if [ "$critical" -gt 0 ]; then
+              echo "::error::$critical écart(s) critique(s). Le comportement observé présente un écart avec le référentiel."
+              exit 1
+            fi ;;
+        esac
+        echo "Aucun écart au seuil retenu."

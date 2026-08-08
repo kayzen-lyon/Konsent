@@ -12,13 +12,14 @@
     "check:rulepack": "node scripts/check-rulepack.mjs",
     "check:csp": "node scripts/check-csp.mjs",
     "check:sovereignty": "node scripts/check-sovereignty.mjs",
+    "test:html": "tsx scripts/test-html.mjs",
     "test:fixtures": "tsx scripts/test-fixtures.mjs",
     "test:tcf": "tsx scripts/test-tcf.mjs",
     "test:jurisdictions": "tsx scripts/test-jurisdictions.mjs",
     "test:billing": "tsx scripts/test-billing.mjs",
     "test:accounts": "tsx scripts/test-accounts.mjs",
     "test:mcp": "tsx scripts/test-mcp.mjs",
-    "check": "npm run check:rulepack && npm run check:csp && npm run check:sovereignty && npm run typecheck && npm run test:fixtures && npm run test:tcf && npm run test:jurisdictions && npm run test:billing && npm run test:accounts && npm run test:mcp"
+    "check": "npm run check:rulepack && npm run check:csp && npm run check:sovereignty && npm run typecheck && npm run test:html && npm run test:fixtures && npm run test:tcf && npm run test:jurisdictions && npm run test:billing && npm run test:accounts && npm run test:mcp"
   },
   "dependencies": {
     "next": "15.5.23",
