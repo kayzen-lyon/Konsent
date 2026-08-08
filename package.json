@@ -10,8 +10,10 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "check:rulepack": "node scripts/check-rulepack.mjs",
+    "check:csp": "node scripts/check-csp.mjs",
     "test:fixtures": "tsx scripts/test-fixtures.mjs",
-    "check": "npm run check:rulepack && npm run typecheck && npm run test:fixtures"
+    "test:tcf": "tsx scripts/test-tcf.mjs",
+    "check": "npm run check:rulepack && npm run check:csp && npm run typecheck && npm run test:fixtures && npm run test:tcf"
   },
   "dependencies": {
     "next": "15.5.23",

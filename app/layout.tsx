@@ -46,8 +46,8 @@ export const metadata: Metadata = {
 const NAV = [
   { href: "/fonctionnalites", label: "Fonctionnalités" },
   { href: "/surveillance", label: "Surveillance" },
+  { href: "/outils", label: "Outils libres" },
   { href: "/veille", label: "Veille" },
-  { href: "/guides", label: "Guides" },
   { href: "/regles", label: "Référentiel" },
   { href: "/tarifs", label: "Tarifs" },
 ];
@@ -120,7 +120,10 @@ function Footer() {
                 ["/fonctionnalites", "Fonctionnalités"],
                 ["/surveillance", "Surveillance"],
                 ["/agence", "Vue portefeuille"],
+                ["/outils", "Outils libres"],
+                ["/outils/decodeur-tcf", "Décodeur TCF"],
                 ["/simulateur", "Simulateur d'exposition"],
+                ["/guides", "Guides de correction"],
                 ["/tarifs", "Tarifs"],
                 ["/comparatif", "Comparatif CMP"],
               ].map(([h, l]) => (

@@ -28,6 +28,11 @@ jobs:
       - name: Contrôles du rulepack
         run: npm run check:rulepack
 
+      # La CSP de production ne doit jamais hériter du `unsafe-eval` concédé
+      # au serveur de développement.
+      - name: Contrôle de la CSP
+        run: npm run check:csp
+
       - name: Typage
         run: npm run typecheck
 
@@ -35,6 +40,11 @@ jobs:
       # (PRD §6.1 et différenciateur n°27).
       - name: Fixtures du moteur
         run: npm run test:fixtures
+
+      # Le décodeur TCF manipule une pièce à conviction : aller-retour
+      # d'encodage, et robustesse aux chaînes abîmées.
+      - name: Décodeur TCF
+        run: npm run test:tcf
 
       - name: Build
         run: npm run build
