@@ -118,6 +118,24 @@ exception dans le code :
    texte exploitable — cas fréquent des sites rendus côté client — le moteur
    s'abstient de conclure plutôt que de produire un faux positif.
 
+## Ce que Konsent obtient sur son propre scanner
+
+**96/100, note A.** Mesuré à chaque poussée par le workflow
+`audit-headless.yml`, qui exécute le protocole trois phases avec un vrai
+navigateur. Le §14.1 du PRD vise 100/100 : voici l'écart qui reste, et
+pourquoi il reste.
+
+`KZC-SEC-003` — notre politique de sécurité de contenu autorise
+`'unsafe-inline'` sur les scripts. Next.js injecte des scripts inline pour
+l'hydratation ; s'en passer suppose une CSP à nonce, laquelle force le rendu
+dynamique de chacune des 322 pages aujourd'hui statiques. Nous avons préféré
+un constat modéré assumé et écrit ici à une régression de performance et de
+coût sur tout le site.
+
+C'est exactement la conduite que nous recommandons à nos clients : quand un
+écart est connu et arbitré, on l'écrit et on le justifie. Ce qui est
+inacceptable, c'est de le taire.
+
 ## Cohérence
 
 Konsent ne dépose aucun cookie, ne charge aucune ressource externe (ni
