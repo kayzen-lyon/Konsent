@@ -22,7 +22,7 @@ export function generateLegalNotice(scan: ScanResult): GeneratedDoc {
     subtitle: scan.hostname,
     generatedAt: scan.scannedAt,
     todos: t.list(),
-    footer: `Modèle généré par ${EDITOR.product} le ${new Date(scan.scannedAt).toLocaleDateString("fr-FR", { dateStyle: "long" })}. Les mentions légales relèvent de la loi pour la confiance dans l'économie numérique, distincte du RGPD : leur absence est sanctionnable pour elle-même. À compléter et à faire valider avant publication.`,
+    footer: `Modèle généré par ${EDITOR.product} le ${new Date(scan.scannedAt).toLocaleDateString("fr-FR", { dateStyle: "long" })}. Les mentions légales relèvent de la loi pour la confiance dans l'économie numérique, distincte du RGPD : leur absence est sanctionnable pour elle-même. À compléter, puis à faire valider par un professionnel du droit avant publication.`,
     sections: [
       {
         id: "editeur",

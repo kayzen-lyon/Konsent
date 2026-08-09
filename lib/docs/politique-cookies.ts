@@ -47,8 +47,16 @@ function needsConsent(t: TrackerEntity): boolean {
   return !t.exemptEligible && t.categories.some((c) => CONSENT_REQUIRED_CATEGORIES.has(c));
 }
 
-function lifetimeLabel(t: TrackerEntity): string {
-  if (!t.cookies || t.cookies.length === 0) return TODO("durée de vie");
+/**
+ * Le marqueur passe par le collecteur, il ne se fabrique pas sur place.
+ *
+ * Un `[[À COMPLÉTER]]` posé dans le corps sans être inscrit dans `todos` ne
+ * remonte pas en tête du document : le lecteur publie alors une politique
+ * trouée sans qu'aucun avertissement le lui ait dit. C'est exactement ce que
+ * `scripts/test-docs.mjs` vérifie désormais sur tous les gabarits.
+ */
+function lifetimeLabel(t: TrackerEntity, track: (label: string) => string): string {
+  if (!t.cookies || t.cookies.length === 0) return track("durée de vie");
   const max = t.cookies.reduce<number | null>((acc, c) => {
     if (c.maxLifetimeDays === null) return acc;
     return acc === null ? c.maxLifetimeDays : Math.max(acc, c.maxLifetimeDays);
@@ -106,7 +114,7 @@ export function generateCookiePolicy(scan: ScanResult): GeneratedDoc {
           v.name,
           v.entity,
           v.categories.map((c) => CATEGORY_LABELS[c] ?? c).join(", "),
-          lifetimeLabel(v),
+          lifetimeLabel(v, track),
           v.effectiveJurisdiction,
         ]),
       },

@@ -108,12 +108,20 @@ export const PLANS: readonly Plan[] = [
       {
         label: "24 documents générés",
         delivered: false,
-        gap: "7 gabarits existent sur 24. La Doc Factory est le premier chantier à finir avant d'ouvrir cette offre.",
+        gap:
+          "15 gabarits existent. Les huit restants sont les plus exposés : CGU et CGV sont des " +
+          "contrats commerciaux, l'AIPD une méthode d'analyse, et les annexes CCT reproduisent " +
+          "une décision d'exécution européenne qui ne se réécrit pas de mémoire. Ils supposent " +
+          "une source officielle et une relecture d'avocat, pas de la rédaction.",
       },
       {
         label: "Accès API",
         delivered: false,
-        gap: "Les routes existent mais sans clés, sans quotas et sans journalisation. Vendre un accès non authentifié n'a pas de sens.",
+        gap:
+          "Les clés, portées, quotas, journal d'appels et description OpenAPI existent désormais. " +
+          "Ce qui manque n'est plus technique : les onze routes restent OUVERTES sans clé, si bien " +
+          "qu'une clé n'apporte aujourd'hui qu'attribution et quota. Vendre cet accès suppose de " +
+          "trancher ce qui reste gratuit — arbitrage commercial, à faire avant d'ouvrir l'offre.",
       },
       {
         label: "250 pages par analyse",
@@ -135,13 +143,13 @@ export const PLANS: readonly Plan[] = [
       { label: "Devis générés à votre grille tarifaire", delivered: true },
       {
         label: "Sous-comptes clients cloisonnés",
-        delivered: false,
-        gap: "Il n'existe aucun système de comptes. C'est la fonctionnalité qui justifie l'écart de prix avec Pro.",
+        delivered: true,
+        requiresEnv: ["SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"],
       },
       {
         label: "25 domaines",
-        delivered: false,
-        gap: "Aucun quota n'est appliqué faute de comptes.",
+        delivered: true,
+        requiresEnv: ["SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"],
       },
     ],
     highlighted: false,

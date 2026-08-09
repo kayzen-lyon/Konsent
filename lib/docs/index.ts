@@ -5,6 +5,14 @@ import { generateCookiePolicy } from "./politique-cookies";
 import { generateRetentionPolicy, generateTransferImpactAssessment } from "./conservation-tia";
 import { generateBreachProcedure, generateRightsProcedure } from "./procedures";
 import { generateRegistre } from "./registre";
+import {
+  generateBreachRegistry,
+  generateConsentRegistry,
+  generateDpoDesignation,
+  generateProcessorRegistry,
+  generateRightsRegistry,
+  generateSecurityPolicy,
+} from "./registres";
 import type { GeneratedDoc } from "./types";
 
 export * from "./types";
@@ -25,6 +33,14 @@ const GENERATORS: Record<string, (scan: ScanResult) => GeneratedDoc> = {
   "procedure-droits": generateRightsProcedure,
   "politique-conservation": generateRetentionPolicy,
   "tia": generateTransferImpactAssessment,
+  // Registres et gouvernance : des structures à tenir, pas des textes à
+  // publier. Voir l'en-tête de `registres.ts` pour ce qui les distingue.
+  "registre-sous-traitant": generateProcessorRegistry,
+  "registre-violations": generateBreachRegistry,
+  "registre-demandes": generateRightsRegistry,
+  "registre-consentements": generateConsentRegistry,
+  "pssi": generateSecurityPolicy,
+  "designation-dpo": generateDpoDesignation,
 };
 
 /**

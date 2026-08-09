@@ -123,6 +123,86 @@ export const TEMPLATES: readonly DocTemplate[] = [
     audience: "interne",
     fedByScan: false,
   },
+  {
+    id: "D13",
+    slug: "politique-conservation",
+    title: "Politique de conservation et de purge",
+    purpose:
+      "Fixer une durée par catégorie de données, et la purge qui l'applique. Une durée annoncée mais non appliquée est le manquement le plus banal.",
+    legalBasis: "RGPD, article 5(1)(e)",
+    audience: "interne",
+    fedByScan: true,
+  },
+  {
+    id: "D18",
+    slug: "tia",
+    title: "Analyse d'impact des transferts (TIA)",
+    purpose:
+      "Évaluer, destinataire par destinataire, si les garanties invoquées résistent au droit du pays de destination.",
+    legalBasis: "Arrêt Schrems II · recommandations CEPD 01/2020",
+    audience: "interne",
+    fedByScan: true,
+  },
+  {
+    id: "D09",
+    slug: "registre-sous-traitant",
+    title: "Registre des activités de traitement — sous-traitant",
+    purpose:
+      "Le registre que doit tenir quiconque traite des données pour le compte d'un client. Distinct du D08, et régulièrement oublié.",
+    legalBasis: "RGPD, article 30(2)",
+    audience: "interne",
+    fedByScan: true,
+  },
+  {
+    id: "D10",
+    slug: "registre-violations",
+    title: "Registre des violations de données",
+    purpose:
+      "Consigner toute violation, y compris celle qu'on décide de ne pas notifier — c'est cette trace qui prouve que l'analyse a été faite.",
+    legalBasis: "RGPD, article 33(5)",
+    audience: "interne",
+    fedByScan: false,
+  },
+  {
+    id: "D11",
+    slug: "registre-demandes",
+    title: "Registre des demandes d'exercice de droits",
+    purpose:
+      "Démontrer que chaque demande a reçu réponse dans le mois. Sans trace, c'est la parole du demandeur qui l'emporte.",
+    legalBasis: "RGPD, article 12(3)",
+    audience: "interne",
+    fedByScan: false,
+  },
+  {
+    id: "D12",
+    slug: "registre-consentements",
+    title: "Registre des consentements — spécification technique",
+    purpose:
+      "Ce qu'il faut journaliser pour pouvoir démontrer un consentement. Sans ces éléments, un consentement recueilli ne se prouve pas.",
+    legalBasis: "RGPD, article 7(1)",
+    audience: "interne",
+    fedByScan: true,
+  },
+  {
+    id: "D14",
+    slug: "pssi",
+    title: "Politique de sécurité des systèmes d'information — socle",
+    purpose:
+      "Les mesures de l'article 32, dont celles que l'analyse constate de l'extérieur : en-têtes, transport, politique de contenu.",
+    legalBasis: "RGPD, article 32",
+    audience: "interne",
+    fedByScan: true,
+  },
+  {
+    id: "D24",
+    slug: "designation-dpo",
+    title: "Lettre de désignation du délégué à la protection des données",
+    purpose:
+      "Désigner un délégué en lui donnant réellement les garanties d'indépendance de l'article 38 — sans quoi la désignation est de façade.",
+    legalBasis: "RGPD, articles 37 à 39",
+    audience: "interne",
+    fedByScan: false,
+  },
 ];
 
 export function getTemplate(slug: string): DocTemplate | undefined {
