@@ -7,7 +7,7 @@ import { useState, useTransition } from "react";
 export function PortfolioForm({ max }: { max: number }) {
   const [domains, setDomains] = useState("");
   const [agency, setAgency] = useState("");
-  const [colour, setColour] = useState("#fd761a");
+  const [colour, setColour] = useState("#2563eb");
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const router = useRouter();
@@ -27,7 +27,7 @@ export function PortfolioForm({ max }: { max: number }) {
 
     const params = new URLSearchParams({ domaines: parsed.slice(0, max).join(",") });
     if (agency.trim()) params.set("agence", agency.trim());
-    if (colour && colour !== "#fd761a") params.set("couleur", colour.replace("#", ""));
+    if (colour && colour !== "#2563eb") params.set("couleur", colour.replace("#", ""));
 
     startTransition(() => router.push(`/agence?${params.toString()}`));
   }

@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono, Outfit } from "next/font/google";
 import Link from "next/link";
 import { EDITOR } from "@/lib/disclaimer";
+import { ContactCard } from "@/components/ContactCard";
 import { Logo } from "@/components/Logo";
 import "./globals.css";
 
@@ -15,6 +16,24 @@ const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
   variable: "--font-inter",
+  display: "swap",
+});
+
+/**
+ * Outfit — police d'affichage commune aux sites Kayzen (système Nexus).
+ *
+ * C'est le porteur principal de la cohérence entre les sites : un lecteur qui
+ * passe de nexus à konsent reconnaît la même main typographique avant même de
+ * lire un mot. Réservée aux titres, comme le prescrit le système ; Inter
+ * conserve le corps de texte, où sa lisibilité en petites tailles reste
+ * supérieure.
+ *
+ * Auto-hébergée au build comme les deux autres : aucune requête tierce.
+ */
+const outfit = Outfit({
+  subsets: ["latin"],
+  weight: ["700", "800", "900"],
+  variable: "--font-outfit",
   display: "swap",
 });
 
@@ -74,6 +93,7 @@ function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <ContactCard />
           <Link
             href="/regles"
             className="tech hidden rounded border border-white/25 px-3.5 py-2 text-[11px] text-white transition hover:border-white/60 sm:block"
@@ -177,9 +197,25 @@ function Footer() {
         </div>
 
         <div className="mt-12 flex flex-col gap-3 border-t border-white/10 pt-6 text-xs text-white/45 sm:flex-row sm:items-center sm:justify-between">
-          <p>
-            {EDITOR.legalName} — SIREN {EDITOR.siren} — {EDITOR.address}
-          </p>
+          <div className="space-y-1.5">
+            <p>
+              {EDITOR.legalName} — SIREN {EDITOR.siren} — {EDITOR.address}
+            </p>
+            <p>
+              Fièrement réalisé par{" "}
+              <a
+                href={EDITOR.agencySite}
+                // Un lien sortant vers notre propre agence : `noopener` par
+                // principe, mais surtout PAS de `referrer` masqué — le site
+                // reproche aux autres les fuites d'URL par l'en-tête Referer,
+                // et notre politique globale la restreint déjà.
+                rel="noopener"
+                className="text-white/70 underline decoration-dotted underline-offset-2 transition hover:text-flame"
+              >
+                {EDITOR.agencyName}
+              </a>
+            </p>
+          </div>
           <p className="max-w-xl sm:text-right">
             Les montants affichés sont des plafonds légaux théoriques, jamais une prévision de
             sanction. Analyse technique automatisée, sans valeur de consultation juridique.
@@ -192,7 +228,7 @@ function Footer() {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr" className={`${inter.variable} ${jetbrains.variable}`}>
+    <html lang="fr" className={`${inter.variable} ${outfit.variable} ${jetbrains.variable}`}>
       <body className="min-h-screen">
         <a
           href="#contenu"

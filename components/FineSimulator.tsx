@@ -170,7 +170,7 @@ export function FineSimulator({ compact = false }: { compact?: boolean }) {
                   type="checkbox"
                   checked={on}
                   onChange={() => toggle(b.id)}
-                  className="mt-0.5 h-4 w-4 shrink-0 accent-[#fd761a]"
+                  className="mt-0.5 h-4 w-4 shrink-0 accent-[#2563eb]"
                 />
                 <span className="min-w-0">
                   <span className="block text-[13px] font-medium leading-snug text-ink-2">

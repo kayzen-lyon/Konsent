@@ -48,7 +48,7 @@ async function PortfolioTable({
   accent: string | null;
 }) {
   const summary = await scanPortfolio(domains);
-  const brandColor = accent ?? "#fd761a";
+  const brandColor = accent ?? "#2563eb";
 
   return (
     <div className="space-y-6">
