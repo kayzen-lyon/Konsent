@@ -1,8 +1,14 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import { OwnedDomains } from "@/components/OwnedDomains";
 import { PortfolioForm } from "@/components/PortfolioForm";
+import { SubAccounts } from "@/components/SubAccounts";
 import { Disclaimer } from "@/components/primitives";
+import { SESSION_COOKIE, getAccounts } from "@/lib/accounts";
+import { DOMAIN_QUOTA, SUB_ACCOUNT_QUOTA, isAgency, visibleAccountIds } from "@/lib/agency/tenancy";
+import { getStorage } from "@/lib/storage";
 import { gradeColor } from "@/lib/risk/score";
 import {
   MAX_PORTFOLIO_DOMAINS,
@@ -200,6 +206,62 @@ async function PortfolioTable({
   );
 }
 
+/**
+ * Panneau des sous-comptes, visible de la seule agence connectée.
+ *
+ * Rendu côté serveur avec la liste déjà chargée : afficher un panneau vide
+ * puis le remplir par une requête laisserait apparaître, une fraction de
+ * seconde, un portefeuille sans clients. Sur un écran partagé en réunion, ce
+ * genre de détail se remarque.
+ */
+async function AgencyPanel() {
+  const accounts = getAccounts();
+  if (!accounts.available) return null;
+
+  const token = (await cookies()).get(SESSION_COOKIE)?.value;
+  if (!token) return null;
+
+  const account = await accounts.accountForSession(token).catch(() => null);
+  if (!account) return null;
+
+  // Un compte Pro connecté ne voit rien de ce panneau : le cloisonnement ne
+  // commence pas à l'affichage, mais il commence AUSSI à l'affichage.
+  if (!isAgency({ id: account.id, plan: account.plan, parentId: account.parentId })) return null;
+
+  const children = await accounts.subAccounts(account.id).catch(() => []);
+
+  // La liste des comptes visibles vient de `visibleAccountIds` et de nulle
+  // part ailleurs : c'est le seul endroit éprouvé, et le portefeuille en
+  // découle mécaniquement plutôt que d'une requête écrite à la main.
+  const actor = { id: account.id, plan: account.plan, parentId: account.parentId };
+  const visible = visibleAccountIds(
+    actor,
+    children.map((c) => ({ id: c.id, plan: c.plan, parentId: c.parentId })),
+  );
+
+  const storage = getStorage();
+  const domains = storage.available
+    ? await storage.domainsForAccounts(visible).catch(() => [])
+    : [];
+
+  const owners = Object.fromEntries(children.map((c) => [c.id, c.email]));
+
+  return (
+    <section className="mb-10 space-y-5">
+      <SubAccounts
+        quota={SUB_ACCOUNT_QUOTA[account.plan]}
+        initial={children.map((c) => ({ id: c.id, email: c.email, createdAt: c.createdAt }))}
+      />
+      <OwnedDomains
+        domains={domains}
+        owners={owners}
+        quota={DOMAIN_QUOTA[account.plan]}
+        emptyHint="Aucun domaine rattaché. Un domaine devient vôtre lorsqu'il est inscrit à la surveillance depuis une session connectée ; ceux de vos clients apparaissent ici avec leur nom."
+      />
+    </section>
+  );
+}
+
 export default async function AgencyPage({
   searchParams,
 }: {
@@ -246,6 +308,8 @@ export default async function AgencyPage({
           </>
         ) : (
           <>
+            <AgencyPanel />
+
             <PortfolioForm max={MAX_PORTFOLIO_DOMAINS} />
 
             <section className="mt-12 grid gap-5 md:grid-cols-3">
@@ -273,11 +337,12 @@ export default async function AgencyPage({
             <section className="mt-8 rounded-xl border-l-2 border-warn bg-white p-6 ring-1 ring-line">
               <p className="tech text-[10px] text-warn">Limite de cette démonstration</p>
               <p className="mt-2 text-[14.5px] leading-relaxed text-ink-2">
-                Cette vue analyse jusqu&apos;à {MAX_PORTFOLIO_DOMAINS} domaines par passe et ne
-                conserve rien : ni compte, ni historique, ni cloisonnement par client. La version
-                Agence complète — sous-comptes, portefeuille persistant, surveillance planifiée,
-                rapports PDF à votre marque — suppose une base de données et un contrat de
-                sous-traitance. Nous préférons le dire que le laisser croire.
+                Cette vue d&apos;essai analyse jusqu&apos;à {MAX_PORTFOLIO_DOMAINS} domaines par
+                passe et ne conserve rien : ni compte, ni historique. Les sous-comptes clients
+                existent et sont cloisonnés — un client ne voit ni vos domaines ni ceux de vos
+                autres clients — mais ils supposent une connexion, donc une base configurée. Ce
+                qui manque encore : le portefeuille persistant par client, et les rapports PDF à
+                votre marque. Nous préférons le dire que le laisser croire.
               </p>
             </section>
           </>

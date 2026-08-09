@@ -37,6 +37,14 @@ export interface Account {
   email: string;
   plan: PlanId;
   createdAt: string;
+  /**
+   * Agence à laquelle ce compte est rattaché, le cas échéant.
+   *
+   * `null` pour un compte de premier niveau. Ce champ porte à lui seul le
+   * cloisonnement : `lib/agency/tenancy.ts` s'en sert pour décider qui voit
+   * quoi, et refuse d'accorder les droits d'agence à un compte qui en a un.
+   */
+  parentId: string | null;
 }
 
 export interface AccountsUnavailable {
@@ -51,6 +59,19 @@ export interface Accounts {
   accountForSession(sessionToken: string): Promise<Account | null>;
   endSession(sessionToken: string): Promise<void>;
   purgeExpired(): Promise<number>;
+  /** Sous-comptes DIRECTS d'une agence. Jamais transitif : le cloisonnement tient sur un niveau. */
+  subAccounts(parentId: string): Promise<readonly Account[]>;
+  /**
+   * Ouvre un sous-compte, ou rattache un compte existant.
+   *
+   * L'autorisation ne se décide PAS ici : elle relève de
+   * `lib/agency/tenancy.ts`, seul endroit éprouvé pour cela. Cette méthode
+   * exécute une décision déjà prise, et la base pose ses propres verrous
+   * (pas d'imbrication, pas d'auto-parentage) au cas où un appelant futur
+   * l'oublierait.
+   */
+  attachSubAccount(parentId: string, email: string): Promise<Account>;
+  detachSubAccount(childId: string): Promise<void>;
 }
 
 /**
@@ -201,6 +222,47 @@ class SupabaseAccounts implements Accounts {
     );
     return (sessions?.length ?? 0) + (tokens?.length ?? 0);
   }
+
+  async subAccounts(parentId: string): Promise<readonly Account[]> {
+    const rows = await this.request<Record<string, unknown>[]>(
+      `accounts?parent_id=eq.${encodeURIComponent(parentId)}&order=created_at.asc`,
+    );
+    return rows.map(toAccount);
+  }
+
+  async attachSubAccount(parentId: string, email: string): Promise<Account> {
+    const normalized = normalizeEmail(email);
+
+    // Le compte est créé s'il n'existe pas, puis rattaché. Deux temps plutôt
+    // qu'un `upsert` portant `parent_id` : un compte existant qui appartient
+    // déjà à une autre agence doit être refusé par le filtre ci-dessous, pas
+    // capté silencieusement.
+    await this.request("rpc/konsent_upsert_account", {
+      method: "POST",
+      body: JSON.stringify({ p_email: normalized }),
+    });
+
+    const rows = await this.request<Record<string, unknown>[]>(
+      `accounts?email=eq.${encodeURIComponent(normalized)}&parent_id=is.null`,
+      { method: "PATCH", body: JSON.stringify({ parent_id: parentId }) },
+    );
+
+    const row = rows[0];
+    if (!row) {
+      throw new Error(
+        "Ce compte existe déjà et appartient à une autre agence. Un client ne peut être rattaché qu'à une seule.",
+      );
+    }
+    return toAccount(row);
+  }
+
+  async detachSubAccount(childId: string): Promise<void> {
+    await this.request(`accounts?id=eq.${encodeURIComponent(childId)}`, {
+      method: "PATCH",
+      headers: { Prefer: "return=minimal" },
+      body: JSON.stringify({ parent_id: null }),
+    });
+  }
 }
 
 function toAccount(row: Record<string, unknown>): Account {
@@ -209,6 +271,9 @@ function toAccount(row: Record<string, unknown>): Account {
     email: String(row["email"]),
     plan: (row["plan"] as PlanId) ?? "libre",
     createdAt: String(row["created_at"]),
+    // Absent des lignes antérieures à la migration 0004 : lu comme « aucun
+    // parent », ce qui est exact — les sous-comptes n'existaient pas.
+    parentId: (row["parent_id"] as string | null) ?? null,
   };
 }
 

@@ -1,4 +1,8 @@
+import { cookies } from "next/headers";
 import { DISCLAIMER_SHORT } from "@/lib/disclaimer";
+import { SESSION_COOKIE, getAccounts } from "@/lib/accounts";
+import { canAddDomain, domainQuotaFor } from "@/lib/agency/tenancy";
+import { withApiAuth } from "@/lib/api/auth";
 import { normalizeTarget, ScanError } from "@/lib/engine/scan";
 import { getStorage } from "@/lib/storage";
 import { dnsInstructions, fileInstructions, verifyOwnership } from "@/lib/storage/verification";
@@ -7,6 +11,29 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+/**
+ * Compte de la session en cours, s'il y en a une.
+ *
+ * Renvoie `null` sans jamais échouer : l'inscription à la surveillance ne
+ * dépend pas d'un compte, et une base indisponible ne doit pas empêcher une
+ * inscription qui fonctionnait très bien avant les comptes.
+ */
+async function sessionOwner() {
+  const accounts = getAccounts();
+  if (!accounts.available) return null;
+
+  const token = (await cookies()).get(SESSION_COOKIE)?.value;
+  if (!token) return null;
+
+  const account = await accounts.accountForSession(token).catch(() => null);
+  if (!account) return null;
+
+  return {
+    actor: { id: account.id, plan: account.plan, parentId: account.parentId },
+    email: account.email,
+  };
+}
 
 /**
  * Inscription à la surveillance planifiée.
@@ -18,7 +45,7 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
  * et aucun historique n'est conservé tant que la propriété du domaine n'a pas
  * été prouvée.
  */
-export async function POST(request: Request) {
+async function handlePOST(request: Request) {
   const storage = getStorage();
   if (!storage.available) {
     return Response.json(
@@ -107,7 +134,32 @@ export async function POST(request: Request) {
 
     // ── Étape 1 : inscription ──
     if (!domain) {
-      domain = await storage.registerDomain({ hostname, alertEmail: email, frequency });
+      // Une session, si elle existe, fait du domaine une propriété. Sans
+      // session, l'inscription reste servie par courriel exactement comme
+      // avant — mais le domaine n'appartient à personne et n'apparaît dans
+      // aucun portefeuille. C'est volontaire : rattacher un domaine à un
+      // compte deviné à partir de l'adresse d'alerte donnerait à quiconque
+      // connaît un courriel le moyen de peupler le portefeuille d'autrui.
+      const owner = await sessionOwner();
+      if (owner) {
+        const mine = await storage.domainsForAccounts([owner.actor.id]);
+        if (!canAddDomain(owner.actor, mine)) {
+          return Response.json(
+            {
+              error: `Votre offre couvre ${domainQuotaFor(owner.actor)} domaine(s), et ils sont utilisés.`,
+              disclaimer: DISCLAIMER_SHORT,
+            },
+            { status: 409 },
+          );
+        }
+      }
+
+      domain = await storage.registerDomain({
+        hostname,
+        alertEmail: email,
+        frequency,
+        accountId: owner?.actor.id ?? null,
+      });
     }
 
     return Response.json(
@@ -136,3 +188,12 @@ export async function POST(request: Request) {
     );
   }
 }
+
+/**
+ * Contrôle, quota et journal.
+ *
+ * La route reste ouverte sans clé — le verdict sans compte est la promesse
+ * produit n°1. Une clé présentée est vérifiée, rattachée à son organisation,
+ * décomptée de son quota et journalisée.
+ */
+export const POST = withApiAuth("monitors:write", handlePOST);

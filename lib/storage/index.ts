@@ -17,6 +17,16 @@ import type { Change } from "../monitoring/diff";
 export interface MonitoredDomain {
   id: string;
   hostname: string;
+  /**
+   * Compte propriétaire.
+   *
+   * `null` pour les inscriptions faites sans session — elles restent servies
+   * par courriel, comme avant, mais n'apparaissent dans AUCUN portefeuille.
+   * Une ressource sans propriétaire n'est accessible à personne : c'est la
+   * règle posée dans `lib/agency/tenancy.ts`, et la valeur par défaut la
+   * respecte plutôt que de l'entamer.
+   */
+  accountId: string | null;
   alertEmail: string;
   verificationToken: string;
   verificationMethod: "dns_txt" | "well_known" | null;
@@ -63,7 +73,17 @@ export interface Storage {
     alertEmail: string;
     frequency: MonitoredDomain["frequency"];
     retentionDays?: number;
+    /** Propriétaire. Omis pour une inscription sans session. */
+    accountId?: string | null;
   }): Promise<MonitoredDomain>;
+  /**
+   * Domaines appartenant aux comptes donnés.
+   *
+   * La liste d'identifiants vient de `visibleAccountIds` et de nulle part
+   * ailleurs : c'est ce qui garantit qu'une agence ne lit que ses clients.
+   * Une liste vide ne renvoie rien — surtout pas « tout ».
+   */
+  domainsForAccounts(accountIds: readonly string[]): Promise<readonly MonitoredDomain[]>;
   getDomain(id: string): Promise<MonitoredDomain | null>;
   findDomain(hostname: string, alertEmail: string): Promise<MonitoredDomain | null>;
   markVerified(id: string, method: "dns_txt" | "well_known"): Promise<void>;
@@ -127,6 +147,7 @@ class SupabaseStorage implements Storage {
     alertEmail: string;
     frequency: MonitoredDomain["frequency"];
     retentionDays?: number;
+    accountId?: string | null;
   }): Promise<MonitoredDomain> {
     const rows = await this.request<Record<string, unknown>[]>("monitored_domains", {
       method: "POST",
@@ -135,9 +156,24 @@ class SupabaseStorage implements Storage {
         alert_email: input.alertEmail,
         frequency: input.frequency,
         ...(input.retentionDays ? { retention_days: input.retentionDays } : {}),
+        ...(input.accountId ? { account_id: input.accountId } : {}),
       }),
     });
     return toDomain(rows[0]!);
+  }
+
+  async domainsForAccounts(accountIds: readonly string[]): Promise<readonly MonitoredDomain[]> {
+    // Une liste vide ne doit RIEN renvoyer. Sans ce garde, le filtre `in.()`
+    // partirait vide et PostgREST rendrait la table entière — le portefeuille
+    // de tous les clients de toutes les agences. Le cas se produit dès qu'un
+    // compte sans sous-compte consulte sa vue.
+    if (accountIds.length === 0) return [];
+
+    const list = accountIds.map((id) => `"${id}"`).join(",");
+    const rows = await this.request<Record<string, unknown>[]>(
+      `monitored_domains?account_id=in.(${encodeURIComponent(list)})&order=hostname.asc`,
+    );
+    return rows.map(toDomain);
   }
 
   async getDomain(id: string): Promise<MonitoredDomain | null> {
@@ -244,6 +280,9 @@ function toDomain(row: Record<string, unknown>): MonitoredDomain {
   return {
     id: String(row["id"]),
     hostname: String(row["hostname"]),
+    // Absent des lignes antérieures à la migration 0004 : elles restent sans
+    // propriétaire, donc hors de tout portefeuille. C'est le bon défaut.
+    accountId: (row["account_id"] as string | null) ?? null,
     alertEmail: String(row["alert_email"]),
     verificationToken: String(row["verification_token"]),
     verificationMethod: (row["verification_method"] as MonitoredDomain["verificationMethod"]) ?? null,

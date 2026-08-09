@@ -2,8 +2,11 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { OwnedDomains } from "@/components/OwnedDomains";
 import { Disclaimer, SectionTitle } from "@/components/primitives";
 import { SESSION_COOKIE, getAccounts } from "@/lib/accounts";
+import { domainQuotaFor } from "@/lib/agency/tenancy";
+import { getStorage } from "@/lib/storage";
 import { PLANS, getPlan } from "@/lib/billing/plans";
 import { misconfigured, readiness } from "@/lib/billing/readiness";
 
@@ -28,6 +31,15 @@ export default async function AccountPage() {
   const state = readiness(plan);
   const config = misconfigured(plan);
 
+  // Un compte ne voit QUE ses propres domaines ici — y compris une agence,
+  // dont le portefeuille complet vit sur /agence. Cette page est l'espace
+  // personnel, pas la vue de gestion.
+  const actor = { id: account.id, plan: account.plan, parentId: account.parentId };
+  const storage = getStorage();
+  const domains = storage.available
+    ? await storage.domainsForAccounts([account.id]).catch(() => [])
+    : [];
+
   return (
     <main className="mx-auto max-w-4xl px-6 py-16">
       <p className="tech text-[10px] text-flame">Espace client</p>
@@ -36,6 +48,21 @@ export default async function AccountPage() {
         Offre en cours : <strong className="text-ink-2">{plan.name}</strong> · compte ouvert le{" "}
         {new Date(account.createdAt).toLocaleDateString("fr-FR")}
       </p>
+
+      {account.parentId ? (
+        <p className="mt-4 rounded-lg border-l-2 border-line bg-white px-4 py-3 text-[13px] leading-relaxed text-muted">
+          Ce compte est rattaché à une agence, qui voit les domaines ci-dessous. Vous ne voyez ni
+          les siens, ni ceux de ses autres clients.
+        </p>
+      ) : null}
+
+      <section className="mt-10">
+        <OwnedDomains
+          domains={domains}
+          quota={domainQuotaFor(actor)}
+          emptyHint="Aucun domaine rattaché à ce compte. Inscrivez-en un depuis la page Surveillance, en restant connecté : c'est la session qui en fait votre propriété."
+        />
+      </section>
 
       <section className="mt-12">
         <SectionTitle
