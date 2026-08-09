@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
+import { withApiAuth } from "@/lib/api/auth";
 import { DISCLAIMER_SHORT } from "@/lib/disclaimer";
-import { ScanError, runScan } from "@/lib/engine/scan";
+import { runVerdictScan } from "@/lib/engine/orchestrate";
+import { ScanError } from "@/lib/engine/scan";
 import { RULEPACK } from "@/lib/rulepack";
 
 export const dynamic = "force-dynamic";
@@ -11,11 +13,17 @@ export const maxDuration = 60;
  *
  *   GET /api/scan?url=exemple.fr
  *
+ * Exécute le protocole en trois phases lorsque le worker navigateur est
+ * déployé, le moteur statique sinon. Le champ `scan.mode` dit lequel a
+ * tourné, et `degraded` dit pourquoi le cas échéant : un agent qui consomme
+ * cette API doit pouvoir distinguer « aucun manquement » de « nous n'avons
+ * pas pu regarder ».
+ *
  * Chaque réponse embarque le champ `disclaimer` (§12.5). Il n'est pas
  * désactivable : un consommateur d'API — humain ou agent — doit recevoir
  * l'avertissement en même temps que le constat.
  */
-export async function GET(request: Request) {
+async function handleGET(request: Request) {
   const target = new URL(request.url).searchParams.get("url");
 
   if (!target) {
@@ -29,11 +37,12 @@ export async function GET(request: Request) {
   }
 
   try {
-    const result = await runScan(target);
+    const { result, degraded } = await runVerdictScan(target);
 
     return NextResponse.json(
       {
         disclaimer: DISCLAIMER_SHORT,
+        ...(degraded ? { degraded: { reason: degraded.reason, cause: degraded.failure } } : {}),
         scan: {
           id: result.id,
           url: result.url,
@@ -54,6 +63,10 @@ export async function GET(request: Request) {
           family: f.family,
           title: f.title,
           occurrences: f.occurrences,
+          // La phase n'existe qu'en mode navigateur : elle dit à quel moment
+          // du parcours le constat a été relevé (avant consentement, après
+          // refus, après acceptation), ce qui est souvent l'essentiel.
+          ...(f.phase ? { phase: f.phase } : {}),
           evidence: f.evidence,
         })),
         vendors: result.vendors.map((v) => ({
@@ -69,7 +82,10 @@ export async function GET(request: Request) {
         })),
         coverage: {
           rulepackTotal: RULEPACK.total,
-          evaluatedByThisMode: RULEPACK.staticCount,
+          // Le compte dépend du moteur qui a effectivement tourné. Annoncer
+          // la couverture statique sur un rapport navigateur — ou l'inverse —
+          // reviendrait à mentir sur l'étendue du contrôle.
+          evaluatedByThisMode: RULEPACK.total - result.notEvaluatedRuleIds.length,
           notEvaluated: result.notEvaluatedRuleIds,
           note:
             "Les règles listées dans « notEvaluated » n'ont pas pu être vérifiées par ce mode d'analyse. Elles ne doivent en aucun cas être interprétées comme satisfaites.",
@@ -96,3 +112,12 @@ export async function GET(request: Request) {
     );
   }
 }
+
+/**
+ * Contrôle, quota et journal.
+ *
+ * La route reste ouverte sans clé — le verdict sans compte est la promesse
+ * produit n°1. Une clé présentée est vérifiée, rattachée à son organisation,
+ * décomptée de son quota et journalisée.
+ */
+export const GET = withApiAuth("scan:read", handleGET);

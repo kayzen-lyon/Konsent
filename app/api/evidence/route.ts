@@ -1,5 +1,7 @@
 import { DISCLAIMER_SHORT } from "@/lib/disclaimer";
-import { ScanError, runScan } from "@/lib/engine/scan";
+import { withApiAuth } from "@/lib/api/auth";
+import { runVerdictScan } from "@/lib/engine/orchestrate";
+import { ScanError } from "@/lib/engine/scan";
 import { buildEvidenceBundle } from "@/lib/evidence/bundle";
 
 export const dynamic = "force-dynamic";
@@ -13,7 +15,7 @@ export const maxDuration = 60;
  * L'archive est construite à la volée : rien n'est conservé côté serveur,
  * conformément à ce qu'annonce la politique de confidentialité.
  */
-export async function GET(request: Request) {
+async function handleGET(request: Request) {
   const target = new URL(request.url).searchParams.get("url");
 
   if (!target) {
@@ -24,7 +26,10 @@ export async function GET(request: Request) {
   }
 
   try {
-    const scan = await runScan(target);
+    // L'archive doit porter la MÊME observation que le rapport lu à l'écran.
+    // Une archive statique adossée à un rapport navigateur produirait deux
+    // vérités opposables sur la même URL, ce qui ruinerait sa valeur.
+    const { result: scan } = await runVerdictScan(target);
     const bundle = buildEvidenceBundle(scan);
 
     return new Response(new Uint8Array(bundle.bytes), {
@@ -52,3 +57,12 @@ export async function GET(request: Request) {
     );
   }
 }
+
+/**
+ * Contrôle, quota et journal.
+ *
+ * La route reste ouverte sans clé — le verdict sans compte est la promesse
+ * produit n°1. Une clé présentée est vérifiée, rattachée à son organisation,
+ * décomptée de son quota et journalisée.
+ */
+export const GET = withApiAuth("evidence:read", handleGET);

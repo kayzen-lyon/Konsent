@@ -1,4 +1,5 @@
 import { DISCLAIMER_SHORT } from "@/lib/disclaimer";
+import { withApiAuth } from "@/lib/api/auth";
 import { TRACKERS } from "@/lib/trackers/db";
 
 export const dynamic = "force-static";
@@ -13,7 +14,7 @@ export const dynamic = "force-static";
  * constituer, et la rendre consultable est ce qui permet de contester une
  * fiche. Une base fermée est une base qu'on doit croire sur parole.
  */
-export async function GET(request: Request) {
+async function handleGET(request: Request) {
   const q = new URL(request.url).searchParams.get("q")?.trim().toLowerCase();
 
   const matches = !q
@@ -53,3 +54,12 @@ export async function GET(request: Request) {
     })),
   });
 }
+
+/**
+ * Contrôle, quota et journal.
+ *
+ * La route reste ouverte sans clé — le verdict sans compte est la promesse
+ * produit n°1. Une clé présentée est vérifiée, rattachée à son organisation,
+ * décomptée de son quota et journalisée.
+ */
+export const GET = withApiAuth("vendors:read", handleGET);

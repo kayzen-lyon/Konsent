@@ -1,4 +1,5 @@
 import { DISCLAIMER_SHORT } from "@/lib/disclaimer";
+import { withApiAuth } from "@/lib/api/auth";
 import { summarizeTcf } from "@/lib/tcf/audit";
 import { decodeTcString } from "@/lib/tcf/decode";
 import { TCF_PURPOSES } from "@/lib/tcf/purposes";
@@ -17,7 +18,7 @@ export const dynamic = "force-dynamic";
  *
  * Rien n'est conservé.
  */
-export async function POST(request: Request) {
+async function handlePOST(request: Request) {
   let body: { tcString?: string };
   try {
     body = (await request.json()) as { tcString?: string };
@@ -68,3 +69,12 @@ export async function POST(request: Request) {
     { headers: { "Cache-Control": "no-store" } },
   );
 }
+
+/**
+ * Contrôle, quota et journal.
+ *
+ * La route reste ouverte sans clé — le verdict sans compte est la promesse
+ * produit n°1. Une clé présentée est vérifiée, rattachée à son organisation,
+ * décomptée de son quota et journalisée.
+ */
+export const POST = withApiAuth("rules:read", handlePOST);

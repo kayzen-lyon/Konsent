@@ -1,4 +1,5 @@
 import { DISCLAIMER_SHORT } from "@/lib/disclaimer";
+import { withApiAuth } from "@/lib/api/auth";
 import { JURISDICTIONS, applicability, partitionForJurisdiction, type JurisdictionCode } from "@/lib/jurisdictions";
 import { RULES, getRule } from "@/lib/rulepack";
 
@@ -16,7 +17,7 @@ export const dynamic = "force-static";
  * Californie, un dépôt avant action n'est pas un écart : c'est le régime
  * normal. Un résumé qui l'ignore est faux, pas approximatif.
  */
-export async function GET(request: Request) {
+async function handleGET(request: Request) {
   const params = new URL(request.url).searchParams;
   const code = params.get("code") as JurisdictionCode | null;
   const ruleId = params.get("rule");
@@ -74,3 +75,12 @@ export async function GET(request: Request) {
       "Seules les qualifications FR et EU sont établies à partir des textes et de la doctrine de l'autorité compétente. Les autres sont indicatives, par analogie de régime, et doivent être validées par un juriste local avant toute exploitation commerciale.",
   });
 }
+
+/**
+ * Contrôle, quota et journal.
+ *
+ * La route reste ouverte sans clé — le verdict sans compte est la promesse
+ * produit n°1. Une clé présentée est vérifiée, rattachée à son organisation,
+ * décomptée de son quota et journalisée.
+ */
+export const GET = withApiAuth("rules:read", handleGET);

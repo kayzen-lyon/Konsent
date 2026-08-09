@@ -1,4 +1,5 @@
 import { DISCLAIMER_SHORT } from "@/lib/disclaimer";
+import { withApiAuth } from "@/lib/api/auth";
 import { PILLARS, RULEPACK, RULES } from "@/lib/rulepack";
 
 /**
@@ -6,7 +7,7 @@ import { PILLARS, RULEPACK, RULES } from "@/lib/rulepack";
  * (§16, n°95). Un référentiel consultable est un référentiel contestable —
  * c'est précisément l'intérêt.
  */
-export async function GET() {
+async function handleGET() {
   return Response.json(
     {
       disclaimer: DISCLAIMER_SHORT,
@@ -42,3 +43,12 @@ export async function GET() {
     { headers: { "Cache-Control": "public, max-age=3600" } },
   );
 }
+
+/**
+ * Contrôle, quota et journal.
+ *
+ * La route reste ouverte sans clé — le verdict sans compte est la promesse
+ * produit n°1. Une clé présentée est vérifiée, rattachée à son organisation,
+ * décomptée de son quota et journalisée.
+ */
+export const GET = withApiAuth("rules:read", handleGET);

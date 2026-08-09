@@ -1,5 +1,7 @@
 import { DISCLAIMER_SHORT } from "@/lib/disclaimer";
-import { ScanError, runScan } from "@/lib/engine/scan";
+import { withApiAuth } from "@/lib/api/auth";
+import { runVerdictScan } from "@/lib/engine/orchestrate";
+import { ScanError } from "@/lib/engine/scan";
 import { decodeBaseline } from "@/lib/monitoring/baseline";
 import { alertSummary, diffAgainstBaseline } from "@/lib/monitoring/diff";
 
@@ -11,7 +13,7 @@ export const maxDuration = 60;
  *
  *   GET /api/diff?url=exemple.fr&ref=<jeton>
  */
-export async function GET(request: Request) {
+async function handleGET(request: Request) {
   const params = new URL(request.url).searchParams;
   const target = params.get("url");
   const token = params.get("ref");
@@ -38,7 +40,11 @@ export async function GET(request: Request) {
   }
 
   try {
-    const current = await runScan(target);
+    // Même moteur que le rapport qui a produit la référence, sans quoi le
+    // différentiel compare deux observations de portées différentes. Quand la
+    // dégradation survient malgré tout, `diffAgainstBaseline` le détecte et
+    // refuse de conclure — il ne fabrique pas de régression.
+    const { result: current, degraded } = await runVerdictScan(target);
 
     if (baseline.h !== current.hostname) {
       return Response.json(
@@ -55,6 +61,7 @@ export async function GET(request: Request) {
     return Response.json(
       {
         disclaimer: DISCLAIMER_SHORT,
+        ...(degraded ? { degraded: { reason: degraded.reason, cause: degraded.failure } } : {}),
         diff,
         alert: alertSummary(diff),
       },
@@ -73,3 +80,12 @@ export async function GET(request: Request) {
     );
   }
 }
+
+/**
+ * Contrôle, quota et journal.
+ *
+ * La route reste ouverte sans clé — le verdict sans compte est la promesse
+ * produit n°1. Une clé présentée est vérifiée, rattachée à son organisation,
+ * décomptée de son quota et journalisée.
+ */
+export const GET = withApiAuth("scan:read", handleGET);

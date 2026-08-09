@@ -1,6 +1,8 @@
 import { DISCLAIMER_SHORT } from "@/lib/disclaimer";
+import { withApiAuth } from "@/lib/api/auth";
 import { generateDocument, hasGenerator } from "@/lib/docs";
-import { ScanError, runScan } from "@/lib/engine/scan";
+import { runVerdictScan } from "@/lib/engine/orchestrate";
+import { ScanError } from "@/lib/engine/scan";
 
 export const dynamic = "force-dynamic";
 
@@ -27,22 +29,22 @@ const CATALOGUE = [
   { id: "D04", slug: "cgu", title: "Conditions générales d'utilisation", available: false },
   { id: "D05", slug: "cgv", title: "Conditions générales de vente", available: false },
   { id: "D06", slug: "politique-facile-a-lire", title: "Politique en langage clair", available: false },
-  { id: "D09", slug: "registre-sous-traitant", title: "Registre — rôle de sous-traitant", available: false },
-  { id: "D10", slug: "registre-violations", title: "Registre des violations", available: false },
-  { id: "D11", slug: "registre-demandes", title: "Registre des demandes de droits", available: false },
-  { id: "D12", slug: "registre-consentements", title: "Registre des consentements", available: false },
+  { id: "D09", slug: "registre-sous-traitant", title: "Registre — rôle de sous-traitant", available: true },
+  { id: "D10", slug: "registre-violations", title: "Registre des violations", available: true },
+  { id: "D11", slug: "registre-demandes", title: "Registre des demandes de droits", available: true },
+  { id: "D12", slug: "registre-consentements", title: "Registre des consentements", available: true },
   { id: "D13", slug: "politique-conservation", title: "Politique de conservation et de purge", available: true },
-  { id: "D14", slug: "pssi", title: "Politique de sécurité (socle)", available: false },
+  { id: "D14", slug: "pssi", title: "Politique de sécurité (socle)", available: true },
   { id: "D17", slug: "aipd", title: "Analyse d'impact (AIPD)", available: false },
   { id: "D18", slug: "tia", title: "Analyse d'impact des transferts (TIA)", available: true },
   { id: "D20", slug: "annexes-cct", title: "Annexes CCT 2021", available: false },
   { id: "D21", slug: "responsabilite-conjointe", title: "Accord de responsabilité conjointe", available: false },
   { id: "D22", slug: "clause-confidentialite", title: "Clause de confidentialité", available: false },
   { id: "D23", slug: "charte-informatique", title: "Charte informatique et note salariés", available: false },
-  { id: "D24", slug: "designation-dpo", title: "Lettre de désignation du DPO", available: false },
+  { id: "D24", slug: "designation-dpo", title: "Lettre de désignation du DPO", available: true },
 ] as const;
 
-export async function GET(request: Request) {
+async function handleGET(request: Request) {
   const params = new URL(request.url).searchParams;
   const slug = params.get("slug");
   const url = params.get("url");
@@ -78,7 +80,11 @@ export async function GET(request: Request) {
   }
 
   try {
-    const scan = await runScan(url);
+    // La politique cookies liste les services RÉELLEMENT observés. En mode
+    // statique, ceux chargés par JavaScript échappent à l'inventaire : la
+    // politique publiée serait plus courte que la réalité du site — soit
+    // exactement le défaut que le document est censé corriger.
+    const { result: scan } = await runVerdictScan(url);
     const doc = generateDocument(slug, scan);
     if (!doc) return Response.json({ error: "Génération impossible." }, { status: 500 });
 
@@ -101,3 +107,12 @@ export async function GET(request: Request) {
     return Response.json({ error: "L'analyse a échoué." }, { status: 500 });
   }
 }
+
+/**
+ * Contrôle, quota et journal.
+ *
+ * La route reste ouverte sans clé — le verdict sans compte est la promesse
+ * produit n°1. Une clé présentée est vérifiée, rattachée à son organisation,
+ * décomptée de son quota et journalisée.
+ */
+export const GET = withApiAuth("documents:read", handleGET);

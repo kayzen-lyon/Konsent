@@ -1,5 +1,7 @@
 import { DISCLAIMER_SHORT } from "@/lib/disclaimer";
-import { ScanError, runScan } from "@/lib/engine/scan";
+import { withApiAuth } from "@/lib/api/auth";
+import { runVerdictScan } from "@/lib/engine/orchestrate";
+import { ScanError } from "@/lib/engine/scan";
 import { STACKS, type Stack, buildQuote, detectStack } from "@/lib/remediation/quote";
 import { computeExposure } from "@/lib/risk/exposure";
 import { getRule } from "@/lib/rulepack";
@@ -16,7 +18,7 @@ export const dynamic = "force-dynamic";
  * ce que ça coûte de ne pas corriger. Les présenter isolément, c'est laisser
  * le premier chiffre agir seul — ce que le garde-fou n°2 interdit.
  */
-export async function GET(request: Request) {
+async function handleGET(request: Request) {
   const params = new URL(request.url).searchParams;
   const url = params.get("url");
   if (!url) {
@@ -33,7 +35,9 @@ export async function GET(request: Request) {
   }
 
   try {
-    const scan = await runScan(url);
+    // Le devis se calcule depuis les constats : il doit reposer sur les mêmes
+    // que le rapport, sinon l'estimation contredit ce que le client vient de lire.
+    const { result: scan } = await runVerdictScan(url);
     const quote = buildQuote(scan, stack);
 
     // L'exposition n'est calculée que si un chiffre d'affaires est fourni.
@@ -85,3 +89,12 @@ export async function GET(request: Request) {
     return Response.json({ error: "L'analyse a échoué." }, { status: 500 });
   }
 }
+
+/**
+ * Contrôle, quota et journal.
+ *
+ * La route reste ouverte sans clé — le verdict sans compte est la promesse
+ * produit n°1. Une clé présentée est vérifiée, rattachée à son organisation,
+ * décomptée de son quota et journalisée.
+ */
+export const GET = withApiAuth("scan:read", handleGET);
