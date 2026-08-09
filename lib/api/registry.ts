@@ -89,6 +89,10 @@ export const INTERNAL_ROUTES: readonly string[] = [
   // Fiche de contact de l'éditeur. Ne sert aucune donnée d'audit et ne
   // renvoie que ce que les mentions légales affichent déjà.
   "/api/vcard",
+  // Formulaire de contact. Interne à dessein : publier le nom du champ leurre
+  // dans une description OpenAPI reviendrait à livrer le mode d'emploi pour
+  // le contourner.
+  "/api/contact",
   "/api/billing/checkout",
   "/api/billing/webhook",
   "/api/cron/monitor",

@@ -184,7 +184,11 @@ function Footer() {
             <ul className="mt-3 space-y-2 text-sm">
               {[
                 ["/mentions-legales", "Mentions légales"],
+                ["/cgu", "Conditions d'utilisation"],
+                ["/cgv", "Conditions de vente"],
                 ["/confidentialite", "Confidentialité"],
+                ["/cookies", "Politique cookies"],
+                ["/contact", "Nous écrire"],
               ].map(([h, l]) => (
                 <li key={h}>
                   <Link href={h as string} className="transition hover:text-flame">
