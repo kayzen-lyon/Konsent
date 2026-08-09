@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import type { ScanResult } from "../engine/types";
+import type { EngineMode, ScanResult } from "../engine/types";
 
 /**
  * Référence de comparaison (« baseline »).
@@ -27,6 +27,18 @@ export interface Baseline {
   t: string;
   /** Version du référentiel, pour signaler une comparaison hétérogène. */
   r: string;
+  /**
+   * Moteur ayant produit la référence.
+   *
+   * Sans ce champ, une référence prise en navigateur puis comparée en mode
+   * statique fait disparaître 76 règles d'un coup — et le différentiel les
+   * annonce en « écarts corrigés ». L'inverse est pire : il déclenche une
+   * alerte nominative pour des régressions qui n'ont jamais eu lieu.
+   *
+   * Absent des jetons émis avant le branchement du worker ; ceux-là sont
+   * nécessairement `static`, puisque aucun autre moteur ne tournait alors.
+   */
+  m?: EngineMode;
   /** Score. */
   s: number;
   g: string;
@@ -55,6 +67,7 @@ export function createBaseline(scan: ScanResult): Baseline {
     h: scan.hostname,
     t: scan.scannedAt,
     r: scan.rulepackVersion,
+    m: scan.mode,
     s: scan.score,
     g: scan.grade,
     f: findings,
@@ -87,4 +100,15 @@ export function decodeBaseline(token: string): Baseline | null {
   } catch {
     return null;
   }
+}
+
+/**
+ * Moteur de la référence, avec la valeur par défaut historique.
+ *
+ * Ne jamais présumer `headless` sur un jeton muet : ce serait interpréter une
+ * référence pauvre comme une référence complète, et donc lire l'apparition
+ * normale de constats navigateur comme autant de régressions.
+ */
+export function baselineMode(baseline: Baseline): EngineMode {
+  return baseline.m === "headless" ? "headless" : "static";
 }

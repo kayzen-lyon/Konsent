@@ -2,7 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { Disclaimer } from "@/components/primitives";
-import { ScanError, runScan } from "@/lib/engine/scan";
+import { runVerdictScan } from "@/lib/engine/orchestrate";
+import { ScanError } from "@/lib/engine/scan";
 import { TEMPLATES, generateDocument, getTemplate, hasGenerator } from "@/lib/docs";
 
 export const dynamic = "force-dynamic";
@@ -67,7 +68,7 @@ export default async function DocumentPage({
 
   let scan;
   try {
-    scan = await runScan(url);
+    scan = (await runVerdictScan(url)).result;
   } catch (error) {
     return (
       <div className="mx-auto max-w-3xl px-5 py-16">

@@ -2,7 +2,8 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { SeverityBadge } from "@/components/primitives";
 import { EDITOR } from "@/lib/disclaimer";
-import { ScanError, runScan } from "@/lib/engine/scan";
+import { runVerdictScan } from "@/lib/engine/orchestrate";
+import { ScanError } from "@/lib/engine/scan";
 import { STACKS, buildQuote, formatEur, type Stack } from "@/lib/remediation/quote";
 
 export const dynamic = "force-dynamic";
@@ -35,7 +36,7 @@ export default async function QuotePage({
 
   let scan;
   try {
-    scan = await runScan(url);
+    scan = (await runVerdictScan(url)).result;
   } catch (error) {
     return (
       <div className="mx-auto max-w-3xl px-5 py-16">

@@ -25,6 +25,22 @@ export interface PortfolioRow {
   durationMs?: number;
 }
 
+/**
+ * Le portefeuille reste sur le moteur STATIQUE, à dessein.
+ *
+ * Un scan en navigateur coûte ~40 s ; huit domaines en série dépassent
+ * largement le budget d'une requête, et les paralléliser saturerait le pool
+ * de workers au détriment des analyses individuelles.
+ *
+ * Conséquence assumée, et à afficher : le score d'un domaine vu ici peut
+ * différer de celui de son rapport complet — vers le haut, puisque le mode
+ * statique ne constate pas ce qu'il ne peut pas voir. Ce tableau sert à
+ * repérer lequel des clients ouvrir en premier, pas à établir un verdict.
+ */
+export const PORTFOLIO_ENGINE_NOTE =
+  "Vue de tri, produite par l'analyse statique pour tenir le budget de temps sur plusieurs domaines. " +
+  "Le rapport complet d'un domaine peut relever davantage d'écarts : ouvrez-le avant de conclure.";
+
 export interface PortfolioSummary {
   rows: readonly PortfolioRow[];
   analysed: number;

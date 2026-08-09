@@ -1,7 +1,8 @@
 import { timingSafeEqual } from "node:crypto";
 import { DISCLAIMER_SHORT } from "@/lib/disclaimer";
 import { alertEmail, sendEmail } from "@/lib/email";
-import { ScanError, runScan } from "@/lib/engine/scan";
+import { runVerdictScan } from "@/lib/engine/orchestrate";
+import { ScanError } from "@/lib/engine/scan";
 import { createBaseline } from "@/lib/monitoring/baseline";
 import { alertSummary, diffAgainstBaseline } from "@/lib/monitoring/diff";
 import { getStorage, nextRun } from "@/lib/storage";
@@ -52,7 +53,11 @@ export async function GET(request: Request) {
 
   for (const domain of due) {
     try {
-      const scan = await runScan(domain.hostname);
+      // Le mode est déjà enregistré avec chaque scan (`engineMode` plus bas) :
+      // c'est ce qui permet au différentiel de refuser de conclure quand la
+      // veille bascule d'un moteur à l'autre, plutôt que d'envoyer une alerte
+      // nominative pour des régressions qui n'ont pas eu lieu.
+      const { result: scan } = await runVerdictScan(domain.hostname);
       const baseline = createBaseline(scan);
       const previous = await storage.latestScan(domain.id);
 

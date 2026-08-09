@@ -2,7 +2,7 @@ import type { ScanResult } from "../engine/types";
 import { getRule } from "../rulepack";
 import type { Severity } from "../rulepack/types";
 import { getTrackerBySlug } from "../trackers/db";
-import type { Baseline } from "./baseline";
+import { baselineMode, type Baseline } from "./baseline";
 
 /**
  * M10 — Moteur de différentiel.
@@ -24,7 +24,8 @@ export type ChangeKind =
   | "legal_page_new"
   | "score_drop"
   | "score_rise"
-  | "rulepack_changed";
+  | "rulepack_changed"
+  | "engine_changed";
 
 export interface Change {
   kind: ChangeKind;
@@ -49,6 +50,23 @@ export interface DiffResult {
   improvements: number;
   /** true si les deux scans n'ont pas été produits avec le même référentiel. */
   heterogeneous: boolean;
+  /**
+   * true si les deux scans n'ont pas été produits par le même MOTEUR.
+   *
+   * Distinct de `heterogeneous` : une évolution du référentiel décale quelques
+   * règles, un changement de moteur en décale 76 d'un bloc.
+   */
+  engineChanged: boolean;
+  /**
+   * Le différentiel peut-il fonder une conclusion ?
+   *
+   * Faux dès que les moteurs diffèrent. Les changements restent listés — ils
+   * ont une valeur documentaire — mais ils ne sont plus comptés comme des
+   * régressions et ne déclenchent aucune alerte. Annoncer « nouveau traceur »
+   * à un client parce que NOTRE moteur a changé serait une fausse alerte, et
+   * le garde-fou n°3 du §3.2 l'interdit : la peur doit être vraie.
+   */
+  conclusive: boolean;
 }
 
 const PAGE_LABELS: Record<string, string> = {
@@ -66,8 +84,32 @@ const SEVERITY_RANK: Record<Severity, number> = {
   INFO: 0,
 };
 
+const MODE_LABELS: Record<string, string> = {
+  static: "analyse statique",
+  headless: "protocole en trois phases",
+};
+
 export function diffAgainstBaseline(baseline: Baseline, current: ScanResult): DiffResult {
   const changes: Change[] = [];
+
+  // ── Moteur ──
+  // Contrôlé en premier : il conditionne la lecture de tout le reste.
+  const previousMode = baselineMode(baseline);
+  const engineChanged = previousMode !== current.mode;
+  if (engineChanged) {
+    changes.push({
+      kind: "engine_changed",
+      regression: false,
+      severity: null,
+      title: "Les deux analyses n'ont pas été produites par le même moteur",
+      detail:
+        `Référence prise en ${MODE_LABELS[previousMode] ?? previousMode}, analyse courante en ` +
+        `${MODE_LABELS[current.mode] ?? current.mode}. Les deux moteurs ne voient pas les mêmes ` +
+        `choses : les écarts ci-dessous peuvent provenir de ce changement, et non du site. ` +
+        `Aucune régression n'est déclarée sur cette base, et aucune alerte n'est envoyée. ` +
+        `Reprenez une référence dans le mode courant pour rétablir une comparaison utile.`,
+    });
+  }
 
   // ── Référentiel ──
   const heterogeneous = baseline.r !== current.rulepackVersion;
@@ -220,6 +262,12 @@ export function diffAgainstBaseline(baseline: Baseline, current: ScanResult): Di
     return rb - ra;
   });
 
+  // Un changement de moteur rend tout comptage trompeur. On garde la liste
+  // — elle documente l'écart entre les deux observations — mais plus rien
+  // n'y est présenté comme une régression du site.
+  const conclusive = !engineChanged;
+  const scored = conclusive ? changes : changes.map((c) => ({ ...c, regression: false }));
+
   return {
     hostname: current.hostname,
     from: baseline.t,
@@ -229,15 +277,23 @@ export function diffAgainstBaseline(baseline: Baseline, current: ScanResult): Di
     scoreDelta: delta,
     gradeBefore: baseline.g,
     gradeAfter: current.grade,
-    changes,
-    regressions: changes.filter((c) => c.regression).length,
-    improvements: changes.filter((c) => !c.regression && c.kind !== "rulepack_changed").length,
+    changes: scored,
+    regressions: scored.filter((c) => c.regression).length,
+    improvements: conclusive
+      ? scored.filter((c) => !c.regression && c.kind !== "rulepack_changed").length
+      : 0,
     heterogeneous,
+    engineChanged,
+    conclusive,
   };
 }
 
 /** Message d'alerte prêt à l'envoi, nominatif et factuel. */
 export function alertSummary(diff: DiffResult): string | null {
+  // Une comparaison non concluante ne réveille personne. C'est le point
+  // entier du champ : une alerte nominative fondée sur un changement de
+  // notre moteur serait une fausse alerte envoyée par e-mail.
+  if (!diff.conclusive) return null;
   if (diff.regressions === 0) return null;
 
   const worst = diff.changes.find((c) => c.regression);

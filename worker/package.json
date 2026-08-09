@@ -6,6 +6,7 @@
   "description": "Worker d'analyse en navigateur — protocole en trois phases (avant consentement / après refus / après acceptation).",
   "scripts": {
     "scan": "node --experimental-strip-types src/index.ts",
+    "serve": "node --experimental-strip-types src/server.ts",
     "postinstall": "playwright install chromium"
   },
   "dependencies": {

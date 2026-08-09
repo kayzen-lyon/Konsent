@@ -4,7 +4,8 @@ import { BaselineInput } from "@/components/BaselineInput";
 import { MonitorSignup } from "@/components/MonitorSignup";
 import { getStorage } from "@/lib/storage";
 import { Disclaimer, SeverityBadge } from "@/components/primitives";
-import { ScanError, runScan } from "@/lib/engine/scan";
+import { runVerdictScan } from "@/lib/engine/orchestrate";
+import { ScanError } from "@/lib/engine/scan";
 import { decodeBaseline } from "@/lib/monitoring/baseline";
 import { alertSummary, diffAgainstBaseline } from "@/lib/monitoring/diff";
 
@@ -49,7 +50,7 @@ async function DiffReport({ url, token }: { url: string; token: string }) {
 
   let current;
   try {
-    current = await runScan(url);
+    current = (await runVerdictScan(url)).result;
   } catch (error) {
     return (
       <div className="rounded-xl border-l-2 border-warn bg-white p-6 ring-1 ring-line">
@@ -125,6 +126,15 @@ async function DiffReport({ url, token }: { url: string; token: string }) {
             </div>
           </div>
 
+          {diff.engineChanged ? (
+            <p className="mt-4 rounded-lg border-l-2 border-warn bg-warn-bg px-4 py-3 text-[13px] leading-relaxed text-warn">
+              Les deux analyses n&apos;ont pas été produites par le même moteur. Ils ne voient pas
+              les mêmes choses : aucune régression n&apos;est déclarée sur cette base, et aucune
+              alerte ne serait envoyée. Reprenez une référence depuis un rapport récent pour
+              rétablir une comparaison utile.
+            </p>
+          ) : null}
+
           {diff.heterogeneous ? (
             <p className="mt-4 rounded-lg border-l-2 border-warn bg-warn-bg px-4 py-3 text-[13px] leading-relaxed text-warn">
               Les deux analyses n&apos;utilisent pas la même version du référentiel. Certains
@@ -144,11 +154,22 @@ async function DiffReport({ url, token }: { url: string; token: string }) {
             ou webhook sur un abonnement Pro.
           </p>
         </div>
-      ) : (
+      ) : diff.conclusive ? (
         <div className="rounded-xl border-l-2 border-ok bg-white p-6 ring-1 ring-line">
           <p className="font-bold text-ink-2">Aucune régression détectée.</p>
           <p className="mt-1 text-sm text-muted">
             L&apos;état du site n&apos;a pas empiré depuis l&apos;analyse de référence.
+          </p>
+        </div>
+      ) : (
+        /* Sans cette branche, une comparaison impossible s'afficherait en
+           « aucune régression » — un faux soulagement, plus nuisible qu'une
+           fausse alerte parce qu'il ne se corrige jamais. */
+        <div className="rounded-xl border-l-2 border-warn bg-white p-6 ring-1 ring-line">
+          <p className="font-bold text-ink-2">Comparaison non concluante.</p>
+          <p className="mt-1 text-sm text-muted">
+            Nous ne pouvons pas dire si l&apos;état du site a empiré : les deux analyses n&apos;ont
+            pas la même portée. Ce n&apos;est pas un satisfecit.
           </p>
         </div>
       )}
