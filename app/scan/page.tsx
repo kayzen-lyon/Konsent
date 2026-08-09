@@ -9,7 +9,12 @@ import { ScoreGauge } from "@/components/ScoreGauge";
 import { Timeline } from "@/components/Timeline";
 import { JurisdictionBreakdown, VendorTable } from "@/components/Vendors";
 import { Disclaimer, SectionTitle, Stat } from "@/components/primitives";
-import { ScanError, runScan } from "@/lib/engine/scan";
+import { PrintReportButton } from "@/components/PrintReportButton";
+import { PrintedLevelNotice, ReadingLevelPicker } from "@/components/ReadingLevelPicker";
+import { runVerdictScan } from "@/lib/engine/orchestrate";
+import { ScanError } from "@/lib/engine/scan";
+import { isWorkerConfigured } from "@/lib/engine/worker-client";
+import { parseReadingLevel, readingLevel, type ReadingLevel } from "@/lib/report/levels";
 import { createBaseline, encodeBaseline } from "@/lib/monitoring/baseline";
 import { RULEPACK, getRule } from "@/lib/rulepack";
 
@@ -31,8 +36,10 @@ function ScanSkeleton({ target }: { target: string }) {
         <div className="h-28 w-full rounded-xl bg-line" />
       </div>
       <p className="mt-8 font-mono text-sm text-muted">
-        Analyse de <span className="font-bold text-ink-2">{target}</span> — chargement du
-        document, résolution DNS, lecture des pages légales…
+        Analyse de <span className="font-bold text-ink-2">{target}</span> —{" "}
+        {isWorkerConfigured()
+          ? "trois chargements en navigateur : avant consentement, après refus, après acceptation. Comptez une quarantaine de secondes."
+          : "chargement du document, résolution DNS, lecture des pages légales…"}
       </p>
     </div>
   );
@@ -54,10 +61,10 @@ function ErrorPanel({ title, message }: { title: string; message: string }) {
   );
 }
 
-async function ScanReport({ target }: { target: string }) {
-  let result;
+async function ScanReport({ target, level }: { target: string; level: ReadingLevel }) {
+  let verdict;
   try {
-    result = await runScan(target);
+    verdict = await runVerdictScan(target);
   } catch (error) {
     if (error instanceof ScanError) {
       const titles: Record<string, string> = {
@@ -78,11 +85,15 @@ async function ScanReport({ target }: { target: string }) {
     );
   }
 
+  const { result, degraded } = verdict;
   const { observation } = result;
+  const headless = result.mode === "headless";
   const criticalCount = result.findings.filter((f) => f.severity === "CRITICAL").length;
   const notEvaluated = result.notEvaluatedRuleIds
     .map((id) => getRule(id))
     .filter((r): r is NonNullable<typeof r> => Boolean(r));
+  const evaluatedCount = RULEPACK.total - result.notEvaluatedRuleIds.length;
+  const spec = readingLevel(level);
 
   return (
     <>
@@ -103,6 +114,25 @@ async function ScanReport({ target }: { target: string }) {
                 })}{" "}
                 · {result.durationMs} ms · {observation.pagesAnalyzed} page(s)
               </p>
+              {/* Le moteur qui a tourné détermine ce que le rapport a pu voir.
+                  Il se lit dès l'en-tête, pas dans une note de bas de page. */}
+              <p className="tech mt-3 text-[10px] text-white/60">
+                {headless ? (
+                  <>
+                    <span className="mr-2 rounded bg-ok px-2 py-1 text-white">
+                      Protocole en trois phases
+                    </span>
+                    avant consentement · après refus · après acceptation, navigateur réel
+                  </>
+                ) : (
+                  <>
+                    <span className="mr-2 rounded bg-warn px-2 py-1 text-white">
+                      Analyse statique
+                    </span>
+                    document servi, en-têtes, DNS et pages légales — aucun JavaScript exécuté
+                  </>
+                )}
+              </p>
             </div>
 
             {criticalCount > 0 ? (
@@ -120,6 +150,32 @@ async function ScanReport({ target }: { target: string }) {
       </section>
 
       <div className="mx-auto max-w-7xl px-5 py-10">
+        {/* ═══════════ NIVEAU DE LECTURE ═══════════ */}
+        <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+          <ReadingLevelPicker target={target} current={level} />
+          <PrintedLevelNotice current={level} />
+          <PrintReportButton />
+        </div>
+
+        {/* ═══════════ DÉGRADATION ═══════════
+            Le protocole complet était attendu et n'a pas pu s'exécuter. Le
+            taire reviendrait à présenter 96 règles non regardées comme
+            satisfaites. On le dit avant le score, pas après. */}
+        {degraded ? (
+          <div className="mb-8 overflow-hidden rounded-xl bg-white ring-1 ring-line">
+            <div className="hazard-top h-1.5" />
+            <div className="p-5">
+              <p className="tech text-[10px] text-warn">Analyse dégradée</p>
+              <p className="mt-2 text-sm leading-relaxed text-ink-2">{degraded.reason}</p>
+              <p className="mt-2 text-[13px] leading-relaxed text-muted">
+                Conséquence concrète : {RULEPACK.headlessCount} règles du référentiel exigent un
+                navigateur et ressortent ci-dessous en « non évalué ». Elles ne sont pas comptées
+                comme satisfaites, et le score n&apos;en tient pas compte.
+              </p>
+            </div>
+          </div>
+        ) : null}
+
         {/* ═══════════ SYNTHÈSE ═══════════ */}
         <section className="grid gap-5 lg:grid-cols-[auto_1fr]">
           <div className="rise flex items-center justify-center rounded-xl bg-white p-6 ring-1 ring-line">
@@ -179,14 +235,35 @@ async function ScanReport({ target }: { target: string }) {
           </div>
         </section>
 
-        {/* ═══════════ PREUVE ═══════════ */}
+        {/* ═══════════ PREUVE ═══════════
+            La chronologie brute est de l'appareillage : elle sert à vérifier,
+            pas à décider. La vue dirigeant en garde le FAIT — combien de
+            services, combien hors EEE — et laisse le détail aux deux autres. */}
         <section className="mt-14">
           <SectionTitle
             eyebrow="La preuve"
             title="Ce que votre page appelle"
-            description="Ce bloc ne s'interprète pas. Il liste les services tiers référencés dans le document servi par votre serveur, dans leur ordre d'apparition."
+            description={
+              spec.showRawEvidence
+                ? "Ce bloc ne s'interprète pas. Il liste les services tiers référencés dans le document servi par votre serveur, dans leur ordre d'apparition."
+                : "Ce bloc ne s'interprète pas : il compte les services tiers que votre page appelle."
+            }
           />
-          <Timeline observation={observation} />
+          {spec.showRawEvidence ? (
+            <Timeline observation={observation} />
+          ) : (
+            <div className="rounded-xl bg-white p-5 ring-1 ring-line">
+              <p className="text-sm leading-relaxed text-ink-2">
+                Votre page appelle <strong>{result.vendors.length} service(s) tiers</strong>
+                {result.outsideEea.length > 0 ? (
+                  <>
+                    , dont <strong>{result.outsideEea.length} hors Union européenne</strong>
+                  </>
+                ) : null}
+                . Le détail requête par requête figure dans les vues DPO et développeur.
+              </p>
+            </div>
+          )}
         </section>
 
         {/* ═══════════ PILIERS ═══════════ */}
@@ -196,7 +273,7 @@ async function ScanReport({ target }: { target: string }) {
             title={`${result.findings.length} écart${result.findings.length > 1 ? "s" : ""} relevé${result.findings.length > 1 ? "s" : ""}, en quatre piliers`}
             description="Chaque constat est factuel et porte sa référence normative. La qualification juridique d'une situation relève de la CNIL ou d'un juge, jamais d'un outil automatisé."
           />
-          <FindingsByPillar findings={result.findings} />
+          <FindingsByPillar findings={result.findings} level={level} />
         </section>
 
         {/* ═══════════ DESTINATAIRES ═══════════ */}
@@ -227,10 +304,10 @@ async function ScanReport({ target }: { target: string }) {
           />
           <div className="rounded-xl bg-white p-5 ring-1 ring-line">
             <p className="text-sm leading-relaxed text-ink-2">
-              Le mode statique évalue {RULEPACK.staticCount} règles sur {RULEPACK.total}. Ne sont
-              pas couverts ici : le dépôt effectif de cookies par JavaScript, le comportement
-              après refus, l&apos;ergonomie réelle du bandeau, les techniques d&apos;empreinte du
-              terminal et le stockage alternatif.
+              Cette analyse a décidé {evaluatedCount} règles sur {RULEPACK.total}.{" "}
+              {headless
+                ? "Les règles restantes supposent une vérification manuelle, une base de données externe, ou la phase de persistance du refus dans le temps — que le protocole n'implémente pas encore."
+                : "Ne sont pas couverts ici : le dépôt effectif de cookies par JavaScript, le comportement après refus, l'ergonomie réelle du bandeau, les techniques d'empreinte du terminal et le stockage alternatif."}
             </p>
             <details className="group mt-3">
               <summary className="tech cursor-pointer list-none text-[10px] text-flame hover:underline">
@@ -343,9 +420,9 @@ async function ScanReport({ target }: { target: string }) {
 export default async function ScanPage({
   searchParams,
 }: {
-  searchParams: Promise<{ url?: string }>;
+  searchParams: Promise<{ url?: string; vue?: string }>;
 }) {
-  const { url } = await searchParams;
+  const { url, vue } = await searchParams;
 
   if (!url) {
     return (
@@ -356,9 +433,13 @@ export default async function ScanPage({
     );
   }
 
+  const level = parseReadingLevel(vue);
+
   return (
-    <Suspense fallback={<ScanSkeleton target={url} />}>
-      <ScanReport target={url} />
+    // La clé inclut le niveau : changer de vue doit reconstruire le rapport,
+    // pas réafficher le précédent avec d'autres colonnes.
+    <Suspense key={`${url}:${level}`} fallback={<ScanSkeleton target={url} />}>
+      <ScanReport target={url} level={level} />
     </Suspense>
   );
 }

@@ -195,3 +195,61 @@ body {
   box-shadow: 0 1px 6px rgba(0, 22, 41, 0.35);
   cursor: pointer;
 }
+
+/* ═══════════════════════════════ Impression ═══════════════════════════════
+ *
+ * Un rapport d'audit finit imprimé ou versé en PDF dans un dossier : c'est
+ * sous cette forme qu'un DPO le présente à un contrôle, et qu'un dirigeant le
+ * transmet à son conseil. Les règles ci-dessous visent une seule chose — que
+ * le papier dise exactement ce que disait l'écran, sans rien perdre.
+ */
+@media print {
+  /* Les fonds sombres de l'interface deviennent illisibles sur papier et
+     vident une cartouche pour rien. On repasse en noir sur blanc. */
+  .grid-bg-dark,
+  .bg-ink {
+    background: #fff !important;
+    color: #001629 !important;
+  }
+  .grid-bg-dark *,
+  .bg-ink * {
+    color: #001629 !important;
+  }
+
+  /* Les preuves repliées à l'écran s'ouvrent sur le papier : un constat sans
+     sa preuve n'est qu'une affirmation. L'état d'un <details> n'étant pas
+     pilotable par une classe utilitaire, il se force ici. */
+  details > summary {
+    display: none !important;
+  }
+  details > *:not(summary) {
+    display: block !important;
+  }
+
+  /* Un constat coupé en deux entre deux pages devient incontestable pour de
+     mauvaises raisons : la preuve se retrouve détachée de ce qu'elle prouve. */
+  .finding,
+  section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Les liens perdent leur destination sur papier. On la restitue, sauf pour
+     les ancres internes qui n'ont aucun sens hors écran. */
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 9px;
+    color: #55606b;
+    word-break: break-all;
+  }
+
+  /* Marges de reliure, et rien d'inutile en pied de page. */
+  @page {
+    margin: 14mm 12mm;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+  }
+}

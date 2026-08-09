@@ -7,6 +7,11 @@ import {
   pillarOfFamily,
 } from "@/lib/rulepack";
 import type { Finding, Rule } from "@/lib/rulepack/types";
+import {
+  DEFAULT_READING_LEVEL,
+  readingLevel,
+  type ReadingLevel,
+} from "@/lib/report/levels";
 import { RiskMeter, SeverityBadge } from "./primitives";
 
 /** Intensité du pilier : 5 segments, pilotés par la gravité cumulée. */
@@ -18,20 +23,41 @@ function pillarIntensity(findings: readonly Finding[]): number {
   return Math.max(0, Math.min(5, Math.round(weight)));
 }
 
-function FindingRow({ finding, rule }: { finding: Finding; rule: Rule }) {
+function FindingRow({
+  finding,
+  rule,
+  level,
+}: {
+  finding: Finding;
+  rule: Rule;
+  level: ReadingLevel;
+}) {
   const priceHint = rule.remediation.priceHintEur;
+  const spec = readingLevel(level);
+
+  // La vue dirigeant n'affiche pas de colonne « Fondement » : la grille se
+  // resserre plutôt que de laisser une colonne vide.
+  const columns = spec.showNormative
+    ? "lg:grid-cols-[1.6fr_auto_1fr_1.3fr]"
+    : "lg:grid-cols-[2fr_auto_1.3fr]";
 
   return (
-    <div className="grid gap-4 border-t border-line px-5 py-5 lg:grid-cols-[1.6fr_auto_1fr_1.3fr] lg:items-start lg:gap-6">
+    <div
+      className={`finding grid gap-4 border-t border-line px-5 py-5 lg:items-start lg:gap-6 ${columns}`}
+    >
       {/* Critère */}
       <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-2">
-          <Link
-            href={`/regles/${rule.id.toLowerCase()}`}
-            className="font-mono text-[11px] text-muted underline decoration-dotted underline-offset-2 hover:text-flame"
-          >
-            {rule.id}
-          </Link>
+          {/* L'identifiant de règle est un outil de travail : il sert à ouvrir
+              un dossier ou à citer une source, pas à comprendre un écart. */}
+          {spec.showNormative ? (
+            <Link
+              href={`/regles/${rule.id.toLowerCase()}`}
+              className="font-mono text-[11px] text-muted underline decoration-dotted underline-offset-2 hover:text-flame"
+            >
+              {rule.id}
+            </Link>
+          ) : null}
           {finding.occurrences > 1 ? (
             <span className="tech text-[9px] text-muted">×{finding.occurrences}</span>
           ) : null}
@@ -40,7 +66,16 @@ function FindingRow({ finding, rule }: { finding: Finding; rule: Rule }) {
         <h4 className="mt-1.5 text-[15px] font-bold leading-snug text-ink-2">{rule.title}</h4>
         <p className="mt-1.5 text-[13px] leading-relaxed text-muted">{rule.messageExec}</p>
 
-        {finding.evidence.length > 0 ? (
+        {spec.showTechnical ? (
+          <p className="mt-2 rounded border-l-2 border-line bg-paper px-3 py-2 text-[12px] leading-relaxed text-ink-2">
+            {rule.messageTech}
+          </p>
+        ) : null}
+
+        {spec.showRawEvidence && finding.evidence.length > 0 ? (
+          /* Dépliée d'office à l'impression — un rapport papier dont la preuve
+             reste repliée ne prouve rien. Le forçage est dans `globals.css` :
+             l'état d'un <details> ne se pilote pas par une classe utilitaire. */
           <details className="group mt-2.5">
             <summary className="tech cursor-pointer list-none text-[9px] text-flame hover:underline">
               <span className="group-open:hidden">Voir la preuve ▾</span>
@@ -53,7 +88,11 @@ function FindingRow({ finding, rule }: { finding: Finding; rule: Rule }) {
                   {e.detail ? <span className="text-muted"> — {e.detail}</span> : null}
                   {e.url ? (
                     <span className="mt-0.5 block break-all font-mono text-[10px] text-muted">
-                      {e.url.length > 110 ? `${e.url.slice(0, 110)}…` : e.url}
+                      {/* La vue développeur ne tronque pas : une URL coupée
+                          n'est plus une preuve reproductible. */}
+                      {spec.showTechnical || e.url.length <= 110
+                        ? e.url
+                        : `${e.url.slice(0, 110)}…`}
                     </span>
                   ) : null}
                 </li>
@@ -66,6 +105,13 @@ function FindingRow({ finding, rule }: { finding: Finding; rule: Rule }) {
             </ul>
           </details>
         ) : null}
+
+        {spec.showNormative && rule.falsePositiveNotes ? (
+          <p className="mt-2 text-[11px] leading-snug text-muted">
+            <span className="tech text-[9px] text-warn">Limite connue</span>{" "}
+            {rule.falsePositiveNotes}
+          </p>
+        ) : null}
       </div>
 
       {/* Statut */}
@@ -74,20 +120,39 @@ function FindingRow({ finding, rule }: { finding: Finding; rule: Rule }) {
       </div>
 
       {/* Référence normative */}
-      <div className="lg:pt-1">
-        <p className="tech text-[9px] text-muted">Référence</p>
-        <p className="mt-1 text-[12px] leading-snug text-ink-2">{rule.references[0]}</p>
-        {rule.references.length > 1 ? (
-          <p className="mt-0.5 text-[11px] text-muted">
-            + {rule.references.length - 1} autre(s)
+      {spec.showNormative ? (
+        <div className="lg:pt-1">
+          <p className="tech text-[9px] text-muted">Référence</p>
+          {/* Le DPO instruit un dossier : toutes les références, pas la première. */}
+          <ul className="mt-1 space-y-0.5">
+            {rule.references.map((ref) => (
+              <li key={ref} className="text-[12px] leading-snug text-ink-2">
+                {ref}
+              </li>
+            ))}
+          </ul>
+          <p className="mt-1.5 text-[11px] leading-snug text-muted">
+            <span className="tech text-[9px] text-muted">Digital Omnibus</span>{" "}
+            {rule.omnibusStatus}
           </p>
-        ) : null}
-      </div>
+        </div>
+      ) : null}
 
       {/* Correctif */}
       <div className="lg:pt-1">
         <p className="tech text-[9px] text-muted">Correctif</p>
-        <p className="mt-1 text-[12px] leading-snug text-ink-2">{rule.remediation.steps[0]}</p>
+        {spec.showTechnical ? (
+          <ol className="mt-1 space-y-1">
+            {rule.remediation.steps.map((step, i) => (
+              <li key={i} className="text-[12px] leading-snug text-ink-2">
+                <span className="tech mr-1 text-[9px] text-muted">{i + 1}.</span>
+                {step}
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <p className="mt-1 text-[12px] leading-snug text-ink-2">{rule.remediation.steps[0]}</p>
+        )}
         {priceHint ? (
           <p className="tech mt-1.5 text-[9px] text-flame">
             {priceHint[0]} – {priceHint[1]} €
@@ -101,7 +166,13 @@ function FindingRow({ finding, rule }: { finding: Finding; rule: Rule }) {
 }
 
 /** Rapport structuré en quatre piliers, à la manière de la maquette. */
-export function FindingsByPillar({ findings }: { findings: readonly Finding[] }) {
+export function FindingsByPillar({
+  findings,
+  level = DEFAULT_READING_LEVEL,
+}: {
+  findings: readonly Finding[];
+  level?: ReadingLevel;
+}) {
   if (findings.length === 0) {
     return (
       <div className="rounded-lg border-l-2 border-ok bg-white p-6 ring-1 ring-line">
@@ -141,8 +212,17 @@ export function FindingsByPillar({ findings }: { findings: readonly Finding[] })
               </p>
             ) : (
               <>
-                <div className="hidden grid-cols-[1.6fr_auto_1fr_1.3fr] gap-6 bg-paper px-5 py-2.5 lg:grid">
-                  {["Critère d'audit", "Statut", "Fondement", "Solution préconisée"].map((h) => (
+                <div
+                  className={`hidden gap-6 bg-paper px-5 py-2.5 lg:grid ${
+                    readingLevel(level).showNormative
+                      ? "grid-cols-[1.6fr_auto_1fr_1.3fr]"
+                      : "grid-cols-[2fr_auto_1.3fr]"
+                  }`}
+                >
+                  {(readingLevel(level).showNormative
+                    ? ["Critère d'audit", "Statut", "Fondement", "Solution préconisée"]
+                    : ["Critère d'audit", "Statut", "Solution préconisée"]
+                  ).map((h) => (
                     <span key={h} className="tech text-[9px] text-muted">
                       {h}
                     </span>
@@ -152,7 +232,7 @@ export function FindingsByPillar({ findings }: { findings: readonly Finding[] })
                   {list.map((f) => {
                     const rule = getRule(f.ruleId);
                     if (!rule) return null;
-                    return <FindingRow key={f.ruleId} finding={f} rule={rule} />;
+                    return <FindingRow key={f.ruleId} finding={f} rule={rule} level={level} />;
                   })}
                 </div>
               </>
