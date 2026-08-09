@@ -19,10 +19,39 @@ export function constatWording(reference: string): string {
   return `Le comportement observé présente un écart avec ${reference}. Seule la CNIL ou un juge peut qualifier une infraction.`;
 }
 
+/**
+ * Identité de l'éditeur — source unique.
+ *
+ * Mentions légales, pied de page, documents générés, carte de contact et
+ * fiche vCard lisent TOUS ce bloc. Recopier un SIREN dans un composant est la
+ * manière la plus sûre de se retrouver avec deux numéros différents sur le
+ * même site, et c'est précisément le genre d'écart que ce produit relève.
+ *
+ * Note de nomenclature : `999 418 346 000 14` est un **SIRET** (14 chiffres,
+ * il identifie l'établissement), pas un SIREN (9 chiffres, il identifie
+ * l'entreprise). Les deux figurent ci-dessous sous leur vrai nom — les
+ * confondre dans des mentions légales est une inexactitude relevable.
+ */
 export const EDITOR = {
   legalName: "KAYZEN LYON SASU",
+  tradeName: "KAYZEN LYON",
+  legalForm: "Société par actions simplifiée unipersonnelle (SASU)",
   siren: "999 418 346",
+  siret: "999 418 346 00014",
+  rcs: "Lyon B 999 418 346",
+  vatNumber: "FR85 999 418 346",
+  apeCode: "4791B",
   address: "6 rue Pierre Termier, 69009 Lyon",
+  street: "6 rue Pierre Termier",
+  postalCode: "69009",
+  city: "Lyon",
+  country: "France",
+  phone: "+33 4 87 77 68 61",
+  /** Format E.164, pour les liens `tel:` et la fiche vCard. */
+  phoneE164: "+33487776861",
   email: "contact@kayzen-lyon.fr",
   product: "Konsent",
+  productSite: "https://konsent-zeta.vercel.app",
+  agencySite: "https://internet.kayzen-lyon.fr",
+  agencyName: "Kayzen Web",
 } as const;

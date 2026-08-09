@@ -86,6 +86,9 @@ export const INTERNAL_ROUTES: readonly string[] = [
   "/api/agence/sous-comptes",
   "/api/auth/lien",
   "/api/auth/session",
+  // Fiche de contact de l'éditeur. Ne sert aucune donnée d'audit et ne
+  // renvoie que ce que les mentions légales affichent déjà.
+  "/api/vcard",
   "/api/billing/checkout",
   "/api/billing/webhook",
   "/api/cron/monitor",
