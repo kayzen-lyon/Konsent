@@ -24,7 +24,7 @@ export default function GuidesIndexPage() {
     <>
       <section className="grid-bg-dark bg-ink">
         <div className="mx-auto max-w-7xl px-5 py-14">
-          <p className="tech text-[10px] text-flame">Guides</p>
+          <p className="tech text-[10px] text-flame-soft">Guides</p>
           <h1 className="display mt-3 max-w-3xl text-3xl text-white sm:text-[2.8rem]">
             Corriger, service par service
           </h1>
@@ -47,10 +47,10 @@ export default function GuidesIndexPage() {
                 <li key={g.slug}>
                   <Link
                     href={`/guides/${g.slug}`}
-                    className="group flex h-full flex-col rounded-lg bg-white p-4 ring-1 ring-line transition hover:ring-flame"
+                    className="group flex h-full flex-col rounded-lg bg-surface p-4 ring-1 ring-line transition hover:ring-flame"
                   >
                     <div className="flex items-start justify-between gap-2">
-                      <span className="text-[15px] font-bold leading-snug text-ink-2 group-hover:text-flame">
+                      <span className="text-[15px] font-bold leading-snug text-ink-2 group-hover:text-accent">
                         {g.tracker.name}
                       </span>
                       <Pill tone={g.tracker.adequacy === "EEA" ? "ok" : "danger"}>
@@ -60,7 +60,7 @@ export default function GuidesIndexPage() {
                     <p className="mt-2 line-clamp-2 text-[13px] leading-snug text-muted">
                       {g.tracker.purposeFr}
                     </p>
-                    <p className="tech mt-3 text-[9px] text-flame">
+                    <p className="tech mt-3 text-[9px] text-accent">
                       {g.snippets.length} extrait{g.snippets.length > 1 ? "s" : ""} de code
                     </p>
                   </Link>
@@ -78,7 +78,7 @@ export default function GuidesIndexPage() {
           </p>
           <Link
             href="/#scan"
-            className="tech mt-5 inline-block rounded bg-flame px-5 py-2.5 text-[11px] text-white transition hover:bg-flame-dark"
+            className="tech mt-5 inline-block rounded bg-white px-5 py-2.5 text-[11px] text-ink transition hover:bg-flame-soft"
           >
             Auditer mon site
           </Link>

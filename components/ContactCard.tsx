@@ -89,11 +89,11 @@ export function ContactCard() {
           // sans écouter le document entier.
           if (e.target === dialogRef.current) setOpen(false);
         }}
-        className="w-[min(92vw,30rem)] rounded-xl bg-white p-0 text-ink-2 shadow-2xl backdrop:bg-ink/60 backdrop:backdrop-blur-sm"
+        className="w-[min(92vw,30rem)] rounded-xl bg-white p-0 text-ink-2 shadow-elevated backdrop:bg-ink/60 backdrop:backdrop-blur-sm"
       >
         <div className="flex items-start justify-between gap-4 border-b border-line px-6 py-4">
           <div className="min-w-0">
-            <p className="tech text-[10px] text-flame">Carte de contact</p>
+            <p className="tech text-[10px] text-accent">Carte de contact</p>
             <h2 id="carte-contact-titre" className="display mt-1 text-xl text-ink-2">
               {EDITOR.tradeName}
             </h2>
@@ -130,12 +130,12 @@ export function ContactCard() {
               {EDITOR.postalCode} {EDITOR.city}
             </p>
             <p className="text-[14px]">
-              <a href={`tel:${EDITOR.phoneE164}`} className="text-flame hover:underline">
+              <a href={`tel:${EDITOR.phoneE164}`} className="text-accent hover:underline">
                 {EDITOR.phone}
               </a>
             </p>
             <p className="text-[14px]">
-              <a href={`mailto:${EDITOR.email}`} className="text-flame hover:underline">
+              <a href={`mailto:${EDITOR.email}`} className="text-accent hover:underline">
                 {EDITOR.email}
               </a>
             </p>
@@ -179,7 +179,7 @@ export function ContactCard() {
             </a>
             <a
               href="/mentions-legales"
-              className="tech rounded border border-ink/20 px-4 py-2.5 text-[11px] text-ink-2 transition hover:border-flame hover:text-flame"
+              className="tech rounded border border-ink/20 px-4 py-2.5 text-[11px] text-ink-2 transition hover:border-flame hover:text-accent"
             >
               Mentions légales
             </a>

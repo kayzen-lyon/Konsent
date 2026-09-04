@@ -13,7 +13,7 @@ export function SectionTitle({
 }) {
   return (
     <div className="mb-6">
-      {eyebrow ? <p className="tech text-[10px] text-flame">{eyebrow}</p> : null}
+      {eyebrow ? <p className="tech text-[10px] text-accent">{eyebrow}</p> : null}
       <h2 className="display mt-2 text-2xl text-ink-2 sm:text-3xl">{title}</h2>
       {description ? (
         <p className="mt-3 max-w-3xl text-[15px] leading-relaxed text-muted">{description}</p>
@@ -89,7 +89,7 @@ export function Disclaimer({ variant = "long" }: { variant?: "long" | "short" })
     );
   }
   return (
-    <aside className="rounded-lg border-l-2 border-ink-2 bg-white p-5 ring-1 ring-line">
+    <aside className="rounded-lg border-l-2 border-ink-2 bg-surface p-5 ring-1 ring-line">
       <p className="tech text-[10px] text-muted">Avertissement</p>
       <p className="mt-2 text-[13px] leading-relaxed text-muted">{DISCLAIMER_LONG}</p>
     </aside>
@@ -115,7 +115,7 @@ export function Stat({
   }[tone];
 
   return (
-    <div className="rounded-lg bg-white p-4 ring-1 ring-line">
+    <div className="rounded-lg bg-surface p-4 ring-1 ring-line">
       <p className="tech text-[9px] text-muted">{label}</p>
       <p className={`tabular display mt-1.5 text-3xl ${valueTone}`}>{value}</p>
       {hint ? <p className="mt-1 text-[11px] leading-snug text-muted">{hint}</p> : null}

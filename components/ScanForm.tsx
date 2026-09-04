@@ -41,7 +41,7 @@ export function ScanForm({
     <form onSubmit={submit} className="w-full" noValidate>
       <div
         className={`flex flex-col gap-2 sm:flex-row sm:gap-0 sm:rounded-lg sm:p-1.5 ${
-          dark ? "sm:bg-white/10" : "sm:bg-white sm:shadow-lg sm:ring-1 sm:ring-ink/10"
+          dark ? "sm:bg-white/10" : "sm:bg-surface sm:shadow-card sm:ring-1 sm:ring-ink/10"
         }`}
       >
         <label htmlFor="scan-url" className="sr-only">

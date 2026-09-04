@@ -48,7 +48,7 @@ function ScanSkeleton({ target }: { target: string }) {
 function ErrorPanel({ title, message }: { title: string; message: string }) {
   return (
     <div className="mx-auto max-w-3xl px-5 py-16">
-      <div className="rounded-xl border-l-2 border-warn bg-white p-6 ring-1 ring-line">
+      <div className="rounded-xl border-l-2 border-warn bg-surface p-6 ring-1 ring-line">
         <p className="tech text-[10px] text-warn">Analyse interrompue</p>
         <h1 className="display mt-2 text-2xl text-ink-2">{title}</h1>
         <p className="mt-3 text-[15px] leading-relaxed text-muted">{message}</p>
@@ -102,7 +102,7 @@ async function ScanReport({ target, level }: { target: string; level: ReadingLev
         <div className="mx-auto max-w-7xl px-5 py-10">
           <div className="flex flex-wrap items-start justify-between gap-6">
             <div className="min-w-0">
-              <p className="tech text-[10px] text-flame">Rapport d&apos;audit technique</p>
+              <p className="tech text-[10px] text-flame-soft">Rapport d&apos;audit technique</p>
               <h1 className="display mt-2 break-all text-3xl text-white sm:text-4xl">
                 {observation.hostname}
               </h1>
@@ -162,7 +162,7 @@ async function ScanReport({ target, level }: { target: string; level: ReadingLev
             taire reviendrait à présenter 96 règles non regardées comme
             satisfaites. On le dit avant le score, pas après. */}
         {degraded ? (
-          <div className="mb-8 overflow-hidden rounded-xl bg-white ring-1 ring-line">
+          <div className="mb-8 overflow-hidden rounded-xl bg-surface ring-1 ring-line">
             <div className="hazard-top h-1.5" />
             <div className="p-5">
               <p className="tech text-[10px] text-warn">Analyse dégradée</p>
@@ -178,7 +178,7 @@ async function ScanReport({ target, level }: { target: string; level: ReadingLev
 
         {/* ═══════════ SYNTHÈSE ═══════════ */}
         <section className="grid gap-5 lg:grid-cols-[auto_1fr]">
-          <div className="rise flex items-center justify-center rounded-xl bg-white p-6 ring-1 ring-line">
+          <div className="rise flex items-center justify-center rounded-xl bg-surface p-6 ring-1 ring-line">
             <ScoreGauge
               score={result.score}
               grade={result.grade}
@@ -209,7 +209,7 @@ async function ScanReport({ target, level }: { target: string; level: ReadingLev
             </div>
 
             {result.cappedBy ? (
-              <div className="overflow-hidden rounded-lg bg-white ring-1 ring-line">
+              <div className="overflow-hidden rounded-lg bg-surface ring-1 ring-line">
                 <div className="hazard-top h-1.5" />
                 <div className="p-4">
                   <p className="tech text-[10px] text-crit">Score plafonné</p>
@@ -218,7 +218,7 @@ async function ScanReport({ target, level }: { target: string; level: ReadingLev
               </div>
             ) : null}
 
-            <div className="rounded-lg bg-white p-4 ring-1 ring-line">
+            <div className="rounded-lg bg-surface p-4 ring-1 ring-line">
               <p className="tech text-[10px] text-muted">Mécanisme de consentement</p>
               <p className="mt-1.5 text-sm leading-relaxed text-ink-2">
                 {observation.cmp.detected
@@ -252,7 +252,7 @@ async function ScanReport({ target, level }: { target: string; level: ReadingLev
           {spec.showRawEvidence ? (
             <Timeline observation={observation} />
           ) : (
-            <div className="rounded-xl bg-white p-5 ring-1 ring-line">
+            <div className="rounded-xl bg-surface p-5 ring-1 ring-line">
               <p className="text-sm leading-relaxed text-ink-2">
                 Votre page appelle <strong>{result.vendors.length} service(s) tiers</strong>
                 {result.outsideEea.length > 0 ? (
@@ -302,7 +302,7 @@ async function ScanReport({ target, level }: { target: string; level: ReadingLev
             title={`${notEvaluated.length} règles n'ont pas pu être évaluées`}
             description="Nous préférons le dire plutôt que de les compter comme satisfaites. Elles supposent l'exécution du site dans un navigateur réel, ou la lecture d'un contenu que ce mode n'a pas obtenu."
           />
-          <div className="rounded-xl bg-white p-5 ring-1 ring-line">
+          <div className="rounded-xl bg-surface p-5 ring-1 ring-line">
             <p className="text-sm leading-relaxed text-ink-2">
               Cette analyse a décidé {evaluatedCount} règles sur {RULEPACK.total}.{" "}
               {headless
@@ -310,7 +310,7 @@ async function ScanReport({ target, level }: { target: string; level: ReadingLev
                 : "Ne sont pas couverts ici : le dépôt effectif de cookies par JavaScript, le comportement après refus, l'ergonomie réelle du bandeau, les techniques d'empreinte du terminal et le stockage alternatif."}
             </p>
             <details className="group mt-3">
-              <summary className="tech cursor-pointer list-none text-[10px] text-flame hover:underline">
+              <summary className="tech cursor-pointer list-none text-[10px] text-accent hover:underline">
                 <span className="group-open:hidden">Voir la liste complète ▾</span>
                 <span className="hidden group-open:inline">Réduire ▴</span>
               </summary>
@@ -319,7 +319,7 @@ async function ScanReport({ target, level }: { target: string; level: ReadingLev
                   <li key={r.id} className="text-[12px] text-muted">
                     <Link
                       href={`/regles/${r.id.toLowerCase()}`}
-                      className="font-mono hover:text-flame hover:underline"
+                      className="font-mono hover:text-accent hover:underline"
                     >
                       {r.id}
                     </Link>{" "}
@@ -334,7 +334,7 @@ async function ScanReport({ target, level }: { target: string; level: ReadingLev
         {/* ═══════════ SUITE ═══════════ */}
         <section className="mt-14 grid gap-5 md:grid-cols-2">
           <div className="rounded-xl bg-ink p-6">
-            <p className="tech text-[10px] text-flame">Document</p>
+            <p className="tech text-[10px] text-flame-soft">Document</p>
             <h3 className="display mt-2 text-xl text-white">
               Politique cookies, alimentée par ce scan
             </h3>
@@ -344,14 +344,14 @@ async function ScanReport({ target, level }: { target: string; level: ReadingLev
             </p>
             <Link
               href={`/documents/politique-cookies?url=${encodeURIComponent(target)}`}
-              className="tech mt-5 inline-block rounded bg-flame px-5 py-2.5 text-[11px] text-white transition hover:bg-flame-dark"
+              className="tech mt-5 inline-block rounded bg-white px-5 py-2.5 text-[11px] text-ink transition hover:bg-flame-soft"
             >
               Générer le brouillon
             </Link>
           </div>
 
-          <div className="rounded-xl bg-white p-6 ring-1 ring-line">
-            <p className="tech text-[10px] text-flame">Correction</p>
+          <div className="rounded-xl bg-surface p-6 ring-1 ring-line">
+            <p className="tech text-[10px] text-accent">Correction</p>
             <h3 className="display mt-2 text-xl text-ink-2">Estimer la remise en conformité</h3>
             <p className="mt-2 text-sm leading-relaxed text-muted">
               Le devis se calcule à partir des constats ci-dessus, sans saisie commerciale : il
@@ -359,14 +359,14 @@ async function ScanReport({ target, level }: { target: string; level: ReadingLev
             </p>
             <Link
               href={`/devis?url=${encodeURIComponent(target)}`}
-              className="tech mt-5 inline-block rounded border border-ink/20 px-5 py-2.5 text-[11px] text-ink-2 transition hover:border-flame hover:text-flame"
+              className="tech mt-5 inline-block rounded border border-ink/20 px-5 py-2.5 text-[11px] text-ink-2 transition hover:border-flame hover:text-accent"
             >
               Voir l&apos;estimation
             </Link>
           </div>
 
-          <div className="rounded-xl bg-white p-6 ring-1 ring-line">
-            <p className="tech text-[10px] text-flame">Preuve</p>
+          <div className="rounded-xl bg-surface p-6 ring-1 ring-line">
+            <p className="tech text-[10px] text-accent">Preuve</p>
             <h3 className="display mt-2 text-xl text-ink-2">Archive signée</h3>
             <p className="mt-2 text-sm leading-relaxed text-muted">
               Constats, observation brute, empreintes SHA-256 et signature Ed25519. Le vrai
@@ -375,14 +375,14 @@ async function ScanReport({ target, level }: { target: string; level: ReadingLev
             </p>
             <a
               href={`/api/evidence?url=${encodeURIComponent(target)}`}
-              className="tech mt-5 inline-block rounded border border-ink/20 px-5 py-2.5 text-[11px] text-ink-2 transition hover:border-flame hover:text-flame"
+              className="tech mt-5 inline-block rounded border border-ink/20 px-5 py-2.5 text-[11px] text-ink-2 transition hover:border-flame hover:text-accent"
             >
               Télécharger l&apos;archive
             </a>
           </div>
 
-          <div className="rounded-xl bg-white p-6 ring-1 ring-line">
-            <p className="tech text-[10px] text-flame">Surveillance</p>
+          <div className="rounded-xl bg-surface p-6 ring-1 ring-line">
+            <p className="tech text-[10px] text-accent">Surveillance</p>
             <h3 className="display mt-2 text-xl text-ink-2">Détecter les régressions</h3>
             <p className="mt-2 text-sm leading-relaxed text-muted">
               Conservez le jeton ci-dessous. En le représentant plus tard, vous obtiendrez
@@ -391,7 +391,7 @@ async function ScanReport({ target, level }: { target: string; level: ReadingLev
             </p>
             <Link
               href="/surveillance"
-              className="tech mt-5 inline-block rounded border border-ink/20 px-5 py-2.5 text-[11px] text-ink-2 transition hover:border-flame hover:text-flame"
+              className="tech mt-5 inline-block rounded border border-ink/20 px-5 py-2.5 text-[11px] text-ink-2 transition hover:border-flame hover:text-accent"
             >
               Ouvrir la surveillance
             </Link>
@@ -406,7 +406,7 @@ async function ScanReport({ target, level }: { target: string; level: ReadingLev
           <Disclaimer />
         </section>
 
-        <section className="mt-8 rounded-xl bg-white p-5 ring-1 ring-line">
+        <section className="mt-8 rounded-xl bg-surface p-5 ring-1 ring-line">
           <p className="tech text-[10px] text-muted">Analyser un autre site</p>
           <div className="mt-3">
             <ScanForm />

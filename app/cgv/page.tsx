@@ -36,7 +36,7 @@ export default function SalesTermsPage() {
           <p className="mt-4">
             Les présentes conditions régissent la <strong>vente</strong> des abonnements{" "}
             {EDITOR.product}. L&apos;usage du service, y compris gratuit, relève des{" "}
-            <Link href="/cgu" className="text-flame hover:underline">
+            <Link href="/cgu" className="text-accent hover:underline">
               conditions générales d&apos;utilisation
             </Link>
             .
@@ -52,11 +52,11 @@ export default function SalesTermsPage() {
         </p>
         <p>
           Téléphone :{" "}
-          <a href={`tel:${EDITOR.phoneE164}`} className="text-flame hover:underline">
+          <a href={`tel:${EDITOR.phoneE164}`} className="text-accent hover:underline">
             {EDITOR.phone}
           </a>{" "}
           — Courriel :{" "}
-          <a href={`mailto:${EDITOR.email}`} className="text-flame hover:underline">
+          <a href={`mailto:${EDITOR.email}`} className="text-accent hover:underline">
             {EDITOR.email}
           </a>
         </p>
@@ -156,7 +156,7 @@ export default function SalesTermsPage() {
         </p>
         <p>
           {EDITOR.legalName} peut résilier l&apos;abonnement en cas de manquement grave aux{" "}
-          <Link href="/cgu" className="text-flame hover:underline">
+          <Link href="/cgu" className="text-accent hover:underline">
             conditions d&apos;utilisation
           </Link>
           , après mise en demeure restée sans effet pendant quinze jours, sauf usage manifestement
@@ -176,7 +176,7 @@ export default function SalesTermsPage() {
           <strong>Délai et exercice.</strong> Le délai court à compter de la conclusion du contrat.
           La rétractation s&apos;exerce sans motif ni pénalité, par déclaration dénuée
           d&apos;ambiguïté adressée à{" "}
-          <a href={`mailto:${EDITOR.email}`} className="text-flame hover:underline">
+          <a href={`mailto:${EDITOR.email}`} className="text-accent hover:underline">
             {EDITOR.email}
           </a>
           .
@@ -214,7 +214,7 @@ export default function SalesTermsPage() {
       <Article id="reclamation" number={8} heading="Réclamation et médiation">
         <p>
           Toute réclamation est adressée à{" "}
-          <a href={`mailto:${EDITOR.email}`} className="text-flame hover:underline">
+          <a href={`mailto:${EDITOR.email}`} className="text-accent hover:underline">
             {EDITOR.email}
           </a>
           . {EDITOR.legalName} s&apos;engage à en accuser réception sous cinq jours ouvrés.
@@ -237,7 +237,7 @@ export default function SalesTermsPage() {
           Plateforme européenne de règlement en ligne des litiges :{" "}
           <a
             href="https://ec.europa.eu/consumers/odr"
-            className="text-flame hover:underline"
+            className="text-accent hover:underline"
             rel="noopener noreferrer"
             target="_blank"
           >
@@ -249,7 +249,7 @@ export default function SalesTermsPage() {
       <Article id="donnees" number={9} heading="Données personnelles et sous-traitance">
         <p>
           Le traitement des données du client est décrit dans la{" "}
-          <Link href="/confidentialite" className="text-flame hover:underline">
+          <Link href="/confidentialite" className="text-accent hover:underline">
             politique de confidentialité
           </Link>
           .

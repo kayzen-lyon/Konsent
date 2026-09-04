@@ -42,7 +42,7 @@ export default async function AccountPage() {
 
   return (
     <main className="mx-auto max-w-4xl px-6 py-16">
-      <p className="tech text-[10px] text-flame">Espace client</p>
+      <p className="tech text-[10px] text-accent">Espace client</p>
       <h1 className="display mt-2 text-3xl text-ink-2">{account.email}</h1>
       <p className="mt-3 text-[15px] text-muted">
         Offre en cours : <strong className="text-ink-2">{plan.name}</strong> · compte ouvert le{" "}
@@ -50,7 +50,7 @@ export default async function AccountPage() {
       </p>
 
       {account.parentId ? (
-        <p className="mt-4 rounded-lg border-l-2 border-line bg-white px-4 py-3 text-[13px] leading-relaxed text-muted">
+        <p className="mt-4 rounded-lg border-l-2 border-line bg-surface px-4 py-3 text-[13px] leading-relaxed text-muted">
           Ce compte est rattaché à une agence, qui voit les domaines ci-dessous. Vous ne voyez ni
           les siens, ni ceux de ses autres clients.
         </p>
@@ -133,13 +133,13 @@ export default async function AccountPage() {
       <div className="mt-12 flex flex-wrap gap-3">
         <Link
           href="/surveillance"
-          className="rounded-lg border border-line px-4 py-2 text-sm font-semibold text-ink-2 transition hover:border-flame hover:text-flame"
+          className="rounded-lg border border-line px-4 py-2 text-sm font-semibold text-ink-2 transition hover:border-flame hover:text-accent"
         >
           Domaines surveillés
         </Link>
         <Link
           href="/tarifs"
-          className="rounded-lg border border-line px-4 py-2 text-sm font-semibold text-ink-2 transition hover:border-flame hover:text-flame"
+          className="rounded-lg border border-line px-4 py-2 text-sm font-semibold text-ink-2 transition hover:border-flame hover:text-accent"
         >
           Offres
         </Link>

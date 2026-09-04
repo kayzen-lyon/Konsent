@@ -44,7 +44,7 @@ export default async function CookiePage({ params }: { params: Promise<{ name: s
   return (
     <div className="mx-auto max-w-3xl px-5 py-12 sm:py-16">
       <nav className="mb-6 text-sm">
-        <Link href="/cookies" className="text-flame hover:underline">
+        <Link href="/cookies" className="text-accent hover:underline">
           ← Index des cookies
         </Link>
       </nav>
@@ -64,26 +64,26 @@ export default async function CookiePage({ params }: { params: Promise<{ name: s
         <h2 className="tech text-[10px] text-muted">À quoi il sert</h2>
         <p className="mt-2 text-[17px] leading-relaxed text-ink-2">{cookie.purposeFr}</p>
         {cookie.noteFr ? (
-          <p className="mt-3 rounded-lg border-l-2 border-flame bg-white p-4 text-[14.5px] leading-relaxed text-ink-2 ring-1 ring-line">
+          <p className="mt-3 rounded-lg border-l-2 border-flame bg-surface p-4 text-[14.5px] leading-relaxed text-ink-2 ring-1 ring-line">
             {cookie.noteFr}
           </p>
         ) : null}
       </section>
 
       <section className="mt-8 grid gap-3 sm:grid-cols-3">
-        <div className="rounded-lg bg-white p-4 ring-1 ring-line">
+        <div className="rounded-lg bg-surface p-4 ring-1 ring-line">
           <p className="tech text-[9px] text-muted">Durée de vie</p>
           <p className="mt-1 text-[15px] font-bold text-ink-2">
             {lifetimeLabel(cookie.maxLifetimeDays)}
           </p>
         </div>
-        <div className="rounded-lg bg-white p-4 ring-1 ring-line">
+        <div className="rounded-lg bg-surface p-4 ring-1 ring-line">
           <p className="tech text-[9px] text-muted">Contient un identifiant</p>
           <p className="mt-1 text-[15px] font-bold text-ink-2">
             {cookie.isIdentifier ? "Oui" : "Non"}
           </p>
         </div>
-        <div className="rounded-lg bg-white p-4 ring-1 ring-line">
+        <div className="rounded-lg bg-surface p-4 ring-1 ring-line">
           <p className="tech text-[9px] text-muted">Juridiction du destinataire</p>
           <p className="mt-1 text-[15px] font-bold text-ink-2">
             {vendor?.effectiveJurisdiction ?? "—"}
@@ -92,7 +92,7 @@ export default async function CookiePage({ params }: { params: Promise<{ name: s
       </section>
 
       {tooLong ? (
-        <section className="mt-6 rounded-lg border-l-2 border-warn bg-white p-5 ring-1 ring-line">
+        <section className="mt-6 rounded-lg border-l-2 border-warn bg-surface p-5 ring-1 ring-line">
           <p className="tech text-[10px] text-warn">Point de vigilance</p>
           <p className="mt-2 text-[14.5px] leading-relaxed text-ink-2">
             Ce cookie dépasse les treize mois recommandés par la CNIL pour la durée de vie des
@@ -136,7 +136,7 @@ export default async function CookiePage({ params }: { params: Promise<{ name: s
       </section>
 
       {vendor ? (
-        <section className="mt-8 rounded-xl bg-white p-6 ring-1 ring-line">
+        <section className="mt-8 rounded-xl bg-surface p-6 ring-1 ring-line">
           <h2 className="tech text-[10px] text-muted">Qui reçoit les données</h2>
           <p className="mt-2 text-[16px] font-bold text-ink-2">{vendor.entity}</p>
           {vendor.ultimateParent && vendor.ultimateParent !== vendor.entity ? (
@@ -149,13 +149,13 @@ export default async function CookiePage({ params }: { params: Promise<{ name: s
           <div className="mt-4 flex flex-wrap gap-2">
             <Link
               href={`/traceurs/${vendor.slug}`}
-              className="tech rounded border border-line px-4 py-2 text-[10px] text-ink-2 transition hover:border-flame hover:text-flame"
+              className="tech rounded border border-line px-4 py-2 text-[10px] text-ink-2 transition hover:border-flame hover:text-accent"
             >
               Fiche complète du service
             </Link>
             <Link
               href={`/guides/bloquer-${vendor.slug}`}
-              className="tech rounded border border-line px-4 py-2 text-[10px] text-ink-2 transition hover:border-flame hover:text-flame"
+              className="tech rounded border border-line px-4 py-2 text-[10px] text-ink-2 transition hover:border-flame hover:text-accent"
             >
               Comment le bloquer avant consentement
             </Link>
@@ -173,7 +173,7 @@ export default async function CookiePage({ params }: { params: Promise<{ name: s
               <li key={s.slug}>
                 <Link
                   href={`/cookies/${s.slug}`}
-                  className="rounded border border-line px-3 py-1.5 font-mono text-[12px] text-muted transition hover:border-flame hover:text-flame"
+                  className="rounded border border-line px-3 py-1.5 font-mono text-[12px] text-muted transition hover:border-flame hover:text-accent"
                 >
                   {s.name}
                 </Link>
@@ -193,7 +193,7 @@ export default async function CookiePage({ params }: { params: Promise<{ name: s
         </p>
         <Link
           href="/#scan"
-          className="tech mt-5 inline-block rounded bg-flame px-5 py-2.5 text-[11px] text-white transition hover:bg-flame-dark"
+          className="tech mt-5 inline-block rounded bg-white px-5 py-2.5 text-[11px] text-ink transition hover:bg-flame-soft"
         >
           Auditer mon site gratuitement
         </Link>

@@ -30,7 +30,7 @@ export default async function TrackerPage({ params }: { params: Promise<{ slug: 
   return (
     <div className="mx-auto max-w-3xl px-5 py-12 sm:py-16">
       <nav className="mb-6 text-sm">
-        <Link href="/traceurs" className="text-flame hover:underline">
+        <Link href="/traceurs" className="text-accent hover:underline">
           ← Base des traceurs
         </Link>
       </nav>
@@ -59,7 +59,7 @@ export default async function TrackerPage({ params }: { params: Promise<{ slug: 
         <p className="mt-2 text-[16px] leading-relaxed text-ink-2">{t.riskNotesFr}</p>
       </section>
 
-      <section className="mt-8 rounded-xl border border-line bg-white p-5">
+      <section className="mt-8 rounded-xl border border-line bg-surface p-5">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
           Rattachement et juridiction
         </h2>
@@ -115,7 +115,7 @@ export default async function TrackerPage({ params }: { params: Promise<{ slug: 
           <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
             Cookies connus
           </h2>
-          <div className="mt-3 overflow-x-auto rounded-xl border border-line bg-white">
+          <div className="mt-3 overflow-x-auto rounded-xl border border-line bg-surface">
             <table className="w-full text-left text-sm">
               <thead className="border-b border-line bg-paper text-xs uppercase text-muted">
                 <tr>

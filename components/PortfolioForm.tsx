@@ -33,7 +33,7 @@ export function PortfolioForm({ max }: { max: number }) {
   }
 
   return (
-    <form onSubmit={submit} className="rounded-xl bg-white p-6 ring-1 ring-line" noValidate>
+    <form onSubmit={submit} className="rounded-xl bg-surface p-6 ring-1 ring-line" noValidate>
       <h2 className="display text-xl text-ink-2">Analyser un portefeuille</h2>
 
       <div className="mt-5">

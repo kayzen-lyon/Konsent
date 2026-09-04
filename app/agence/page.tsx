@@ -72,7 +72,7 @@ async function PortfolioTable({
             tone: summary.totalCritical > 0 ? "crit" : "ok",
           },
         ].map((s) => (
-          <div key={s.label} className="rounded-lg bg-white p-4 ring-1 ring-line">
+          <div key={s.label} className="rounded-lg bg-surface p-4 ring-1 ring-line">
             <p className="tech text-[9px] text-muted">{s.label}</p>
             <p
               className={`tabular display mt-1 text-2xl ${
@@ -86,13 +86,13 @@ async function PortfolioTable({
       </div>
 
       {/* Tableau */}
-      <div className="overflow-hidden rounded-xl bg-white ring-1 ring-line">
+      <div className="overflow-hidden rounded-xl bg-surface ring-1 ring-line">
         <header
           className="flex flex-wrap items-center justify-between gap-3 px-5 py-4"
           style={{ backgroundColor: agency ? brandColor : undefined }}
         >
           <div className={agency ? "text-white" : ""}>
-            <p className={`tech text-[10px] ${agency ? "text-white/70" : "text-flame"}`}>
+            <p className={`tech text-[10px] ${agency ? "text-white/70" : "text-accent"}`}>
               {agency ? `Rapport préparé par ${agency}` : "Vue portefeuille"}
             </p>
             <h2 className={`display mt-1 text-xl ${agency ? "text-white" : "text-ink-2"}`}>
@@ -162,7 +162,7 @@ async function PortfolioTable({
 
                   <Link
                     href={`/scan?url=${encodeURIComponent(r.input)}`}
-                    className="tech shrink-0 rounded border border-line px-3 py-1.5 text-[9px] text-muted transition hover:border-flame hover:text-flame"
+                    className="tech shrink-0 rounded border border-line px-3 py-1.5 text-[9px] text-muted transition hover:border-flame hover:text-accent"
                   >
                     Rapport
                   </Link>
@@ -179,7 +179,7 @@ async function PortfolioTable({
 
       {summary.worst ? (
         <div className="rounded-xl bg-ink p-6">
-          <p className="tech text-[10px] text-flame">À traiter en premier</p>
+          <p className="tech text-[10px] text-flame-soft">À traiter en premier</p>
           <h3 className="display mt-2 text-xl text-white">{summary.worst.hostname}</h3>
           <p className="mt-2 text-[14px] leading-relaxed text-white/65">
             Score de {summary.worst.score}/100 ({summary.worst.grade}), {summary.worst.findingCount}{" "}
@@ -189,7 +189,7 @@ async function PortfolioTable({
           <div className="mt-4 flex flex-wrap gap-2">
             <Link
               href={`/scan?url=${encodeURIComponent(summary.worst.input)}`}
-              className="tech rounded bg-flame px-5 py-2.5 text-[11px] text-white transition hover:bg-flame-dark"
+              className="tech rounded bg-white px-5 py-2.5 text-[11px] text-ink transition hover:bg-flame-soft"
             >
               Ouvrir le rapport
             </Link>
@@ -278,7 +278,7 @@ export default async function AgencyPage({
     <>
       <section className="grid-bg-dark bg-ink">
         <div className="mx-auto max-w-7xl px-5 py-14">
-          <p className="tech text-[10px] text-flame">Programme agence</p>
+          <p className="tech text-[10px] text-flame-soft">Programme agence</p>
           <h1 className="display mt-3 max-w-3xl text-3xl text-white sm:text-[2.8rem]">
             Vos soixante clients, sur un seul écran
           </h1>
@@ -294,7 +294,7 @@ export default async function AgencyPage({
         {domains.length > 0 ? (
           <>
             <div className="mb-8">
-              <Link href="/agence" className="tech text-[10px] text-flame hover:underline">
+              <Link href="/agence" className="tech text-[10px] text-accent hover:underline">
                 ← Nouvelle sélection
               </Link>
             </div>
@@ -327,14 +327,14 @@ export default async function AgencyPage({
                   d: "Chaque rapport ouvre sur une estimation de correction calculée depuis les constats, que vous pouvez présenter à votre tarif.",
                 },
               ].map((c) => (
-                <div key={c.t} className="rounded-xl bg-white p-6 ring-1 ring-line">
+                <div key={c.t} className="rounded-xl bg-surface p-6 ring-1 ring-line">
                   <h3 className="text-[16px] font-bold text-ink-2">{c.t}</h3>
                   <p className="mt-2 text-[14px] leading-relaxed text-muted">{c.d}</p>
                 </div>
               ))}
             </section>
 
-            <section className="mt-8 rounded-xl border-l-2 border-warn bg-white p-6 ring-1 ring-line">
+            <section className="mt-8 rounded-xl border-l-2 border-warn bg-surface p-6 ring-1 ring-line">
               <p className="tech text-[10px] text-warn">Limite de cette démonstration</p>
               <p className="mt-2 text-[14.5px] leading-relaxed text-ink-2">
                 Cette vue d&apos;essai analyse jusqu&apos;à {MAX_PORTFOLIO_DOMAINS} domaines par

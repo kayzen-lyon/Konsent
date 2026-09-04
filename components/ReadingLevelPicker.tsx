@@ -36,7 +36,7 @@ export function ReadingLevelPicker({
                 className={`tech rounded px-3 py-1.5 text-[10px] transition ${
                   active
                     ? "bg-ink text-white"
-                    : "text-muted hover:bg-white hover:text-ink-2"
+                    : "text-muted hover:bg-surface hover:text-ink-2"
                 }`}
               >
                 {level.label}

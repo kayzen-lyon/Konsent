@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function TcfDecoderPage() {
   return (
     <main className="mx-auto max-w-4xl px-6 py-16">
-      <p className="text-sm font-medium uppercase tracking-wide text-flame">Outil libre</p>
+      <p className="text-sm font-medium uppercase tracking-wide text-accent">Outil libre</p>
       <h1 className="mt-2 text-4xl font-semibold tracking-tight text-ink">
         Décodeur de chaîne de consentement TCF
       </h1>
@@ -52,7 +52,7 @@ export default function TcfDecoderPage() {
           </li>
           <li className="rounded-lg border border-slate-200 p-5">
             <strong className="text-ink">Par le scan.</strong> Un{" "}
-            <Link href="/scan" className="font-medium text-flame underline underline-offset-4">
+            <Link href="/scan" className="font-medium text-accent underline underline-offset-4">
               audit complet
             </Link>{" "}
             relève la chaîne à chacune des trois phases, et signale notamment le cas le plus grave :

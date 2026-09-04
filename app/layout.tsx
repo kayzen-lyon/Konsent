@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono, Outfit } from "next/font/google";
 import Link from "next/link";
 import { EDITOR } from "@/lib/disclaimer";
 import { ContactCard } from "@/components/ContactCard";
@@ -7,42 +6,11 @@ import { Logo } from "@/components/Logo";
 import "./globals.css";
 
 /**
- * next/font télécharge et auto-héberge les fichiers de police au moment du
- * build. Aucune requête n'est émise vers un serveur tiers à l'exécution —
- * condition non négociable pour un produit qui signale précisément ce
- * comportement chez les autres (KZC-DEPOT-009).
+ * Typographie : pile de polices système, comme Konforme. Aucun fichier de
+ * police n'est téléchargé, ni au build ni à l'exécution — condition non
+ * négociable pour un produit qui signale précisément ce comportement chez
+ * les autres (KZC-DEPOT-009). Les familles sont déclarées dans globals.css.
  */
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-inter",
-  display: "swap",
-});
-
-/**
- * Outfit — police d'affichage commune aux sites Kayzen (système Nexus).
- *
- * C'est le porteur principal de la cohérence entre les sites : un lecteur qui
- * passe de nexus à konsent reconnaît la même main typographique avant même de
- * lire un mot. Réservée aux titres, comme le prescrit le système ; Inter
- * conserve le corps de texte, où sa lisibilité en petites tailles reste
- * supérieure.
- *
- * Auto-hébergée au build comme les deux autres : aucune requête tierce.
- */
-const outfit = Outfit({
-  subsets: ["latin"],
-  weight: ["700", "800", "900"],
-  variable: "--font-outfit",
-  display: "swap",
-});
-
-const jetbrains = JetBrains_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500", "700"],
-  variable: "--font-mono-jb",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://konsent.fr"),
@@ -76,7 +44,7 @@ function Header() {
     <header className="sticky top-0 z-50 border-b border-white/10 bg-ink/95 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-5 py-3">
         <Link href="/" className="flex items-center gap-2.5" aria-label="Konsent, accueil">
-          <Logo className="h-7 w-7 text-flame" />
+          <Logo className="h-7 w-7 text-flame-soft" />
           <span className="display text-lg tracking-tight text-white">KONSENT</span>
         </Link>
 
@@ -102,7 +70,7 @@ function Header() {
           </Link>
           <Link
             href="/#scan"
-            className="tech rounded bg-flame px-4 py-2 text-[11px] text-white transition hover:bg-flame-dark"
+            className="tech rounded bg-white px-4 py-2 text-[11px] text-ink transition hover:bg-flame-soft"
           >
             Auditer mon site
           </Link>
@@ -119,7 +87,7 @@ function Footer() {
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
           <div className="lg:col-span-2">
             <div className="flex items-center gap-2.5">
-              <Logo className="h-7 w-7 text-flame" />
+              <Logo className="h-7 w-7 text-flame-soft" />
               <span className="display text-lg tracking-tight text-white">KONSENT</span>
             </div>
             <p className="mt-3 max-w-sm text-sm leading-relaxed">
@@ -148,7 +116,7 @@ function Footer() {
                 ["/comparatif", "Comparatif CMP"],
               ].map(([h, l]) => (
                 <li key={h}>
-                  <Link href={h as string} className="transition hover:text-flame">
+                  <Link href={h as string} className="transition hover:text-white">
                     {l}
                   </Link>
                 </li>
@@ -171,7 +139,7 @@ function Footer() {
                 ["/bot", "Notre robot"],
               ].map(([h, l]) => (
                 <li key={h}>
-                  <Link href={h as string} className="transition hover:text-flame">
+                  <Link href={h as string} className="transition hover:text-white">
                     {l}
                   </Link>
                 </li>
@@ -191,7 +159,7 @@ function Footer() {
                 ["/contact", "Nous écrire"],
               ].map(([h, l]) => (
                 <li key={h}>
-                  <Link href={h as string} className="transition hover:text-flame">
+                  <Link href={h as string} className="transition hover:text-white">
                     {l}
                   </Link>
                 </li>
@@ -214,7 +182,7 @@ function Footer() {
                 // reproche aux autres les fuites d'URL par l'en-tête Referer,
                 // et notre politique globale la restreint déjà.
                 rel="noopener"
-                className="text-white/70 underline decoration-dotted underline-offset-2 transition hover:text-flame"
+                className="text-white/70 underline decoration-dotted underline-offset-2 transition hover:text-white"
               >
                 {EDITOR.agencyName}
               </a>
@@ -232,7 +200,7 @@ function Footer() {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr" className={`${inter.variable} ${outfit.variable} ${jetbrains.variable}`}>
+    <html lang="fr">
       <body className="min-h-screen">
         <a
           href="#contenu"

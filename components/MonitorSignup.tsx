@@ -75,8 +75,8 @@ export function MonitorSignup() {
 
   if (registration) {
     return (
-      <div className="rounded-xl bg-white p-6 ring-1 ring-line">
-        <p className="tech text-[10px] text-flame">Étape 2 sur 2</p>
+      <div className="rounded-xl bg-surface p-6 ring-1 ring-line">
+        <p className="tech text-[10px] text-accent">Étape 2 sur 2</p>
         <h2 className="display mt-2 text-xl text-ink-2">
           Prouvez que ce domaine est le vôtre
         </h2>
@@ -130,7 +130,7 @@ export function MonitorSignup() {
               setRegistration(null);
               setMessage(null);
             }}
-            className="tech rounded border border-line px-5 py-3 text-[11px] text-muted transition hover:border-flame hover:text-flame"
+            className="tech rounded border border-line px-5 py-3 text-[11px] text-muted transition hover:border-flame hover:text-accent"
           >
             Recommencer
           </button>
@@ -146,8 +146,8 @@ export function MonitorSignup() {
   }
 
   return (
-    <form onSubmit={register} className="rounded-xl bg-white p-6 ring-1 ring-line" noValidate>
-      <p className="tech text-[10px] text-flame">Étape 1 sur 2</p>
+    <form onSubmit={register} className="rounded-xl bg-surface p-6 ring-1 ring-line" noValidate>
+      <p className="tech text-[10px] text-accent">Étape 1 sur 2</p>
       <h2 className="display mt-2 text-xl text-ink-2">Surveiller un domaine</h2>
       <p className="mt-2 text-[14.5px] leading-relaxed text-muted">
         Nous analysons votre site à intervalle régulier et vous écrivons uniquement quand quelque
@@ -237,7 +237,7 @@ export function MonitorSignup() {
         Nous conserverons le domaine, votre adresse et l&apos;historique des analyses pendant
         395 jours, puis purge automatique. Aucune donnée relative aux visiteurs de votre site
         n&apos;est collectée : un audit observe un serveur, pas des personnes. Voir notre{" "}
-        <a href="/confidentialite" className="text-flame hover:underline">
+        <a href="/confidentialite" className="text-accent hover:underline">
           politique de confidentialité
         </a>
         .

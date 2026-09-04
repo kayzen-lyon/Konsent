@@ -24,7 +24,7 @@ export default function CookieIndexPage() {
     <>
       <section className="grid-bg-dark bg-ink">
         <div className="mx-auto max-w-7xl px-5 py-14">
-          <p className="tech text-[10px] text-flame">Index</p>
+          <p className="tech text-[10px] text-flame-soft">Index</p>
           <h1 className="display mt-3 max-w-3xl text-3xl text-white sm:text-[2.8rem]">
             Que fait ce cookie ?
           </h1>
@@ -54,7 +54,7 @@ export default function CookieIndexPage() {
             <a
               key={l}
               href={`#lettre-${l}`}
-              className="tech rounded border border-line px-2.5 py-1.5 text-[10px] text-muted transition hover:border-flame hover:text-flame"
+              className="tech rounded border border-line px-2.5 py-1.5 text-[10px] text-muted transition hover:border-flame hover:text-accent"
             >
               {l}
             </a>
@@ -69,10 +69,10 @@ export default function CookieIndexPage() {
                 <li key={c.slug}>
                   <Link
                     href={`/cookies/${c.slug}`}
-                    className="group flex h-full flex-col rounded-lg bg-white p-4 ring-1 ring-line transition hover:ring-flame"
+                    className="group flex h-full flex-col rounded-lg bg-surface p-4 ring-1 ring-line transition hover:ring-flame"
                   >
                     <div className="flex items-start justify-between gap-2">
-                      <span className="font-mono text-[14px] font-bold text-ink-2 group-hover:text-flame">
+                      <span className="font-mono text-[14px] font-bold text-ink-2 group-hover:text-accent">
                         {c.name}
                       </span>
                       <Pill tone={c.requiresConsent ? "danger" : "ok"}>
@@ -94,7 +94,7 @@ export default function CookieIndexPage() {
         ))}
 
         <section className="rounded-xl bg-ink p-6">
-          <p className="tech text-[10px] text-flame">Sur votre propre site</p>
+          <p className="tech text-[10px] text-flame-soft">Sur votre propre site</p>
           <h2 className="display mt-2 text-xl text-white">
             Savoir lesquels vous déposez, et quand
           </h2>
@@ -104,7 +104,7 @@ export default function CookieIndexPage() {
           </p>
           <Link
             href="/#scan"
-            className="tech mt-5 inline-block rounded bg-flame px-5 py-2.5 text-[11px] text-white transition hover:bg-flame-dark"
+            className="tech mt-5 inline-block rounded bg-white px-5 py-2.5 text-[11px] text-ink transition hover:bg-flame-soft"
           >
             Auditer mon site
           </Link>

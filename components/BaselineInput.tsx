@@ -30,7 +30,7 @@ export function BaselineInput({ initialUrl = "" }: { initialUrl?: string }) {
   }
 
   return (
-    <form onSubmit={submit} className="rounded-xl bg-white p-6 ring-1 ring-line" noValidate>
+    <form onSubmit={submit} className="rounded-xl bg-surface p-6 ring-1 ring-line" noValidate>
       <h2 className="display text-xl text-ink-2">Comparer à une référence</h2>
 
       <div className="mt-5 space-y-4">
@@ -98,10 +98,10 @@ export function BaselineExport({ token }: { token: string }) {
   }
 
   return (
-    <div className="rounded-xl bg-white p-6 ring-1 ring-line">
+    <div className="rounded-xl bg-surface p-6 ring-1 ring-line">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="tech text-[10px] text-flame">Surveillance</p>
+          <p className="tech text-[10px] text-accent">Surveillance</p>
           <h3 className="display mt-1.5 text-xl text-ink-2">Jeton de référence</h3>
           <p className="mt-1.5 max-w-xl text-[14px] leading-relaxed text-muted">
             Conservez ce jeton. En le représentant plus tard sur la page de surveillance, vous
@@ -112,7 +112,7 @@ export function BaselineExport({ token }: { token: string }) {
         <button
           type="button"
           onClick={copy}
-          className="tech shrink-0 rounded border border-ink/20 px-4 py-2 text-[10px] text-ink-2 transition hover:border-flame hover:text-flame"
+          className="tech shrink-0 rounded border border-ink/20 px-4 py-2 text-[10px] text-ink-2 transition hover:border-flame hover:text-accent"
         >
           {copied ? "Copié ✓" : "Copier"}
         </button>

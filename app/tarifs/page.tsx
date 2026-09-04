@@ -62,7 +62,7 @@ export default function PricingPage() {
           return (
             <div
               key={p.id}
-              className={`flex flex-col rounded-xl border bg-white p-5 ${
+              className={`flex flex-col rounded-xl border bg-surface p-5 ${
                 p.highlighted ? "border-flame ring-1 ring-flame" : "border-line"
               }`}
             >
@@ -108,7 +108,7 @@ export default function PricingPage() {
                 className={`mt-5 rounded-lg px-4 py-2 text-center text-sm font-semibold transition ${
                   p.highlighted
                     ? "bg-flame text-white hover:bg-flame-dark"
-                    : "border border-line text-ink-2 hover:border-flame hover:text-flame"
+                    : "border border-line text-ink-2 hover:border-flame hover:text-accent"
                 }`}
               >
                 {p.amountCents === null
@@ -130,7 +130,7 @@ export default function PricingPage() {
           Constater un écart ne le corrige pas. Ces prestations sont réalisées par l&apos;équipe
           technique de KAYZEN LYON, puis validées par une nouvelle analyse.
         </p>
-        <div className="mt-5 overflow-hidden rounded-xl border border-line bg-white">
+        <div className="mt-5 overflow-hidden rounded-xl border border-line bg-surface">
           <table className="w-full text-left text-sm">
             <tbody className="divide-y divide-line">
               {SERVICES.map(([label, price]) => (

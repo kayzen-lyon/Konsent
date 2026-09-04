@@ -87,7 +87,7 @@ export function SubAccounts({
   }
 
   return (
-    <div className="rounded-xl bg-white p-5 ring-1 ring-line">
+    <div className="rounded-xl bg-surface p-5 ring-1 ring-line">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <p className="tech text-[10px] text-muted">Sous-comptes clients</p>
         <p className="tabular text-[12px] text-muted">

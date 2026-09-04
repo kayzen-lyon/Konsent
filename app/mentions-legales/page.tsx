@@ -50,7 +50,7 @@ export default function LegalNoticePage() {
           Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, États-Unis —{" "}
           <a
             href="https://vercel.com"
-            className="text-flame hover:underline"
+            className="text-accent hover:underline"
             rel="noopener noreferrer nofollow"
             target="_blank"
           >
@@ -72,7 +72,7 @@ export default function LegalNoticePage() {
       <Article id="conception" heading="Conception et réalisation">
         <p>
           Site conçu et réalisé par {EDITOR.agencyName} —{" "}
-          <a href={EDITOR.agencySite} className="text-flame hover:underline" rel="noopener">
+          <a href={EDITOR.agencySite} className="text-accent hover:underline" rel="noopener">
             {EDITOR.agencySite.replace("https://", "")}
           </a>
         </p>
@@ -122,7 +122,7 @@ export default function LegalNoticePage() {
       <Article id="signalement" heading="Signalement de contenu">
         <p>
           Tout contenu jugé illicite peut être signalé à l&apos;adresse{" "}
-          <a href={`mailto:${EDITOR.email}`} className="text-flame hover:underline">
+          <a href={`mailto:${EDITOR.email}`} className="text-accent hover:underline">
             {EDITOR.email}
           </a>
           . Conformément à l&apos;article 6-I-5 de la LCEN, le signalement doit préciser la date, la

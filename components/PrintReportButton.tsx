@@ -17,7 +17,7 @@ export function PrintReportButton() {
     <button
       type="button"
       onClick={() => window.print()}
-      className="tech rounded border border-ink/20 px-4 py-2 text-[10px] text-ink-2 transition hover:border-flame hover:text-flame print:hidden"
+      className="tech rounded border border-ink/20 px-4 py-2 text-[10px] text-ink-2 transition hover:border-flame hover:text-accent print:hidden"
     >
       Imprimer / PDF
     </button>

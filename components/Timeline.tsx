@@ -23,7 +23,7 @@ export function Timeline({ observation }: { observation: Observation }) {
 
   if (rows.length === 0) {
     return (
-      <div className="rounded-lg border-l-2 border-ok bg-white p-5 ring-1 ring-line">
+      <div className="rounded-lg border-l-2 border-ok bg-surface p-5 ring-1 ring-line">
         <p className="font-bold text-ink-2">
           Aucun service tiers connu repéré dans le document servi.
         </p>

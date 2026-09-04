@@ -72,7 +72,7 @@ export default async function DocumentPage({
   } catch (error) {
     return (
       <div className="mx-auto max-w-3xl px-5 py-16">
-        <div className="rounded-xl border-l-2 border-warn bg-white p-6 ring-1 ring-line">
+        <div className="rounded-xl border-l-2 border-warn bg-surface p-6 ring-1 ring-line">
           <h1 className="display text-xl text-ink-2">Génération impossible</h1>
           <p className="mt-2 text-[15px] text-muted">
             {error instanceof ScanError ? error.message : "L'analyse préalable n'a pas abouti."}
@@ -90,10 +90,10 @@ export default async function DocumentPage({
   return (
     <div className="mx-auto max-w-3xl px-5 py-12 sm:py-16">
       <nav className="mb-6 flex flex-wrap gap-4 text-sm print:hidden">
-        <Link href={`/scan?url=${encodeURIComponent(url)}`} className="text-flame hover:underline">
+        <Link href={`/scan?url=${encodeURIComponent(url)}`} className="text-accent hover:underline">
           ← Rapport d&apos;audit
         </Link>
-        <Link href={`/documents?url=${encodeURIComponent(url)}`} className="text-flame hover:underline">
+        <Link href={`/documents?url=${encodeURIComponent(url)}`} className="text-accent hover:underline">
           Tous les documents
         </Link>
       </nav>
@@ -103,7 +103,7 @@ export default async function DocumentPage({
           <span className="tech rounded bg-ink px-2 py-1 text-[9px] text-white">
             {doc.templateId}
           </span>
-          <span className="tech text-[9px] text-flame">Brouillon</span>
+          <span className="tech text-[9px] text-accent">Brouillon</span>
           {template.fedByScan ? (
             <span className="tech text-[9px] text-muted">alimenté par le scan</span>
           ) : null}
@@ -114,7 +114,7 @@ export default async function DocumentPage({
       </header>
 
       {doc.todos.length > 0 ? (
-        <div className="mt-8 rounded-xl border-l-2 border-warn bg-white p-5 ring-1 ring-line">
+        <div className="mt-8 rounded-xl border-l-2 border-warn bg-surface p-5 ring-1 ring-line">
           <p className="tech text-[10px] text-warn">
             {doc.todos.length} information(s) que nous ne pouvons pas deviner
           </p>
@@ -157,7 +157,7 @@ export default async function DocumentPage({
             ) : null}
 
             {s.table ? (
-              <div className="mt-4 overflow-x-auto rounded-xl bg-white ring-1 ring-line">
+              <div className="mt-4 overflow-x-auto rounded-xl bg-surface ring-1 ring-line">
                 <table className="w-full text-left text-sm">
                   <thead className="bg-paper">
                     <tr>
@@ -192,7 +192,7 @@ export default async function DocumentPage({
         ))}
       </article>
 
-      <footer className="mt-12 rounded-xl bg-white p-5 ring-1 ring-line">
+      <footer className="mt-12 rounded-xl bg-surface p-5 ring-1 ring-line">
         <p className="text-[13px] leading-relaxed text-muted">{doc.footer}</p>
       </footer>
 
@@ -203,7 +203,7 @@ export default async function DocumentPage({
             <Link
               key={o.slug}
               href={`/documents/${o.slug}?url=${encodeURIComponent(url)}`}
-              className="tech rounded border border-line px-3 py-2 text-[10px] text-ink-2 transition hover:border-flame hover:text-flame"
+              className="tech rounded border border-line px-3 py-2 text-[10px] text-ink-2 transition hover:border-flame hover:text-accent"
             >
               {o.title}
             </Link>
