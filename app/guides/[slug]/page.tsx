@@ -61,7 +61,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
             {p}
           </p>
         ))}
-        <p className="mt-3 rounded-lg border-l-2 border-flame bg-white p-4 text-[14.5px] leading-relaxed text-ink-2 ring-1 ring-line">
+        <p className="mt-3 rounded-lg border-l-2 border-secondary bg-surface p-4 text-[14.5px] leading-relaxed text-ink-2 ring-1 ring-line shadow-md">
           Le point de droit est simple : l&apos;article 82 de la loi n° 78-17 subordonne le
           dépôt ou la lecture d&apos;informations dans le terminal de votre visiteur à son
           consentement préalable, sauf si l&apos;opération est strictement nécessaire au service
@@ -75,7 +75,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
         <ol className="mt-4 space-y-3">
           {guide.steps.map((s, i) => (
             <li key={s} className="flex gap-4">
-              <span className="tech shrink-0 text-[10px] text-flame">
+              <span className="tech shrink-0 text-[10px] text-accent">
                 {String(i + 1).padStart(2, "0")}
               </span>
               <span className="text-[15.5px] leading-relaxed text-ink-2">{s}</span>
@@ -104,7 +104,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
       ) : null}
 
       {tracker.alternativesEu && tracker.alternativesEu.length > 0 ? (
-        <section className="mt-10 rounded-xl border-l-2 border-ok bg-white p-6 ring-1 ring-line">
+        <section className="mt-10 rounded-xl border-l-2 border-ok bg-surface p-6 ring-1 ring-line shadow-md">
           <h2 className="display text-xl text-ink-2">Alternatives européennes</h2>
           <p className="mt-2 text-[15px] leading-relaxed text-ink-2">
             {tracker.alternativesEu.join(" · ")}
@@ -120,7 +120,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
       {cookies.length > 0 ? (
         <section className="mt-10">
           <h2 className="display text-xl text-ink-2">Les cookies concernés</h2>
-          <div className="mt-4 overflow-x-auto rounded-xl bg-white ring-1 ring-line">
+          <div className="mt-4 overflow-x-auto rounded-xl bg-surface ring-1 ring-line shadow-md">
             <table className="w-full text-left text-sm">
               <thead className="bg-paper">
                 <tr>
@@ -154,7 +154,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
         </section>
       ) : null}
 
-      <section className="mt-10 rounded-xl bg-white p-6 ring-1 ring-line">
+      <section className="mt-10 rounded-xl bg-surface p-6 ring-1 ring-line shadow-md">
         <h2 className="tech text-[10px] text-muted">Qui reçoit les données</h2>
         <p className="mt-2 text-[16px] font-bold text-ink-2">{tracker.entity}</p>
         {tracker.ultimateParent && tracker.ultimateParent !== tracker.entity ? (
@@ -179,7 +179,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
               <li key={r.id}>
                 <Link
                   href={`/regles/${r.id.toLowerCase()}`}
-                  className="group flex gap-3 rounded-lg bg-white p-3 ring-1 ring-line transition hover:ring-flame"
+                  className="group flex gap-3 rounded-lg bg-surface p-3 ring-1 ring-line shadow-md transition hover:ring-flame"
                 >
                   <span className="font-mono text-[11px] text-muted">{r.id}</span>
                   <span className="text-[13.5px] leading-snug text-ink-2 group-hover:text-flame">
@@ -202,7 +202,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
         </p>
         <Link
           href="/#scan"
-          className="tech mt-5 inline-block rounded bg-flame px-5 py-2.5 text-[11px] text-white transition hover:bg-flame-dark"
+          className="tech mt-5 inline-block rounded-full bg-flame shadow-md px-5 py-2.5 text-[11px] text-white transition hover:bg-flame-dark"
         >
           Vérifier gratuitement
         </Link>

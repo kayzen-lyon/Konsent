@@ -75,8 +75,8 @@ export function MonitorSignup() {
 
   if (registration) {
     return (
-      <div className="rounded-xl bg-white p-6 ring-1 ring-line">
-        <p className="tech text-[10px] text-flame">Étape 2 sur 2</p>
+      <div className="rounded-xl bg-surface p-6 ring-1 ring-line shadow-md">
+        <p className="tech text-[10px] text-accent">Étape 2 sur 2</p>
         <h2 className="display mt-2 text-xl text-ink-2">
           Prouvez que ce domaine est le vôtre
         </h2>
@@ -116,7 +116,7 @@ export function MonitorSignup() {
             type="button"
             onClick={verify}
             disabled={busy || registration.verified}
-            className="tech rounded bg-flame px-5 py-3 text-[11px] text-white transition hover:bg-flame-dark disabled:opacity-60"
+            className="tech rounded-full bg-flame shadow-md px-5 py-3 text-[11px] text-white transition hover:bg-flame-dark disabled:opacity-60"
           >
             {registration.verified
               ? "Vérifié ✓"
@@ -146,8 +146,8 @@ export function MonitorSignup() {
   }
 
   return (
-    <form onSubmit={register} className="rounded-xl bg-white p-6 ring-1 ring-line" noValidate>
-      <p className="tech text-[10px] text-flame">Étape 1 sur 2</p>
+    <form onSubmit={register} className="rounded-xl bg-surface p-6 ring-1 ring-line shadow-md" noValidate>
+      <p className="tech text-[10px] text-accent">Étape 1 sur 2</p>
       <h2 className="display mt-2 text-xl text-ink-2">Surveiller un domaine</h2>
       <p className="mt-2 text-[14.5px] leading-relaxed text-muted">
         Nous analysons votre site à intervalle régulier et vous écrivons uniquement quand quelque
@@ -228,7 +228,7 @@ export function MonitorSignup() {
       <button
         type="submit"
         disabled={busy}
-        className="tech mt-6 w-full rounded bg-flame px-6 py-3.5 text-[11px] text-white transition hover:bg-flame-dark disabled:opacity-60"
+        className="tech mt-6 w-full rounded-full bg-flame shadow-md px-6 py-3.5 text-[11px] text-white transition hover:bg-flame-dark disabled:opacity-60"
       >
         {busy ? "Inscription…" : "Continuer"}
       </button>

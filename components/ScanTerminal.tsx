@@ -53,7 +53,7 @@ export function ScanTerminal() {
   }, [shown]);
 
   return (
-    <div className="overflow-hidden rounded-xl bg-[#0b1220] shadow-2xl ring-1 ring-white/10">
+    <div className="overflow-hidden rounded-xl bg-[#1a1a1a] shadow-lg ring-1 ring-white/10">
       {/* Barre de fenêtre */}
       <div className="flex items-center gap-2 border-b border-white/10 bg-white/[0.04] px-4 py-2.5">
         <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
@@ -82,7 +82,7 @@ export function ScanTerminal() {
           </div>
         ))}
         {shown < SCRIPT.length ? (
-          <span className="caret inline-block text-flame">▊</span>
+          <span className="caret inline-block text-flame-soft">▊</span>
         ) : null}
       </div>
 

@@ -13,7 +13,7 @@ export default function GlossaryPage() {
     <>
       <section className="grid-bg-dark bg-ink">
         <div className="mx-auto max-w-7xl px-5 py-14">
-          <p className="tech text-[10px] text-flame">Glossaire</p>
+          <p className="tech text-[10px] text-flame-soft">Glossaire</p>
           <h1 className="display mt-3 max-w-3xl text-3xl text-white sm:text-[2.8rem]">
             Le vocabulaire, sans le jargon
           </h1>
@@ -33,14 +33,14 @@ export default function GlossaryPage() {
               <li key={t.slug}>
                 <Link
                   href={`/glossaire/${t.slug}`}
-                  className="group flex h-full flex-col rounded-lg bg-white p-5 ring-1 ring-line transition hover:ring-flame"
+                  className="group flex h-full flex-col rounded-lg bg-surface p-5 ring-1 ring-line shadow-md transition hover:ring-flame"
                 >
                   <span className="text-[16px] font-bold leading-snug text-ink-2 group-hover:text-flame">
                     {t.term}
                   </span>
                   <p className="mt-1.5 text-[13.5px] leading-relaxed text-muted">{t.short}</p>
                   {t.reference ? (
-                    <p className="tech mt-3 text-[9px] text-flame">{t.reference}</p>
+                    <p className="tech mt-3 text-[9px] text-accent">{t.reference}</p>
                   ) : null}
                 </Link>
               </li>

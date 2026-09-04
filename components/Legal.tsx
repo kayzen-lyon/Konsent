@@ -40,7 +40,7 @@ export function LegalPage({
       </p>
 
       {intro ? (
-        <div className="mt-6 rounded-xl border-l-2 border-flame bg-white p-5 text-[15px] leading-relaxed text-ink-2 ring-1 ring-line">
+        <div className="mt-6 rounded-xl border-l-2 border-secondary bg-surface p-5 text-[15px] leading-relaxed text-ink-2 ring-1 ring-line shadow-md">
           {intro}
         </div>
       ) : null}

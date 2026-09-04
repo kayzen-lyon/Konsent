@@ -1,80 +1,107 @@
 @import "tailwindcss";
 
 /**
- * Système de design Konsent — aligné sur Nexus (kayzen-lyon).
+ * Système de design Konsent — aligné sur Kayzen Web (kayzen-lyon.com).
  *
- * Bleu de marque `#2563eb`, surfaces sur l'échelle zinc, Outfit en titrage.
- * Les noms de jetons sont CONSERVÉS (`--color-flame`, `--color-ink`) bien que
- * la teinte ait changé : renommer aurait imposé de toucher trois cents
- * occurrences dans les composants pour un résultat identique à l'écran, et
- * chaque occurrence est une occasion d'en oublier une. Le commentaire porte
- * l'information que le nom ne porte plus.
+ * « Chaleur technique » : terracotta d'action (#b74831) réservée aux
+ * interactions, marine profond (#1f3b61) pour la structure et les bandes,
+ * émeraude (#34d399) pour les états positifs. Outfit en titrage et en
+ * libellés, Plus Jakarta Sans en corps de texte. Boutons en pilule, cartes
+ * à 24 px de rayon, ombres directionnelles, transitions à 200 ms.
+ *
+ * Les noms de jetons historiques sont CONSERVÉS (`--color-flame`,
+ * `--color-ink`) bien que la teinte ait changé : renommer aurait imposé de
+ * toucher plusieurs centaines d'occurrences dans les composants pour un
+ * résultat identique à l'écran. Correspondance avec la fiche Kayzen Web :
+ *
+ *   flame        → primary                  #b74831  (boutons, liens, focus)
+ *   flame-dark   → button-primary-hover     #a03d28
+ *   flame-bg     → primary-container        #e8d5cf  (badge-primary)
+ *   flame-deep   → on-primary-container     #5a2817  (texte sur flame-bg)
+ *   flame-soft   → inverse-primary          #ffb399  (accent sur bande marine)
+ *   secondary    → secondary                #1f3b61  (surtitres, structure)
+ *   accent       → secondary                #1f3b61  (alias, surtitres et icônes)
+ *   ink          → secondary                #1f3b61  (bandes sombres, bannière)
+ *   ink-2        → on-surface               #1f2937  (texte courant, titres)
+ *   ink-3        → on-secondary-container   #0f1f35
+ *   paper        → background               #ffffff
+ *   surface      → surface                  #ffffff  (cartes)
+ *   surface-low  → surface-container-low    #f0f0f0  (champs, survol de carte)
+ *   surface-high → surface-container-high   #e9ecef  (survol de bouton secondaire)
+ *   line         → outline-variant          #d0d0d0
+ *   line-2       → outline                  #9ca3af
+ *   muted        → on-surface-variant       #6c757d
  *
  * Les couleurs de CONSTAT restent une famille distincte de la marque, et
  * c'est la seule contrainte que l'alignement ne peut pas lever : dans un
  * rapport d'audit, le vert dit « conforme » et le rouge dit « critique ».
- * Elles sont accordées à la palette Nexus — l'émeraude d'accent remplace le
- * vert d'origine — mais jamais confondues avec le bleu de marque.
+ * Elles sont accordées à la fiche — error pour le critique, tertiary pour
+ * le conforme — mais jamais employées comme accents décoratifs. Le jaune
+ * d'écart modéré n'a pas d'équivalent dans la fiche et reste inchangé.
  *
  * Les polices sont auto-hébergées au moment du build (next/font) : aucune
  * requête vers un serveur tiers à l'exécution. Konsent signale le
  * chargement de Google Fonts comme un écart — il ne peut pas le pratiquer.
  */
 @theme {
-  /* Surfaces sombres — échelle zinc de Nexus */
-  --color-ink: #09090b;
-  --color-ink-2: #18181b;
-  --color-ink-3: #27272a;
+  /* Marine — bandes sombres, bannière, structure */
+  --color-ink: #1f3b61;
+  --color-ink-2: #1f2937;
+  --color-ink-3: #0f1f35;
+  --color-secondary: #1f3b61;
+  --color-secondary-bg: #c5d9f1;
+  --color-accent: #1f3b61;
 
-  /* Bleu Nexus — accent de marque et signal d'action */
-  --color-flame: #2563eb;
-  --color-flame-dark: #1d4ed8;
-  --color-flame-soft: #bfdbfe;
-  --color-flame-bg: #eff6ff;
+  /* Terracotta — action et interaction uniquement */
+  --color-flame: #b74831;
+  --color-flame-dark: #a03d28;
+  --color-flame-bg: #e8d5cf;
+  --color-flame-deep: #5a2817;
+  --color-flame-soft: #ffb399;
 
-  /* Constats — accordés à Nexus, distincts du bleu de marque */
-  --color-crit: #b91c1c;
+  /* Constats — accordés à la fiche, distincts de la marque */
+  --color-crit: #dc2626;
   --color-crit-bg: #fee2e2;
   --color-warn: #a16207;
   --color-warn-bg: #fef9c3;
-  --color-ok: #047857;
-  --color-ok-bg: #d1fae5;
+  --color-ok: #1a6b52;
+  --color-ok-bg: #a6f3d5;
 
-  /* Surfaces claires — échelle zinc */
-  --color-paper: #fafafa;
-  --color-line: #e4e4e7;
-  --color-line-2: #d4d4d8;
-  --color-muted: #52525b;
+  /* Surfaces claires */
+  --color-paper: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-dim: #f5f5f5;
+  --color-surface-low: #f0f0f0;
+  --color-surface-high: #e9ecef;
+  --color-line: #d0d0d0;
+  --color-line-2: #9ca3af;
+  --color-muted: #6c757d;
+  --color-on-primary: #ffffff;
 
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-outfit), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-mono-jb), ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-outfit), var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
 
-  /* ─────────────────── Échelles partagées — système Nexus ─────────────────── */
+  /* Rayons Kayzen — 4 / 8 / 12 / 16 / 24, plus la pilule (rounded-full) */
+  --radius-sm: 0.25rem;
+  --radius: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
 
-  /* Rayons — 6 / 8 / 12 / 16 / 24, plus la pilule */
-  --radius-nx-xs: 6px;
-  --radius-nx-sm: 8px;
-  --radius-nx-md: 12px;
-  --radius-nx-lg: 16px;
-  --radius-nx-xl: 24px;
+  /* Élévations Kayzen — sm pour les badges, md pour cartes et boutons,
+   * lg pour les surfaces flottantes (modales, terminal du héros). */
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.06);
+  --shadow-md: 0 4px 12px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 16px 40px rgb(0 0 0 / 0.12);
+  --shadow-header: 0 1px 3px rgb(0 0 0 / 0.08);
 
-  /* Échelle bleue complète, pour les états et les surfaces secondaires. */
-  --color-nx-blue: #3b82f6;
-  --color-nx-blue-deep: #2563eb;
-  --color-nx-blue-sky: #60a5fa;
-  --color-nx-blue-night: #172554;
+  /* Conteneur à 1400 px (max-w-7xl) */
+  --container-7xl: 87.5rem;
 
-  /* Or Nexus — accent premium. Réservé aux mises en avant commerciales, et
-   * tenu à l'écart des constats, où le jaune signifierait « écart modéré ». */
-  --color-nx-gold: #fecd4d;
-
-  /* Élévations, teintées plutôt que noires : une ombre noire franche sur un
-   * fond sombre écrase le contraste au lieu de créer de la profondeur. */
-  --shadow-nx-1: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-nx-2: 0 4px 8px -2px rgb(37 99 235 / 0.15);
-  --shadow-nx-3:
-    0 10px 15px -3px rgb(37 99 235 / 0.25), 0 4px 6px -4px rgb(37 99 235 / 0.25);
+  /* Mouvement Kayzen — 200 ms, courbe « ease » */
+  --default-transition-duration: 200ms;
+  --default-transition-timing-function: ease;
 }
 
 html {
@@ -86,24 +113,50 @@ body {
   background: var(--color-paper);
   color: var(--color-ink-2);
   font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
-/* Titres très serrés, à la manière des maquettes. */
+/* Titrage Kayzen — Outfit.
+ * display     : 800 / 72 px sur 63,84 px / -0.04 em  (h1 de héros)
+ * headline-lg : 700 / 48 px sur 40 px   / -0.02 em  (h2)
+ * headline-md : 700 / 36 px sur 28 px   / -0.01 em  (h3) */
 .display {
   font-family: var(--font-display);
   font-weight: 800;
-  letter-spacing: -0.033em;
-  line-height: 1.03;
+  letter-spacing: -0.04em;
+  line-height: 1.13;
 }
 
-/* Petites capitales techniques : libellés, statuts, en-têtes de tableau. */
+h2.display {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+h3.display {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.29;
+}
+
+/* Libellés (label-md Kayzen) : Outfit 700, en capitales espacées pour les
+ * surtitres, statuts, en-têtes de tableau et textes de bouton. */
 .tech {
-  font-family: var(--font-mono);
-  font-weight: 500;
+  font-family: var(--font-display);
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.09em;
+  letter-spacing: 0.08em;
+}
+
+/* Champs (input-field-focus Kayzen) : bordure primaire et halo à 10 %. */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,
+textarea:focus,
+select:focus {
+  border-color: var(--color-flame);
+  box-shadow: 0 0 0 3px rgb(183 72 49 / 0.1);
 }
 
 .tabular {
@@ -111,7 +164,8 @@ body {
 }
 
 /**
- * Anneau de focus — 2 px de bleu de marque, comme le prescrit Nexus.
+ * Anneau de focus — 2 px de terracotta. Sur une bande marine, l'anneau
+ * passe en blanc pour rester visible.
  *
  * `outline-offset` empêche l'anneau de se confondre avec la bordure de
  * l'élément : un anneau collé au bord est le défaut le plus courant, et il
@@ -123,8 +177,13 @@ body {
   border-radius: 2px;
 }
 
+.bg-ink :focus-visible,
+.grid-bg-dark :focus-visible {
+  outline-color: #fff;
+}
+
 /**
- * Cibles tactiles de 44 px, exigées par le système Nexus et par le critère
+ * Cibles tactiles de 44 px, exigées par le critère
  * WCAG 2.5.8 (niveau AA en 2.2).
  *
  * Le rembourrage visuel n'est pas augmenté : c'est une zone de clic
@@ -155,8 +214,8 @@ body {
 /* Trame de fond discrète du héros. */
 .grid-bg {
   background-image:
-    linear-gradient(to right, rgba(15, 23, 42, 0.045) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(15, 23, 42, 0.045) 1px, transparent 1px);
+    linear-gradient(to right, rgba(31, 59, 97, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(31, 59, 97, 0.06) 1px, transparent 1px);
   background-size: 44px 44px;
 }
 
@@ -176,9 +235,10 @@ body {
   );
 }
 
-/* Soulignement bleu peint à la main sous un mot clé du titre. */
+/* Soulignement peint à la main sous un mot clé du titre — primary-container,
+ * une teinte de conteneur, jamais le primaire lui-même sur un élément passif. */
 .underline-flame {
-  background-image: linear-gradient(transparent 62%, rgba(37, 99, 235, 0.42) 62%);
+  background-image: linear-gradient(transparent 62%, #e8d5cf 62%);
   background-repeat: no-repeat;
 }
 
@@ -194,7 +254,7 @@ body {
 }
 
 .rise {
-  animation: rise 0.5s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+  animation: rise 0.4s ease both;
 }
 
 @keyframes blink {
@@ -255,7 +315,7 @@ body {
   border-radius: 999px;
   background: var(--color-flame);
   border: 3px solid #fff;
-  box-shadow: 0 1px 6px rgba(9, 9, 11, 0.35);
+  box-shadow: 0 1px 6px rgba(31, 41, 55, 0.35);
   cursor: pointer;
 }
 
@@ -265,7 +325,7 @@ body {
   border-radius: 999px;
   background: var(--color-flame);
   border: 3px solid #fff;
-  box-shadow: 0 1px 6px rgba(9, 9, 11, 0.35);
+  box-shadow: 0 1px 6px rgba(31, 41, 55, 0.35);
   cursor: pointer;
 }
 
@@ -282,11 +342,11 @@ body {
   .grid-bg-dark,
   .bg-ink {
     background: #fff !important;
-    color: #18181b !important;
+    color: #1f2937 !important;
   }
   .grid-bg-dark *,
   .bg-ink * {
-    color: #18181b !important;
+    color: #1f2937 !important;
   }
 
   /* Les preuves repliées à l'écran s'ouvrent sur le papier : un constat sans
@@ -327,20 +387,23 @@ body {
   }
 }
 
-/* ═══════════════ Cohérence inter-sites — système Nexus ═══════════════════
+/* ═══════════════ Cohérence inter-sites — système Kayzen Web ══════════════
  *
- * Ce site reprend le thème de nexus.kayzen-lyon.fr : bleu de marque #2563eb,
- * surfaces sur l'échelle zinc, Outfit en titrage, Inter en corps de texte,
- * anneau de focus de 2 px et cible tactile de 44 px.
+ * Ce site reprend les jetons de kayzen-lyon.com : terracotta d'action
+ * #b74831, marine #1f3b61, émeraude #34d399 pour le positif, Outfit en
+ * titrage et libellés, Plus Jakarta Sans en corps, boutons en pilule,
+ * cartes à 24 px, ombres 0 4px 12px, transitions à 200 ms, anneau de focus
+ * de 2 px et cible tactile de 44 px.
  *
- * Une seule adaptation, et elle n'est pas négociable : les couleurs de
- * CONSTAT restent une famille à part. Dans un rapport d'audit, le rouge dit
- * « critique », le jaune « écart modéré » et le vert « conforme ». Elles sont
- * accordées à la palette Nexus — l'émeraude d'accent, l'or premium — mais
- * jamais employées comme accents décoratifs, faute de quoi un badge de
- * navigation se lirait comme une appréciation de conformité.
+ * Deux règles de la fiche guident les composants :
+ *  - le terracotta n'apparaît que sur des éléments interactifs (boutons,
+ *    liens, focus) — les filets décoratifs et l'anneau de mise en avant
+ *    sont en marine ;
+ *  - les couleurs de CONSTAT restent une famille à part. Dans un rapport
+ *    d'audit, le rouge dit « critique », le jaune « écart modéré » et le
+ *    vert « conforme ». Elles ne sont jamais employées comme accents
+ *    décoratifs.
  *
- * Les noms de jetons n'ont pas été renommés (`--color-flame` porte désormais
- * du bleu) : la teinte change en un point, contre trois cents occurrences à
- * réécrire pour un résultat identique à l'écran.
+ * Sur une bande marine (`bg-ink`), les surtitres passent en `flame-soft`
+ * (inverse-primary) et les boutons restent terracotta sur blanc.
  */

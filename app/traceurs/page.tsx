@@ -19,7 +19,7 @@ export default function TrackersPage() {
   return (
     <div className="mx-auto max-w-6xl px-5 py-12 sm:py-16">
       <header className="max-w-3xl">
-        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-flame">
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-accent">
           Base de connaissance
         </p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight text-ink-2 sm:text-4xl">
@@ -41,7 +41,7 @@ export default function TrackersPage() {
           <li key={t.slug}>
             <Link
               href={`/traceurs/${t.slug}`}
-              className="group flex h-full flex-col rounded-xl border border-line bg-white p-4 transition hover:border-flame"
+              className="group flex h-full flex-col rounded-xl border border-line bg-surface p-4 transition hover:border-flame"
             >
               <div className="flex items-start justify-between gap-2">
                 <span className="text-[15px] font-semibold leading-snug text-ink-2 group-hover:text-flame">
@@ -52,7 +52,7 @@ export default function TrackersPage() {
                     t.adequacy === "EEA"
                       ? "bg-green-50 text-green-800"
                       : t.adequacy === "ADEQUATE"
-                        ? "bg-flame-bg text-flame-dark"
+                        ? "bg-flame-bg text-flame-deep"
                         : t.adequacy === "DPF_CONDITIONAL"
                           ? "bg-amber-50 text-amber-800"
                           : "bg-red-50 text-red-800"

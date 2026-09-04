@@ -52,7 +52,7 @@ export default function RegWatchPage() {
     <>
       <section className="grid-bg-dark bg-ink">
         <div className="mx-auto max-w-7xl px-5 py-14">
-          <p className="tech text-[10px] text-flame">Veille réglementaire</p>
+          <p className="tech text-[10px] text-flame-soft">Veille réglementaire</p>
           <h1 className="display mt-3 max-w-3xl text-3xl text-white sm:text-[2.8rem]">
             Ce qui s&apos;applique, ce qui se discute, et ce qui n&apos;existe plus
           </h1>
@@ -86,7 +86,7 @@ export default function RegWatchPage() {
 
               <div className="mt-6 space-y-4">
                 {group.entries.map((e) => (
-                  <article key={e.id} className="rounded-xl bg-white p-6 ring-1 ring-line">
+                  <article key={e.id} className="rounded-xl bg-surface p-6 ring-1 ring-line shadow-md">
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
@@ -117,8 +117,8 @@ export default function RegWatchPage() {
                       <p className="mt-1.5 text-[14px] leading-relaxed text-ink-2">{e.impact}</p>
                     </div>
 
-                    <div className="mt-3 border-l-2 border-flame pl-4">
-                      <p className="tech text-[9px] text-flame">Recommandation</p>
+                    <div className="mt-3 border-l-2 border-secondary pl-4">
+                      <p className="tech text-[9px] text-accent">Recommandation</p>
                       <p className="mt-1 text-[14px] leading-relaxed text-ink-2">{e.action}</p>
                     </div>
 
@@ -164,7 +164,7 @@ export default function RegWatchPage() {
         )}
 
         <section className="rounded-xl bg-ink p-6">
-          <p className="tech text-[10px] text-flame">Méthode</p>
+          <p className="tech text-[10px] text-flame-soft">Méthode</p>
           <h2 className="display mt-2 text-xl text-white">Comment cette veille est tenue</h2>
           <p className="mt-3 text-[14.5px] leading-relaxed text-white/70">
             Revue hebdomadaire des publications de la CNIL, du Comité européen de la protection

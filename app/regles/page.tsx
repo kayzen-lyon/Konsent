@@ -13,7 +13,7 @@ export default function RulesPage() {
   return (
     <div className="mx-auto max-w-6xl px-5 py-12 sm:py-16">
       <header className="max-w-3xl">
-        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-flame">
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-accent">
           Référentiel {RULEPACK.version}
         </p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight text-ink-2 sm:text-4xl">
@@ -25,7 +25,7 @@ export default function RulesPage() {
           adopté. Le référentiel est versionné : un rapport produit aujourd&apos;hui reste
           explicable dans six mois.
         </p>
-        <p className="mt-4 rounded-lg border border-line bg-white px-4 py-3 text-sm text-muted">
+        <p className="mt-4 rounded-lg border border-line bg-surface px-4 py-3 text-sm text-muted">
           <span className="font-medium text-ink-2">{RULEPACK.staticCount} règles</span> sont
           évaluables sans navigateur et couvertes par l&apos;analyse en ligne.{" "}
           <span className="font-medium text-ink-2">{RULEPACK.headlessCount} règles</span>{" "}
@@ -54,7 +54,7 @@ export default function RulesPage() {
                   <li key={rule.id}>
                     <Link
                       href={`/regles/${rule.id.toLowerCase()}`}
-                      className="group flex flex-wrap items-start gap-3 rounded-lg border border-line bg-white px-4 py-3 transition hover:border-flame"
+                      className="group flex flex-wrap items-start gap-3 rounded-lg border border-line bg-surface px-4 py-3 transition hover:border-flame"
                     >
                       <SeverityBadge severity={rule.severity} />
                       <span className="min-w-0 flex-1">

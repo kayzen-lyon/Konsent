@@ -23,7 +23,7 @@ export default function JurisdictionsPage() {
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-16">
-      <p className="tech text-[10px] text-flame">Portée</p>
+      <p className="tech text-[10px] text-accent">Portée</p>
       <h1 className="display mt-2 text-4xl text-ink-2">Juridictions couvertes</h1>
       <p className="mt-5 max-w-3xl text-lg leading-relaxed text-muted">
         Un traceur publicitaire déposé avant toute action de l&apos;utilisateur est le même fait

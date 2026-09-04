@@ -11,7 +11,7 @@ export default function BotPage() {
   return (
     <div className="mx-auto max-w-3xl px-5 py-12 sm:py-16">
       <header>
-        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-flame">
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-accent">
           Notre robot
         </p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight text-ink-2 sm:text-4xl">
@@ -25,7 +25,7 @@ export default function BotPage() {
 
       <section className="mt-10">
         <h2 className="text-lg font-semibold text-ink-2">Comment il s&apos;identifie</h2>
-        <pre className="mt-3 overflow-x-auto rounded-lg border border-line bg-white p-4 font-mono text-[13px] text-ink-2">
+        <pre className="mt-3 overflow-x-auto rounded-lg border border-line bg-surface p-4 font-mono text-[13px] text-ink-2">
           Mozilla/5.0 (compatible; KonsentBot/1.0; +https://konsent.fr/bot) AppleWebKit/537.36
         </pre>
         <p className="mt-3 text-[15px] leading-relaxed text-ink-2">
@@ -77,7 +77,7 @@ export default function BotPage() {
         <p className="mt-2 text-[15px] leading-relaxed text-ink-2">
           Ajoutez à votre <code className="font-mono text-[13px]">robots.txt</code> :
         </p>
-        <pre className="mt-3 overflow-x-auto rounded-lg border border-line bg-white p-4 font-mono text-[13px] text-ink-2">
+        <pre className="mt-3 overflow-x-auto rounded-lg border border-line bg-surface p-4 font-mono text-[13px] text-ink-2">
           {`User-agent: KonsentBot
 Disallow: /`}
         </pre>
@@ -90,7 +90,7 @@ Disallow: /`}
         </p>
       </section>
 
-      <section className="mt-10 rounded-xl border border-line bg-white p-5">
+      <section className="mt-10 rounded-xl border border-line bg-surface p-5">
         <h2 className="text-sm font-semibold text-ink-2">Contester un résultat</h2>
         <p className="mt-2 text-[15px] leading-relaxed text-ink-2">
           Si un constat vous paraît erroné, écrivez-nous en précisant le domaine et

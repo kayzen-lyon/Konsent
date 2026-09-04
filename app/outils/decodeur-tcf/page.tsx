@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function TcfDecoderPage() {
   return (
     <main className="mx-auto max-w-4xl px-6 py-16">
-      <p className="text-sm font-medium uppercase tracking-wide text-flame">Outil libre</p>
+      <p className="text-sm font-medium uppercase tracking-wide text-accent">Outil libre</p>
       <h1 className="mt-2 text-4xl font-semibold tracking-tight text-ink">
         Décodeur de chaîne de consentement TCF
       </h1>

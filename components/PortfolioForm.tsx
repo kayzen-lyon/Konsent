@@ -33,7 +33,7 @@ export function PortfolioForm({ max }: { max: number }) {
   }
 
   return (
-    <form onSubmit={submit} className="rounded-xl bg-white p-6 ring-1 ring-line" noValidate>
+    <form onSubmit={submit} className="rounded-xl bg-surface p-6 ring-1 ring-line shadow-md" noValidate>
       <h2 className="display text-xl text-ink-2">Analyser un portefeuille</h2>
 
       <div className="mt-5">
@@ -100,7 +100,7 @@ export function PortfolioForm({ max }: { max: number }) {
       <button
         type="submit"
         disabled={pending}
-        className="tech mt-6 w-full rounded bg-flame px-6 py-3.5 text-[11px] text-white transition hover:bg-flame-dark disabled:cursor-wait disabled:opacity-70"
+        className="tech mt-6 w-full rounded-full bg-flame shadow-md px-6 py-3.5 text-[11px] text-white transition hover:bg-flame-dark disabled:cursor-wait disabled:opacity-70"
       >
         {pending ? "Analyse du portefeuille…" : "Analyser le portefeuille"}
       </button>

@@ -77,7 +77,7 @@ function Decoded({
 
   return (
     <div className="mt-6 space-y-6">
-      <div className="rounded-lg border border-slate-200 bg-white p-6">
+      <div className="rounded-lg border border-slate-200 bg-surface p-6">
         <h2 className="display text-xl text-ink-2">Ce que la chaîne déclare</h2>
         <dl className="mt-4">
           <Row label="Version du cadre">TCF v{core.version}</Row>
@@ -106,7 +106,7 @@ function Decoded({
         </dl>
       </div>
 
-      <div className="rounded-lg border border-slate-200 bg-white p-6">
+      <div className="rounded-lg border border-slate-200 bg-surface p-6">
         <h2 className="display text-xl text-ink-2">Finalités</h2>
         <p className="mt-2 text-sm text-muted">
           À gauche, ce que le visiteur a accepté. À droite, ce qui est activé sans son accord, au
@@ -167,7 +167,7 @@ function Decoded({
             l&apos;accord du visiteur. La Cour de justice de l&apos;Union européenne a jugé le
             4 octobre 2024 (affaire C-621/22) qu&apos;un intérêt purement commercial ne suffit pas
             à lui seul à fonder cette base. C&apos;est le constat{" "}
-            <code className="rounded bg-white px-1.5 py-0.5 text-xs">KZC-TCF-006</code>.
+            <code className="rounded bg-surface px-1.5 py-0.5 text-xs">KZC-TCF-006</code>.
           </p>
         </div>
       ) : null}

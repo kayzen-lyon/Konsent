@@ -59,7 +59,7 @@ export default async function TrackerPage({ params }: { params: Promise<{ slug: 
         <p className="mt-2 text-[16px] leading-relaxed text-ink-2">{t.riskNotesFr}</p>
       </section>
 
-      <section className="mt-8 rounded-xl border border-line bg-white p-5">
+      <section className="mt-8 rounded-xl border border-line bg-surface p-5">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
           Rattachement et juridiction
         </h2>
@@ -115,7 +115,7 @@ export default async function TrackerPage({ params }: { params: Promise<{ slug: 
           <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
             Cookies connus
           </h2>
-          <div className="mt-3 overflow-x-auto rounded-xl border border-line bg-white">
+          <div className="mt-3 overflow-x-auto rounded-xl border border-line bg-surface">
             <table className="w-full text-left text-sm">
               <thead className="border-b border-line bg-paper text-xs uppercase text-muted">
                 <tr>
@@ -142,8 +142,8 @@ export default async function TrackerPage({ params }: { params: Promise<{ slug: 
 
       {t.alternativesEu && t.alternativesEu.length > 0 ? (
         <section className="mt-8 rounded-xl border border-flame/30 bg-flame-bg p-5">
-          <h2 className="text-sm font-semibold text-flame-dark">Alternatives européennes</h2>
-          <p className="mt-1.5 text-[15px] leading-relaxed text-flame-dark">
+          <h2 className="text-sm font-semibold text-flame-deep">Alternatives européennes</h2>
+          <p className="mt-1.5 text-[15px] leading-relaxed text-flame-deep">
             {t.alternativesEu.join(" · ")}
           </p>
         </section>

@@ -15,7 +15,7 @@ export default function ToolsPage() {
 
   return (
     <main className="mx-auto max-w-4xl px-6 py-16">
-      <p className="tech text-[10px] text-flame">Outils libres</p>
+      <p className="tech text-[10px] text-accent">Outils libres</p>
       <h1 className="display mt-2 text-4xl text-ink-2">
         Des réponses, pas des formulaires
       </h1>
@@ -38,7 +38,7 @@ export default function ToolsPage() {
                 href={tool.slug === "simulateur" ? "/simulateur" : `/outils/${tool.slug}`}
                 className="block rounded-lg border border-slate-200 p-6 transition hover:border-flame"
               >
-                <p className="text-sm text-flame">{tool.question}</p>
+                <p className="text-sm text-accent">{tool.question}</p>
                 <h2 className="display mt-2 text-xl text-ink-2">{tool.title}</h2>
                 <p className="mt-2 text-[15px] leading-relaxed text-muted">{tool.description}</p>
                 <p className="tech mt-3 text-[10px] text-muted">

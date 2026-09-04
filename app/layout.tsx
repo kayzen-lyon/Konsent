@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono, Outfit } from "next/font/google";
+import { Outfit, Plus_Jakarta_Sans } from "next/font/google";
 import Link from "next/link";
 import { EDITOR } from "@/lib/disclaimer";
 import { ContactCard } from "@/components/ContactCard";
@@ -11,36 +11,22 @@ import "./globals.css";
  * build. Aucune requête n'est émise vers un serveur tiers à l'exécution —
  * condition non négociable pour un produit qui signale précisément ce
  * comportement chez les autres (KZC-DEPOT-009).
- */
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-inter",
-  display: "swap",
-});
-
-/**
- * Outfit — police d'affichage commune aux sites Kayzen (système Nexus).
  *
- * C'est le porteur principal de la cohérence entre les sites : un lecteur qui
- * passe de nexus à konsent reconnaît la même main typographique avant même de
- * lire un mot. Réservée aux titres, comme le prescrit le système ; Inter
- * conserve le corps de texte, où sa lisibilité en petites tailles reste
- * supérieure.
- *
- * Auto-hébergée au build comme les deux autres : aucune requête tierce.
+ * Outfit porte les titres et les libellés, Plus Jakarta Sans le corps de
+ * texte : c'est l'appariement du système Kayzen Web, et le porteur principal
+ * de la cohérence entre les sites de l'agence.
  */
 const outfit = Outfit({
   subsets: ["latin"],
-  weight: ["700", "800", "900"],
+  weight: ["600", "700", "800"],
   variable: "--font-outfit",
   display: "swap",
 });
 
-const jetbrains = JetBrains_Mono({
+const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  weight: ["400", "500", "700"],
-  variable: "--font-mono-jb",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-jakarta",
   display: "swap",
 });
 
@@ -73,11 +59,11 @@ const NAV = [
 
 function Header() {
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-ink/95 backdrop-blur-md">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-5 py-3">
+    <header className="sticky top-0 z-50 bg-white/95 shadow-header backdrop-blur-[10px]">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-4">
         <Link href="/" className="flex items-center gap-2.5" aria-label="Konsent, accueil">
           <Logo className="h-7 w-7 text-flame" />
-          <span className="display text-lg tracking-tight text-white">KONSENT</span>
+          <span className="display text-lg tracking-tight text-secondary">KONSENT</span>
         </Link>
 
         <nav className="hidden items-center gap-1 lg:flex" aria-label="Navigation principale">
@@ -85,7 +71,7 @@ function Header() {
             <Link
               key={n.href}
               href={n.href}
-              className="tech rounded px-3 py-2 text-[11px] text-white/60 transition hover:text-white"
+              className="tech rounded-full px-3 py-2 text-[11px] text-muted transition hover:bg-surface hover:text-ink-2"
             >
               {n.label}
             </Link>
@@ -96,13 +82,13 @@ function Header() {
           <ContactCard />
           <Link
             href="/regles"
-            className="tech hidden rounded border border-white/25 px-3.5 py-2 text-[11px] text-white transition hover:border-white/60 sm:block"
+            className="tech hidden rounded-full border-2 border-flame px-4 py-2 text-[11px] text-flame transition hover:bg-surface-high sm:block"
           >
             Référentiel
           </Link>
           <Link
             href="/#scan"
-            className="tech rounded bg-flame px-4 py-2 text-[11px] text-white transition hover:bg-flame-dark"
+            className="tech rounded-full bg-flame px-5 py-2.5 text-[11px] text-white shadow-md transition hover:bg-flame-dark"
           >
             Auditer mon site
           </Link>
@@ -119,7 +105,7 @@ function Footer() {
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
           <div className="lg:col-span-2">
             <div className="flex items-center gap-2.5">
-              <Logo className="h-7 w-7 text-flame" />
+              <Logo className="h-7 w-7 text-flame-soft" />
               <span className="display text-lg tracking-tight text-white">KONSENT</span>
             </div>
             <p className="mt-3 max-w-sm text-sm leading-relaxed">
@@ -148,7 +134,7 @@ function Footer() {
                 ["/comparatif", "Comparatif CMP"],
               ].map(([h, l]) => (
                 <li key={h}>
-                  <Link href={h as string} className="transition hover:text-flame">
+                  <Link href={h as string} className="transition hover:text-white">
                     {l}
                   </Link>
                 </li>
@@ -171,7 +157,7 @@ function Footer() {
                 ["/bot", "Notre robot"],
               ].map(([h, l]) => (
                 <li key={h}>
-                  <Link href={h as string} className="transition hover:text-flame">
+                  <Link href={h as string} className="transition hover:text-white">
                     {l}
                   </Link>
                 </li>
@@ -191,7 +177,7 @@ function Footer() {
                 ["/contact", "Nous écrire"],
               ].map(([h, l]) => (
                 <li key={h}>
-                  <Link href={h as string} className="transition hover:text-flame">
+                  <Link href={h as string} className="transition hover:text-white">
                     {l}
                   </Link>
                 </li>
@@ -214,7 +200,7 @@ function Footer() {
                 // reproche aux autres les fuites d'URL par l'en-tête Referer,
                 // et notre politique globale la restreint déjà.
                 rel="noopener"
-                className="text-white/70 underline decoration-dotted underline-offset-2 transition hover:text-flame"
+                className="text-white/70 underline decoration-dotted underline-offset-2 transition hover:text-white"
               >
                 {EDITOR.agencyName}
               </a>
@@ -232,7 +218,7 @@ function Footer() {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr" className={`${inter.variable} ${outfit.variable} ${jetbrains.variable}`}>
+    <html lang="fr" className={`${outfit.variable} ${jakarta.variable}`}>
       <body className="min-h-screen">
         <a
           href="#contenu"

@@ -62,7 +62,7 @@ export default async function RulePage({ params }: { params: Promise<{ id: strin
         <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
           Constat technique
         </h2>
-        <p className="mt-2 rounded-lg border border-line bg-white px-4 py-3 font-mono text-[13px] leading-relaxed text-ink-2">
+        <p className="mt-2 rounded-lg border border-line bg-surface px-4 py-3 font-mono text-[13px] leading-relaxed text-ink-2">
           {rule.messageTech}
         </p>
       </section>
@@ -104,7 +104,7 @@ export default async function RulePage({ params }: { params: Promise<{ id: strin
         <ol className="mt-3 space-y-2">
           {rule.remediation.steps.map((s, i) => (
             <li key={s} className="flex gap-3 text-[15px] leading-relaxed text-ink-2">
-              <span className="tabular shrink-0 font-mono text-sm text-flame">
+              <span className="tabular shrink-0 font-mono text-sm text-accent">
                 {String(i + 1).padStart(2, "0")}
               </span>
               <span>{s}</span>

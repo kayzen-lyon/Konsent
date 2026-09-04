@@ -30,7 +30,7 @@ function adequacyTone(a: TrackerEntity["adequacy"]) {
 export function VendorTable({ vendors }: { vendors: readonly TrackerEntity[] }) {
   if (vendors.length === 0) {
     return (
-      <p className="rounded-lg border border-line bg-white p-5 text-sm text-muted">
+      <p className="rounded-lg border border-line bg-surface p-5 text-sm text-muted">
         Aucun destinataire tiers connu n&apos;a été identifié dans le document servi.
       </p>
     );
@@ -45,7 +45,7 @@ export function VendorTable({ vendors }: { vendors: readonly TrackerEntity[] }) 
   return (
     <div className="space-y-3">
       {sorted.map((v) => (
-        <article key={v.slug} className="rounded-xl border border-line bg-white p-5">
+        <article key={v.slug} className="rounded-xl border border-line bg-surface p-5">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
@@ -95,7 +95,7 @@ export function VendorTable({ vendors }: { vendors: readonly TrackerEntity[] }) 
           <p className="mt-2 text-xs text-muted">{ADEQUACY_LABELS[v.adequacy]}</p>
 
           {v.alternativesEu && v.alternativesEu.length > 0 ? (
-            <p className="mt-3 rounded-md bg-flame-bg px-3 py-2 text-[13px] text-flame-dark">
+            <p className="mt-3 rounded-md bg-flame-bg px-3 py-2 text-[13px] text-flame-deep">
               <span className="font-semibold">Alternatives européennes : </span>
               {v.alternativesEu.join(", ")}.
             </p>
@@ -118,7 +118,7 @@ export function JurisdictionBreakdown({ vendors }: { vendors: readonly TrackerEn
   const total = vendors.length;
 
   return (
-    <div className="rounded-xl border border-line bg-white p-5">
+    <div className="rounded-xl border border-line bg-surface p-5">
       <p className="text-sm font-semibold text-ink-2">Où partent les données</p>
       <ul className="mt-3 space-y-2.5">
         {entries.map(([jur, n]) => {

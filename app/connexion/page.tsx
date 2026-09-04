@@ -29,7 +29,7 @@ export default async function LoginPage({
 
   return (
     <main className="mx-auto max-w-md px-6 py-20">
-      <p className="tech text-[10px] text-flame">Espace client</p>
+      <p className="tech text-[10px] text-accent">Espace client</p>
       <h1 className="display mt-2 text-3xl text-ink-2">Connexion</h1>
       <p className="mt-4 text-[15px] leading-relaxed text-muted">
         Votre espace donne accès à l&apos;historique de vos analyses, à vos domaines surveillés et

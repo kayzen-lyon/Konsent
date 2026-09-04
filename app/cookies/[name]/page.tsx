@@ -64,26 +64,26 @@ export default async function CookiePage({ params }: { params: Promise<{ name: s
         <h2 className="tech text-[10px] text-muted">À quoi il sert</h2>
         <p className="mt-2 text-[17px] leading-relaxed text-ink-2">{cookie.purposeFr}</p>
         {cookie.noteFr ? (
-          <p className="mt-3 rounded-lg border-l-2 border-flame bg-white p-4 text-[14.5px] leading-relaxed text-ink-2 ring-1 ring-line">
+          <p className="mt-3 rounded-lg border-l-2 border-secondary bg-surface p-4 text-[14.5px] leading-relaxed text-ink-2 ring-1 ring-line shadow-md">
             {cookie.noteFr}
           </p>
         ) : null}
       </section>
 
       <section className="mt-8 grid gap-3 sm:grid-cols-3">
-        <div className="rounded-lg bg-white p-4 ring-1 ring-line">
+        <div className="rounded-lg bg-surface p-4 ring-1 ring-line shadow-md">
           <p className="tech text-[9px] text-muted">Durée de vie</p>
           <p className="mt-1 text-[15px] font-bold text-ink-2">
             {lifetimeLabel(cookie.maxLifetimeDays)}
           </p>
         </div>
-        <div className="rounded-lg bg-white p-4 ring-1 ring-line">
+        <div className="rounded-lg bg-surface p-4 ring-1 ring-line shadow-md">
           <p className="tech text-[9px] text-muted">Contient un identifiant</p>
           <p className="mt-1 text-[15px] font-bold text-ink-2">
             {cookie.isIdentifier ? "Oui" : "Non"}
           </p>
         </div>
-        <div className="rounded-lg bg-white p-4 ring-1 ring-line">
+        <div className="rounded-lg bg-surface p-4 ring-1 ring-line shadow-md">
           <p className="tech text-[9px] text-muted">Juridiction du destinataire</p>
           <p className="mt-1 text-[15px] font-bold text-ink-2">
             {vendor?.effectiveJurisdiction ?? "—"}
@@ -92,7 +92,7 @@ export default async function CookiePage({ params }: { params: Promise<{ name: s
       </section>
 
       {tooLong ? (
-        <section className="mt-6 rounded-lg border-l-2 border-warn bg-white p-5 ring-1 ring-line">
+        <section className="mt-6 rounded-lg border-l-2 border-warn bg-surface p-5 ring-1 ring-line shadow-md">
           <p className="tech text-[10px] text-warn">Point de vigilance</p>
           <p className="mt-2 text-[14.5px] leading-relaxed text-ink-2">
             Ce cookie dépasse les treize mois recommandés par la CNIL pour la durée de vie des
@@ -136,7 +136,7 @@ export default async function CookiePage({ params }: { params: Promise<{ name: s
       </section>
 
       {vendor ? (
-        <section className="mt-8 rounded-xl bg-white p-6 ring-1 ring-line">
+        <section className="mt-8 rounded-xl bg-surface p-6 ring-1 ring-line shadow-md">
           <h2 className="tech text-[10px] text-muted">Qui reçoit les données</h2>
           <p className="mt-2 text-[16px] font-bold text-ink-2">{vendor.entity}</p>
           {vendor.ultimateParent && vendor.ultimateParent !== vendor.entity ? (
@@ -193,7 +193,7 @@ export default async function CookiePage({ params }: { params: Promise<{ name: s
         </p>
         <Link
           href="/#scan"
-          className="tech mt-5 inline-block rounded bg-flame px-5 py-2.5 text-[11px] text-white transition hover:bg-flame-dark"
+          className="tech mt-5 inline-block rounded-full bg-flame shadow-md px-5 py-2.5 text-[11px] text-white transition hover:bg-flame-dark"
         >
           Auditer mon site gratuitement
         </Link>

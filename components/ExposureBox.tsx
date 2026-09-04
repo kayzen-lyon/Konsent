@@ -49,7 +49,7 @@ export function ExposureBox({
   } as const;
 
   return (
-    <div className="overflow-hidden rounded-xl border border-line bg-white">
+    <div className="overflow-hidden rounded-xl border border-line bg-surface">
       <div className="border-b border-line bg-paper px-5 py-3">
         <h3 className="text-sm font-semibold text-ink-2">Mise en perspective financière</h3>
       </div>

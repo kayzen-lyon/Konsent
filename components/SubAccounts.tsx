@@ -87,7 +87,7 @@ export function SubAccounts({
   }
 
   return (
-    <div className="rounded-xl bg-white p-5 ring-1 ring-line">
+    <div className="rounded-xl bg-surface p-5 ring-1 ring-line shadow-md">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <p className="tech text-[10px] text-muted">Sous-comptes clients</p>
         <p className="tabular text-[12px] text-muted">
@@ -140,7 +140,7 @@ export function SubAccounts({
         <button
           type="submit"
           disabled={busy || full}
-          className="tech rounded bg-flame px-4 py-2 text-[10px] text-white transition hover:bg-flame-dark disabled:opacity-50"
+          className="tech rounded-full bg-flame shadow-md px-4 py-2 text-[10px] text-white transition hover:bg-flame-dark disabled:opacity-50"
         >
           {busy ? "…" : "Rattacher"}
         </button>

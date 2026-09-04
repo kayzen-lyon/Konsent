@@ -19,7 +19,7 @@ export default function SimulatorPage() {
     <>
       <section className="grid-bg-dark bg-ink">
         <div className="mx-auto max-w-7xl px-5 py-14">
-          <p className="tech text-[10px] text-flame">Mise en perspective</p>
+          <p className="tech text-[10px] text-flame-soft">Mise en perspective</p>
           <h1 className="display mt-3 max-w-3xl text-3xl text-white sm:text-[2.8rem]">
             Ce que vous risquez, et ce que coûte de ne plus le risquer
           </h1>
@@ -77,7 +77,7 @@ export default function SimulatorPage() {
               </div>
             </div>
 
-            <div className="mt-8 rounded-lg bg-white p-5 ring-1 ring-line">
+            <div className="mt-8 rounded-lg bg-surface p-5 ring-1 ring-line shadow-md">
               <p className="tech text-[10px] text-muted">Sources des montants</p>
               <ul className="mt-3 space-y-2.5">
                 {cited.map((f) => (

@@ -135,7 +135,7 @@ export function ContactForm({ token }: { token: string }) {
       <button
         type="submit"
         disabled={state.tone === "sending"}
-        className="tech rounded-lg bg-flame px-5 py-3 text-[11px] text-white transition hover:bg-flame-dark disabled:opacity-50"
+        className="tech rounded-full bg-flame shadow-md px-5 py-3 text-[11px] text-white transition hover:bg-flame-dark disabled:opacity-50"
       >
         {state.tone === "sending" ? "Envoi…" : "Envoyer le message"}
       </button>

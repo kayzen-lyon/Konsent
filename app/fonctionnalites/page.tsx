@@ -210,7 +210,7 @@ export default function FeaturesPage() {
     <>
       <section className="grid-bg-dark bg-ink">
         <div className="mx-auto max-w-7xl px-5 py-14">
-          <p className="tech text-[10px] text-flame">Le produit</p>
+          <p className="tech text-[10px] text-flame-soft">Le produit</p>
           <h1 className="display mt-3 max-w-3xl text-3xl text-white sm:text-[2.8rem]">
             Ce qui sépare un audit d&apos;un scanner de cookies
           </h1>
@@ -229,8 +229,8 @@ export default function FeaturesPage() {
           {PILLARS.map((p) => {
             const count = RULES.filter((r) => p.families.includes(r.family)).length;
             return (
-              <div key={p.id} className="bg-white p-6">
-                <span className="tech text-[10px] text-flame">Pilier {p.index}</span>
+              <div key={p.id} className="bg-surface p-6">
+                <span className="tech text-[10px] text-accent">Pilier {p.index}</span>
                 <h3 className="mt-2 text-[17px] font-bold leading-snug text-ink-2">{p.title}</h3>
                 <p className="mt-2 text-[13px] leading-relaxed text-muted">{p.description}</p>
                 <p className="tech mt-4 text-[9px] text-muted">{count} règles</p>
@@ -246,14 +246,14 @@ export default function FeaturesPage() {
           {MODULES.map((m) => (
             <article
               key={m.tag}
-              className="grid gap-6 rounded-xl bg-white p-7 ring-1 ring-line lg:grid-cols-[1fr_1fr]"
+              className="grid gap-6 rounded-xl bg-surface p-7 ring-1 ring-line shadow-md lg:grid-cols-[1fr_1fr]"
             >
               <div>
                 <div className="flex items-center gap-3">
                   <span className="tech rounded bg-ink px-2 py-1 text-[9px] text-white">
                     {m.tag}
                   </span>
-                  <span className="tech text-[9px] text-flame">{m.status}</span>
+                  <span className="tech text-[9px] text-accent">{m.status}</span>
                 </div>
                 <h3 className="display mt-3 text-2xl text-ink-2">{m.title}</h3>
                 <p className="mt-2 text-[15px] font-medium text-ink-2">{m.lead}</p>
@@ -279,7 +279,7 @@ export default function FeaturesPage() {
 
       {/* ── Ce qui reste conditionné à une infrastructure ── */}
       <section className="mx-auto max-w-7xl px-5 pb-14">
-        <div className="rounded-xl border-l-2 border-warn bg-white p-6 ring-1 ring-line">
+        <div className="rounded-xl border-l-2 border-warn bg-surface p-6 ring-1 ring-line shadow-md">
           <p className="tech text-[10px] text-warn">Limites assumées</p>
           <h2 className="display mt-2 text-xl text-ink-2">
             Ce qui suppose une base de données
@@ -304,13 +304,13 @@ export default function FeaturesPage() {
         <div className="flex flex-wrap justify-center gap-3">
           <Link
             href="/#scan"
-            className="tech rounded bg-flame px-7 py-3.5 text-[11px] text-white transition hover:bg-flame-dark"
+            className="tech rounded-full bg-flame shadow-md px-7 py-3.5 text-[11px] text-white transition hover:bg-flame-dark"
           >
             Auditer mon site
           </Link>
           <Link
             href="/regles"
-            className="tech rounded border border-ink/20 px-7 py-3.5 text-[11px] text-ink-2 transition hover:border-flame hover:text-flame"
+            className="tech rounded-full border-2 border-flame px-7 py-3.5 text-[11px] text-flame transition hover:bg-surface-high"
           >
             Parcourir le référentiel
           </Link>

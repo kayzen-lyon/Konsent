@@ -57,8 +57,8 @@ export default async function TermPage({ params }: { params: Promise<{ term: str
       </div>
 
       {entry.reference ? (
-        <p className="mt-8 border-l-2 border-flame pl-4 text-[13.5px] leading-relaxed text-muted">
-          <span className="tech text-[9px] text-flame">Référence</span>
+        <p className="mt-8 border-l-2 border-secondary pl-4 text-[13.5px] leading-relaxed text-muted">
+          <span className="tech text-[9px] text-accent">Référence</span>
           <br />
           {entry.reference}
         </p>
@@ -72,7 +72,7 @@ export default async function TermPage({ params }: { params: Promise<{ term: str
               <li key={r.slug}>
                 <Link
                   href={`/glossaire/${r.slug}`}
-                  className="group block rounded-lg bg-white p-4 ring-1 ring-line transition hover:ring-flame"
+                  className="group block rounded-lg bg-surface p-4 ring-1 ring-line shadow-md transition hover:ring-flame"
                 >
                   <span className="text-[15px] font-bold text-ink-2 group-hover:text-flame">
                     {r.term}
@@ -93,7 +93,7 @@ export default async function TermPage({ params }: { params: Promise<{ term: str
         </p>
         <Link
           href="/#scan"
-          className="tech mt-5 inline-block rounded bg-flame px-5 py-2.5 text-[11px] text-white transition hover:bg-flame-dark"
+          className="tech mt-5 inline-block rounded-full bg-flame shadow-md px-5 py-2.5 text-[11px] text-white transition hover:bg-flame-dark"
         >
           Auditer mon site
         </Link>

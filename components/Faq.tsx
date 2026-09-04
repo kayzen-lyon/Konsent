@@ -14,12 +14,12 @@ export function Faq({ items }: { items: readonly QA[] }) {
       {items.map((item) => (
         <details
           key={item.q}
-          className="group rounded-lg border border-line bg-white transition hover:border-line-2"
+          className="group rounded-lg border border-line bg-surface transition hover:border-line-2"
         >
           <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4">
             <span className="text-[15px] font-semibold leading-snug text-ink-2">{item.q}</span>
             <span
-              className="shrink-0 text-flame transition group-open:rotate-45"
+              className="shrink-0 text-accent transition group-open:rotate-45"
               aria-hidden="true"
             >
               <svg viewBox="0 0 16 16" className="h-4 w-4" fill="none">

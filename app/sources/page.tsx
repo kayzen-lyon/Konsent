@@ -11,7 +11,7 @@ export default function SourcesPage() {
   return (
     <div className="mx-auto max-w-3xl px-5 py-12 sm:py-16">
       <header>
-        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-flame">
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-accent">
           Transparence
         </p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight text-ink-2 sm:text-4xl">
@@ -34,7 +34,7 @@ export default function SourcesPage() {
         </h2>
         <ul className="mt-4 space-y-3">
           {PUBLIC_FACTS.map((f) => (
-            <li key={f.id} className="rounded-xl border border-line bg-white p-4">
+            <li key={f.id} className="rounded-xl border border-line bg-surface p-4">
               <p className="text-[15px] font-medium text-ink-2">{f.claim}</p>
               <p className="mt-1 text-[15px] text-ink-2">{f.value}</p>
               <p className="mt-2 text-xs text-muted">

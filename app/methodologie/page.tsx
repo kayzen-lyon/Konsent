@@ -13,7 +13,7 @@ export default function MethodologyPage() {
   return (
     <div className="mx-auto max-w-3xl px-5 py-12 sm:py-16">
       <header>
-        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-flame">
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-accent">
           Transparence
         </p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight text-ink-2 sm:text-4xl">
@@ -53,7 +53,7 @@ export default function MethodologyPage() {
           règles déclenchées, pondérés par un facteur d&apos;occurrence à rendements
           décroissants :
         </p>
-        <pre className="mt-3 overflow-x-auto rounded-lg border border-line bg-white p-4 font-mono text-[13px] text-ink-2">
+        <pre className="mt-3 overflow-x-auto rounded-lg border border-line bg-surface p-4 font-mono text-[13px] text-ink-2">
           {`score = 100 − Σ ( poids_règle × facteur )
 facteur = 1 + ln(occurrences) / 4`}
         </pre>

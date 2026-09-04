@@ -58,7 +58,7 @@ export default async function DocumentPage({
         </p>
         <Link
           href="/documents"
-          className="tech mt-6 inline-block rounded bg-flame px-5 py-2.5 text-[11px] text-white transition hover:bg-flame-dark"
+          className="tech mt-6 inline-block rounded-full bg-flame shadow-md px-5 py-2.5 text-[11px] text-white transition hover:bg-flame-dark"
         >
           Retour aux documents
         </Link>
@@ -72,7 +72,7 @@ export default async function DocumentPage({
   } catch (error) {
     return (
       <div className="mx-auto max-w-3xl px-5 py-16">
-        <div className="rounded-xl border-l-2 border-warn bg-white p-6 ring-1 ring-line">
+        <div className="rounded-xl border-l-2 border-warn bg-surface p-6 ring-1 ring-line shadow-md">
           <h1 className="display text-xl text-ink-2">Génération impossible</h1>
           <p className="mt-2 text-[15px] text-muted">
             {error instanceof ScanError ? error.message : "L'analyse préalable n'a pas abouti."}
@@ -103,7 +103,7 @@ export default async function DocumentPage({
           <span className="tech rounded bg-ink px-2 py-1 text-[9px] text-white">
             {doc.templateId}
           </span>
-          <span className="tech text-[9px] text-flame">Brouillon</span>
+          <span className="tech text-[9px] text-accent">Brouillon</span>
           {template.fedByScan ? (
             <span className="tech text-[9px] text-muted">alimenté par le scan</span>
           ) : null}
@@ -114,7 +114,7 @@ export default async function DocumentPage({
       </header>
 
       {doc.todos.length > 0 ? (
-        <div className="mt-8 rounded-xl border-l-2 border-warn bg-white p-5 ring-1 ring-line">
+        <div className="mt-8 rounded-xl border-l-2 border-warn bg-surface p-5 ring-1 ring-line shadow-md">
           <p className="tech text-[10px] text-warn">
             {doc.todos.length} information(s) que nous ne pouvons pas deviner
           </p>
@@ -157,7 +157,7 @@ export default async function DocumentPage({
             ) : null}
 
             {s.table ? (
-              <div className="mt-4 overflow-x-auto rounded-xl bg-white ring-1 ring-line">
+              <div className="mt-4 overflow-x-auto rounded-xl bg-surface ring-1 ring-line shadow-md">
                 <table className="w-full text-left text-sm">
                   <thead className="bg-paper">
                     <tr>
@@ -192,7 +192,7 @@ export default async function DocumentPage({
         ))}
       </article>
 
-      <footer className="mt-12 rounded-xl bg-white p-5 ring-1 ring-line">
+      <footer className="mt-12 rounded-xl bg-surface p-5 ring-1 ring-line shadow-md">
         <p className="text-[13px] leading-relaxed text-muted">{doc.footer}</p>
       </footer>
 
