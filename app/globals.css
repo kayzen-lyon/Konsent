@@ -257,6 +257,24 @@ select:focus {
   animation: rise 0.4s ease both;
 }
 
+/* Reflet de ShinyText (components/bits) : le dégradé est peint dans le texte
+ * et glisse de droite à gauche. Coupé par la règle de mouvement réduit. */
+.shiny-text {
+  display: inline-block;
+  background-size: 200% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 4s linear infinite;
+}
+
+@keyframes shine {
+  to {
+    background-position: -100% 0;
+  }
+}
+
 @keyframes blink {
   0%,
   49% {

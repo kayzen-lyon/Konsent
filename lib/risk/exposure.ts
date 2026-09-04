@@ -87,10 +87,4 @@ export function computeExposure({ revenueEur, findings }: ExposureInput): Exposu
   };
 }
 
-export function formatEur(value: number): string {
-  return new Intl.NumberFormat("fr-FR", {
-    style: "currency",
-    currency: "EUR",
-    maximumFractionDigits: 0,
-  }).format(value);
-}
+export { formatEur } from "@/lib/format";
