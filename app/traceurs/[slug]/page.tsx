@@ -30,7 +30,7 @@ export default async function TrackerPage({ params }: { params: Promise<{ slug: 
   return (
     <div className="mx-auto max-w-3xl px-5 py-12 sm:py-16">
       <nav className="mb-6 text-sm">
-        <Link href="/traceurs" className="text-accent hover:underline">
+        <Link href="/traceurs" className="text-flame hover:underline">
           ← Base des traceurs
         </Link>
       </nav>
@@ -142,8 +142,8 @@ export default async function TrackerPage({ params }: { params: Promise<{ slug: 
 
       {t.alternativesEu && t.alternativesEu.length > 0 ? (
         <section className="mt-8 rounded-xl border border-flame/30 bg-flame-bg p-5">
-          <h2 className="text-sm font-semibold text-flame-dark">Alternatives européennes</h2>
-          <p className="mt-1.5 text-[15px] leading-relaxed text-flame-dark">
+          <h2 className="text-sm font-semibold text-flame-deep">Alternatives européennes</h2>
+          <p className="mt-1.5 text-[15px] leading-relaxed text-flame-deep">
             {t.alternativesEu.join(" · ")}
           </p>
         </section>

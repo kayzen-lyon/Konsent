@@ -40,7 +40,7 @@ export function LegalPage({
       </p>
 
       {intro ? (
-        <div className="mt-6 rounded-xl border-l-2 border-flame bg-surface p-5 text-[15px] leading-relaxed text-ink-2 ring-1 ring-line">
+        <div className="mt-6 rounded-xl border-l-2 border-secondary bg-surface p-5 text-[15px] leading-relaxed text-ink-2 ring-1 ring-line shadow-md">
           {intro}
         </div>
       ) : null}
@@ -61,7 +61,7 @@ export function LegalPage({
             ] as const
           ).map(([href, label]) => (
             <li key={href}>
-              <Link href={href} className="text-accent hover:underline">
+              <Link href={href} className="text-flame hover:underline">
                 {label}
               </Link>
             </li>
@@ -118,7 +118,7 @@ export function EditorIdentity() {
       <div className="contents">
         <dt className="tech text-[10px] text-muted sm:pt-1">Téléphone</dt>
         <dd className="text-[15px]">
-          <a href={`tel:${EDITOR.phoneE164}`} className="text-accent hover:underline">
+          <a href={`tel:${EDITOR.phoneE164}`} className="text-flame hover:underline">
             {EDITOR.phone}
           </a>
         </dd>
@@ -126,7 +126,7 @@ export function EditorIdentity() {
       <div className="contents">
         <dt className="tech text-[10px] text-muted sm:pt-1">Courriel</dt>
         <dd className="text-[15px]">
-          <a href={`mailto:${EDITOR.email}`} className="text-accent hover:underline">
+          <a href={`mailto:${EDITOR.email}`} className="text-flame hover:underline">
             {EDITOR.email}
           </a>
         </dd>

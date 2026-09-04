@@ -119,7 +119,7 @@ export function FineSimulator({ compact = false }: { compact?: boolean }) {
 
   return (
     <div
-      className={`rounded-xl bg-surface p-6 shadow-elevated ring-1 ring-ink/10 ${compact ? "" : "sm:p-8"}`}
+      className={`rounded-xl bg-surface p-6 shadow-lg ring-1 ring-ink/10 ${compact ? "" : "sm:p-8"}`}
     >
       <div className="flex items-start justify-between gap-4">
         <div>

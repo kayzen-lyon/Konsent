@@ -47,10 +47,10 @@ export default function GuidesIndexPage() {
                 <li key={g.slug}>
                   <Link
                     href={`/guides/${g.slug}`}
-                    className="group flex h-full flex-col rounded-lg bg-surface p-4 ring-1 ring-line transition hover:ring-flame"
+                    className="group flex h-full flex-col rounded-lg bg-surface p-4 ring-1 ring-line shadow-md transition hover:ring-flame"
                   >
                     <div className="flex items-start justify-between gap-2">
-                      <span className="text-[15px] font-bold leading-snug text-ink-2 group-hover:text-accent">
+                      <span className="text-[15px] font-bold leading-snug text-ink-2 group-hover:text-flame">
                         {g.tracker.name}
                       </span>
                       <Pill tone={g.tracker.adequacy === "EEA" ? "ok" : "danger"}>
@@ -78,7 +78,7 @@ export default function GuidesIndexPage() {
           </p>
           <Link
             href="/#scan"
-            className="tech mt-5 inline-block rounded bg-white px-5 py-2.5 text-[11px] text-ink transition hover:bg-flame-soft"
+            className="tech mt-5 inline-block rounded-full bg-flame shadow-md px-5 py-2.5 text-[11px] text-white transition hover:bg-flame-dark"
           >
             Auditer mon site
           </Link>

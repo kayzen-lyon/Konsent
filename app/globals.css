@@ -1,94 +1,107 @@
 @import "tailwindcss";
 
 /**
- * Système de design Konsent — aligné sur Konforme (konforme.kayzen-lyon.com).
+ * Système de design Konsent — aligné sur Kayzen Web (kayzen-lyon.com).
  *
- * Jetons mesurés sur le site Konforme : palette monochrome ardoise, police
- * système, rayons 4 / 8 / 12 / 16, ombres « card » et « elevated », mouvement
- * à 150 ms. Aucun bleu de marque : le primaire est une encre profonde
- * (#101828), l'accent une ardoise moyenne (#44536f) qui sert aussi de texte
- * atténué.
+ * « Chaleur technique » : terracotta d'action (#b74831) réservée aux
+ * interactions, marine profond (#1f3b61) pour la structure et les bandes,
+ * émeraude (#34d399) pour les états positifs. Outfit en titrage et en
+ * libellés, Plus Jakarta Sans en corps de texte. Boutons en pilule, cartes
+ * à 24 px de rayon, ombres directionnelles, transitions à 200 ms.
  *
  * Les noms de jetons historiques sont CONSERVÉS (`--color-flame`,
  * `--color-ink`) bien que la teinte ait changé : renommer aurait imposé de
  * toucher plusieurs centaines d'occurrences dans les composants pour un
- * résultat identique à l'écran. Le commentaire porte l'information que le
- * nom ne porte plus. Correspondance :
+ * résultat identique à l'écran. Correspondance avec la fiche Kayzen Web :
  *
- *   flame       → primary  #101828   (boutons pleins, bordures actives)
- *   accent      → accent   #44536f   (surtitres, liens, icônes)
- *   flame-soft  → background #d4dbe8 (accent posé sur une surface sombre)
- *   ink / ink-2 → primary  #101828   (bandes sombres, texte courant)
- *   paper       → background #d4dbe8 (fond de page)
- *   surface     → surface  #f3f5fa   (cartes, champs, boîtes de dialogue)
- *   line        → border   #d4dbe8
- *   muted       → text-muted #44536f
- *
- * Les valeurs marquées « dérivée » ne figurent pas dans la fiche Konforme :
- * elles interpolent deux jetons voisins pour un état (survol, bordure
- * appuyée) que la fiche ne documente pas.
+ *   flame        → primary                  #b74831  (boutons, liens, focus)
+ *   flame-dark   → button-primary-hover     #a03d28
+ *   flame-bg     → primary-container        #e8d5cf  (badge-primary)
+ *   flame-deep   → on-primary-container     #5a2817  (texte sur flame-bg)
+ *   flame-soft   → inverse-primary          #ffb399  (accent sur bande marine)
+ *   secondary    → secondary                #1f3b61  (surtitres, structure)
+ *   accent       → secondary                #1f3b61  (alias, surtitres et icônes)
+ *   ink          → secondary                #1f3b61  (bandes sombres, bannière)
+ *   ink-2        → on-surface               #1f2937  (texte courant, titres)
+ *   ink-3        → on-secondary-container   #0f1f35
+ *   paper        → background               #ffffff
+ *   surface      → surface                  #ffffff  (cartes)
+ *   surface-low  → surface-container-low    #f0f0f0  (champs, survol de carte)
+ *   surface-high → surface-container-high   #e9ecef  (survol de bouton secondaire)
+ *   line         → outline-variant          #d0d0d0
+ *   line-2       → outline                  #9ca3af
+ *   muted        → on-surface-variant       #6c757d
  *
  * Les couleurs de CONSTAT restent une famille distincte de la marque, et
  * c'est la seule contrainte que l'alignement ne peut pas lever : dans un
  * rapport d'audit, le vert dit « conforme » et le rouge dit « critique ».
- * Konforme ne les spécifie pas ; elles sont inchangées.
+ * Elles sont accordées à la fiche — error pour le critique, tertiary pour
+ * le conforme — mais jamais employées comme accents décoratifs. Le jaune
+ * d'écart modéré n'a pas d'équivalent dans la fiche et reste inchangé.
  *
- * Polices : pile système, comme Konforme. Aucun fichier de police n'est
- * chargé, ni au build ni à l'exécution — Konsent signale le chargement de
- * Google Fonts comme un écart, il ne peut pas le pratiquer.
+ * Les polices sont auto-hébergées au moment du build (next/font) : aucune
+ * requête vers un serveur tiers à l'exécution. Konsent signale le
+ * chargement de Google Fonts comme un écart — il ne peut pas le pratiquer.
  */
 @theme {
-  /* Surfaces sombres — le primaire Konforme sert de bande sombre */
-  --color-ink: #101828;
-  --color-ink-2: #101828;
-  --color-ink-3: #1d2939; /* dérivée : un cran au-dessus du primaire */
+  /* Marine — bandes sombres, bannière, structure */
+  --color-ink: #1f3b61;
+  --color-ink-2: #1f2937;
+  --color-ink-3: #0f1f35;
+  --color-secondary: #1f3b61;
+  --color-secondary-bg: #c5d9f1;
+  --color-accent: #1f3b61;
 
-  /* Primaire Konforme — boutons pleins et signal d'action */
-  --color-flame: #101828;
-  --color-flame-dark: #1d2939; /* dérivée : état de survol des boutons pleins */
-  --color-flame-soft: #d4dbe8; /* accent posé sur une surface sombre */
-  --color-flame-bg: #e4e9f2; /* dérivée : entre surface et background */
+  /* Terracotta — action et interaction uniquement */
+  --color-flame: #b74831;
+  --color-flame-dark: #a03d28;
+  --color-flame-bg: #e8d5cf;
+  --color-flame-deep: #5a2817;
+  --color-flame-soft: #ffb399;
 
-  /* Accent Konforme — surtitres, liens, icônes ; identique au texte atténué */
-  --color-accent: #44536f;
-
-  /* Constats — hors fiche Konforme, inchangés et distincts de la marque */
-  --color-crit: #b91c1c;
+  /* Constats — accordés à la fiche, distincts de la marque */
+  --color-crit: #dc2626;
   --color-crit-bg: #fee2e2;
   --color-warn: #a16207;
   --color-warn-bg: #fef9c3;
-  --color-ok: #047857;
-  --color-ok-bg: #d1fae5;
+  --color-ok: #1a6b52;
+  --color-ok-bg: #a6f3d5;
 
   /* Surfaces claires */
-  --color-paper: #d4dbe8;
-  --color-surface: #f3f5fa;
-  --color-line: #d4dbe8;
-  --color-line-2: #b9c3d6; /* dérivée : bordure appuyée */
-  --color-muted: #44536f;
+  --color-paper: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-dim: #f5f5f5;
+  --color-surface-low: #f0f0f0;
+  --color-surface-high: #e9ecef;
+  --color-line: #d0d0d0;
+  --color-line-2: #9ca3af;
+  --color-muted: #6c757d;
   --color-on-primary: #ffffff;
 
-  --font-sans:
-    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
-    sans-serif;
-  --font-display: var(--font-sans);
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-outfit), var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
 
-  /* Rayons Konforme — 4 / 8 / 12 / 16, plus la pilule (rounded-full) */
-  --radius: 4px;
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
+  /* Rayons Kayzen — 4 / 8 / 12 / 16 / 24, plus la pilule (rounded-full) */
+  --radius-sm: 0.25rem;
+  --radius: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
 
-  /* Élévations Konforme */
-  --shadow-card: 0 10px 30px 0 rgb(0 0 0 / 0.25);
-  --shadow-elevated: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  /* Élévations Kayzen — sm pour les badges, md pour cartes et boutons,
+   * lg pour les surfaces flottantes (modales, terminal du héros). */
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.06);
+  --shadow-md: 0 4px 12px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 16px 40px rgb(0 0 0 / 0.12);
+  --shadow-header: 0 1px 3px rgb(0 0 0 / 0.08);
 
-  /* Mouvement Konforme — une seule durée, une seule courbe */
-  --default-transition-duration: 150ms;
-  --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-konforme: cubic-bezier(0.4, 0, 0.2, 1);
+  /* Conteneur à 1400 px (max-w-7xl) */
+  --container-7xl: 87.5rem;
+
+  /* Mouvement Kayzen — 200 ms, courbe « ease » */
+  --default-transition-duration: 200ms;
+  --default-transition-timing-function: ease;
 }
 
 html {
@@ -100,35 +113,50 @@ body {
   background: var(--color-paper);
   color: var(--color-ink-2);
   font-family: var(--font-sans);
-  font-size: 14px;
-  line-height: 1.43;
+  font-size: 16px;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
-/* Titrage Konforme.
- * display : 800 / 1.08 / -1.5 px à 60 px, soit -0.025 em.
- * heading : 700 / 1.11 / -0.9 px à 36 px, soit le même -0.025 em.
- * Les <h2> et <h3> portent l'échelle « heading » ; le <h1> l'échelle « display ». */
+/* Titrage Kayzen — Outfit.
+ * display     : 800 / 72 px sur 63,84 px / -0.04 em  (h1 de héros)
+ * headline-lg : 700 / 48 px sur 40 px   / -0.02 em  (h2)
+ * headline-md : 700 / 36 px sur 28 px   / -0.01 em  (h3) */
 .display {
   font-family: var(--font-display);
   font-weight: 800;
-  letter-spacing: -0.025em;
-  line-height: 1.08;
+  letter-spacing: -0.04em;
+  line-height: 1.13;
 }
 
-h2.display,
+h2.display {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
 h3.display {
   font-weight: 700;
-  line-height: 1.11;
+  letter-spacing: -0.01em;
+  line-height: 1.29;
 }
 
-/* Petites capitales techniques : libellés, statuts, en-têtes de tableau. */
+/* Libellés (label-md Kayzen) : Outfit 700, en capitales espacées pour les
+ * surtitres, statuts, en-têtes de tableau et textes de bouton. */
 .tech {
-  font-family: var(--font-mono);
-  font-weight: 500;
+  font-family: var(--font-display);
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.09em;
+  letter-spacing: 0.08em;
+}
+
+/* Champs (input-field-focus Kayzen) : bordure primaire et halo à 10 %. */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,
+textarea:focus,
+select:focus {
+  border-color: var(--color-flame);
+  box-shadow: 0 0 0 3px rgb(183 72 49 / 0.1);
 }
 
 .tabular {
@@ -136,8 +164,8 @@ h3.display {
 }
 
 /**
- * Anneau de focus — 2 px de primaire. Sur une bande sombre, le primaire se
- * confondrait avec le fond : l'anneau y passe en blanc.
+ * Anneau de focus — 2 px de terracotta. Sur une bande marine, l'anneau
+ * passe en blanc pour rester visible.
  *
  * `outline-offset` empêche l'anneau de se confondre avec la bordure de
  * l'élément : un anneau collé au bord est le défaut le plus courant, et il
@@ -186,8 +214,8 @@ h3.display {
 /* Trame de fond discrète du héros. */
 .grid-bg {
   background-image:
-    linear-gradient(to right, rgba(16, 24, 40, 0.06) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(16, 24, 40, 0.06) 1px, transparent 1px);
+    linear-gradient(to right, rgba(31, 59, 97, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(31, 59, 97, 0.06) 1px, transparent 1px);
   background-size: 44px 44px;
 }
 
@@ -207,9 +235,10 @@ h3.display {
   );
 }
 
-/* Soulignement ardoise peint à la main sous un mot clé du titre. */
+/* Soulignement peint à la main sous un mot clé du titre — primary-container,
+ * une teinte de conteneur, jamais le primaire lui-même sur un élément passif. */
 .underline-flame {
-  background-image: linear-gradient(transparent 62%, rgba(68, 83, 111, 0.35) 62%);
+  background-image: linear-gradient(transparent 62%, #e8d5cf 62%);
   background-repeat: no-repeat;
 }
 
@@ -225,7 +254,7 @@ h3.display {
 }
 
 .rise {
-  animation: rise 150ms var(--ease-konforme) both;
+  animation: rise 0.4s ease both;
 }
 
 @keyframes blink {
@@ -286,7 +315,7 @@ h3.display {
   border-radius: 999px;
   background: var(--color-flame);
   border: 3px solid #fff;
-  box-shadow: 0 1px 6px rgba(16, 24, 40, 0.35);
+  box-shadow: 0 1px 6px rgba(31, 41, 55, 0.35);
   cursor: pointer;
 }
 
@@ -296,7 +325,7 @@ h3.display {
   border-radius: 999px;
   background: var(--color-flame);
   border: 3px solid #fff;
-  box-shadow: 0 1px 6px rgba(16, 24, 40, 0.35);
+  box-shadow: 0 1px 6px rgba(31, 41, 55, 0.35);
   cursor: pointer;
 }
 
@@ -313,11 +342,11 @@ h3.display {
   .grid-bg-dark,
   .bg-ink {
     background: #fff !important;
-    color: #101828 !important;
+    color: #1f2937 !important;
   }
   .grid-bg-dark *,
   .bg-ink * {
-    color: #101828 !important;
+    color: #1f2937 !important;
   }
 
   /* Les preuves repliées à l'écran s'ouvrent sur le papier : un constat sans
@@ -358,21 +387,23 @@ h3.display {
   }
 }
 
-/* ═══════════════ Cohérence inter-sites — système Konforme ════════════════
+/* ═══════════════ Cohérence inter-sites — système Kayzen Web ══════════════
  *
- * Ce site reprend les jetons mesurés sur konforme.kayzen-lyon.com : palette
- * monochrome ardoise (#101828 / #44536f / #d4dbe8 / #f3f5fa), pile de polices
- * système, rayons 4-8-12-16, ombres « card » et « elevated », mouvement à
- * 150 ms sur cubic-bezier(0.4, 0, 0.2, 1), anneau de focus de 2 px et cible
- * tactile de 44 px.
+ * Ce site reprend les jetons de kayzen-lyon.com : terracotta d'action
+ * #b74831, marine #1f3b61, émeraude #34d399 pour le positif, Outfit en
+ * titrage et libellés, Plus Jakarta Sans en corps, boutons en pilule,
+ * cartes à 24 px, ombres 0 4px 12px, transitions à 200 ms, anneau de focus
+ * de 2 px et cible tactile de 44 px.
  *
- * Une seule adaptation, et elle n'est pas négociable : les couleurs de
- * CONSTAT restent une famille à part. Dans un rapport d'audit, le rouge dit
- * « critique », le jaune « écart modéré » et le vert « conforme ». Elles ne
- * sont jamais employées comme accents décoratifs, faute de quoi un badge de
- * navigation se lirait comme une appréciation de conformité.
+ * Deux règles de la fiche guident les composants :
+ *  - le terracotta n'apparaît que sur des éléments interactifs (boutons,
+ *    liens, focus) — les filets décoratifs et l'anneau de mise en avant
+ *    sont en marine ;
+ *  - les couleurs de CONSTAT restent une famille à part. Dans un rapport
+ *    d'audit, le rouge dit « critique », le jaune « écart modéré » et le
+ *    vert « conforme ». Elles ne sont jamais employées comme accents
+ *    décoratifs.
  *
- * Sur une bande sombre (`bg-ink`, elle-même au primaire), l'accent et les
- * boutons pleins s'inversent : texte en `flame-soft`, bouton blanc à texte
- * primaire. Ces inversions sont écrites dans les composants, pas en cascade.
+ * Sur une bande marine (`bg-ink`), les surtitres passent en `flame-soft`
+ * (inverse-primary) et les boutons restent terracotta sur blanc.
  */

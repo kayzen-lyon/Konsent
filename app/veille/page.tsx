@@ -86,7 +86,7 @@ export default function RegWatchPage() {
 
               <div className="mt-6 space-y-4">
                 {group.entries.map((e) => (
-                  <article key={e.id} className="rounded-xl bg-surface p-6 ring-1 ring-line">
+                  <article key={e.id} className="rounded-xl bg-surface p-6 ring-1 ring-line shadow-md">
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
@@ -117,7 +117,7 @@ export default function RegWatchPage() {
                       <p className="mt-1.5 text-[14px] leading-relaxed text-ink-2">{e.impact}</p>
                     </div>
 
-                    <div className="mt-3 border-l-2 border-flame pl-4">
+                    <div className="mt-3 border-l-2 border-secondary pl-4">
                       <p className="tech text-[9px] text-accent">Recommandation</p>
                       <p className="mt-1 text-[14px] leading-relaxed text-ink-2">{e.action}</p>
                     </div>
@@ -135,7 +135,7 @@ export default function RegWatchPage() {
                                 key={id}
                                 href={`/regles/${id.toLowerCase()}`}
                                 title={rule?.title ?? id}
-                                className="rounded border border-line px-2 py-1 font-mono text-[10px] text-muted transition hover:border-flame hover:text-accent"
+                                className="rounded border border-line px-2 py-1 font-mono text-[10px] text-muted transition hover:border-flame hover:text-flame"
                               >
                                 {id}
                               </Link>
@@ -149,7 +149,7 @@ export default function RegWatchPage() {
                       Source :{" "}
                       <a
                         href={e.sourceUrl}
-                        className="text-accent hover:underline"
+                        className="text-flame hover:underline"
                         rel="noopener noreferrer nofollow"
                         target="_blank"
                       >

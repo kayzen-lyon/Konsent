@@ -24,9 +24,9 @@ export function SectionTitle({
 
 const SEVERITY_STYLES: Record<Severity, string> = {
   CRITICAL: "bg-crit text-white",
-  MAJOR: "bg-flame text-white",
+  MAJOR: "bg-secondary text-white",
   MODERATE: "bg-warn-bg text-warn",
-  MINOR: "bg-slate-200 text-slate-700",
+  MINOR: "bg-surface-high text-ink-2",
   INFO: "bg-ok-bg text-ok",
 };
 
@@ -34,7 +34,7 @@ const SEVERITY_STYLES: Record<Severity, string> = {
 export function SeverityBadge({ severity }: { severity: Severity }) {
   return (
     <span
-      className={`tech inline-flex shrink-0 items-center rounded px-2 py-1 text-[9px] ${SEVERITY_STYLES[severity]}`}
+      className={`tech inline-flex shrink-0 items-center rounded-full px-2.5 py-1 text-[9px] ${SEVERITY_STYLES[severity]}`}
     >
       {SEVERITY_LABELS[severity]}
     </span>
@@ -49,14 +49,14 @@ export function Pill({
   tone?: "neutral" | "danger" | "warn" | "ok" | "flame";
 }) {
   const tones = {
-    neutral: "bg-slate-100 text-slate-700",
+    neutral: "bg-surface-high text-ink-2",
     danger: "bg-crit-bg text-crit",
     warn: "bg-warn-bg text-warn",
     ok: "bg-ok-bg text-ok",
-    flame: "bg-flame-bg text-flame-dark",
+    flame: "bg-flame-bg text-flame-deep",
   } as const;
   return (
-    <span className={`inline-flex items-center rounded px-2 py-0.5 text-[11px] font-medium ${tones[tone]}`}>
+    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium ${tones[tone]}`}>
       {children}
     </span>
   );
@@ -89,7 +89,7 @@ export function Disclaimer({ variant = "long" }: { variant?: "long" | "short" })
     );
   }
   return (
-    <aside className="rounded-lg border-l-2 border-ink-2 bg-surface p-5 ring-1 ring-line">
+    <aside className="rounded-lg border-l-2 border-ink-2 bg-surface p-5 ring-1 ring-line shadow-md">
       <p className="tech text-[10px] text-muted">Avertissement</p>
       <p className="mt-2 text-[13px] leading-relaxed text-muted">{DISCLAIMER_LONG}</p>
     </aside>
@@ -115,7 +115,7 @@ export function Stat({
   }[tone];
 
   return (
-    <div className="rounded-lg bg-surface p-4 ring-1 ring-line">
+    <div className="rounded-lg bg-surface p-4 ring-1 ring-line shadow-md">
       <p className="tech text-[9px] text-muted">{label}</p>
       <p className={`tabular display mt-1.5 text-3xl ${valueTone}`}>{value}</p>
       {hint ? <p className="mt-1 text-[11px] leading-snug text-muted">{hint}</p> : null}

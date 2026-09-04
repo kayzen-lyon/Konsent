@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Outfit, Plus_Jakarta_Sans } from "next/font/google";
 import Link from "next/link";
 import { EDITOR } from "@/lib/disclaimer";
 import { ContactCard } from "@/components/ContactCard";
@@ -6,11 +7,28 @@ import { Logo } from "@/components/Logo";
 import "./globals.css";
 
 /**
- * Typographie : pile de polices système, comme Konforme. Aucun fichier de
- * police n'est téléchargé, ni au build ni à l'exécution — condition non
- * négociable pour un produit qui signale précisément ce comportement chez
- * les autres (KZC-DEPOT-009). Les familles sont déclarées dans globals.css.
+ * next/font télécharge et auto-héberge les fichiers de police au moment du
+ * build. Aucune requête n'est émise vers un serveur tiers à l'exécution —
+ * condition non négociable pour un produit qui signale précisément ce
+ * comportement chez les autres (KZC-DEPOT-009).
+ *
+ * Outfit porte les titres et les libellés, Plus Jakarta Sans le corps de
+ * texte : c'est l'appariement du système Kayzen Web, et le porteur principal
+ * de la cohérence entre les sites de l'agence.
  */
+const outfit = Outfit({
+  subsets: ["latin"],
+  weight: ["600", "700", "800"],
+  variable: "--font-outfit",
+  display: "swap",
+});
+
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-jakarta",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://konsent.fr"),
@@ -41,11 +59,11 @@ const NAV = [
 
 function Header() {
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-ink/95 backdrop-blur-md">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-5 py-3">
+    <header className="sticky top-0 z-50 bg-white/95 shadow-header backdrop-blur-[10px]">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-4">
         <Link href="/" className="flex items-center gap-2.5" aria-label="Konsent, accueil">
-          <Logo className="h-7 w-7 text-flame-soft" />
-          <span className="display text-lg tracking-tight text-white">KONSENT</span>
+          <Logo className="h-7 w-7 text-flame" />
+          <span className="display text-lg tracking-tight text-secondary">KONSENT</span>
         </Link>
 
         <nav className="hidden items-center gap-1 lg:flex" aria-label="Navigation principale">
@@ -53,7 +71,7 @@ function Header() {
             <Link
               key={n.href}
               href={n.href}
-              className="tech rounded px-3 py-2 text-[11px] text-white/60 transition hover:text-white"
+              className="tech rounded-full px-3 py-2 text-[11px] text-muted transition hover:bg-surface hover:text-ink-2"
             >
               {n.label}
             </Link>
@@ -64,13 +82,13 @@ function Header() {
           <ContactCard />
           <Link
             href="/regles"
-            className="tech hidden rounded border border-white/25 px-3.5 py-2 text-[11px] text-white transition hover:border-white/60 sm:block"
+            className="tech hidden rounded-full border-2 border-flame px-4 py-2 text-[11px] text-flame transition hover:bg-surface-high sm:block"
           >
             Référentiel
           </Link>
           <Link
             href="/#scan"
-            className="tech rounded bg-white px-4 py-2 text-[11px] text-ink transition hover:bg-flame-soft"
+            className="tech rounded-full bg-flame px-5 py-2.5 text-[11px] text-white shadow-md transition hover:bg-flame-dark"
           >
             Auditer mon site
           </Link>
@@ -200,7 +218,7 @@ function Footer() {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr">
+    <html lang="fr" className={`${outfit.variable} ${jakarta.variable}`}>
       <body className="min-h-screen">
         <a
           href="#contenu"

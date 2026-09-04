@@ -83,7 +83,7 @@ Disallow: /`}
         </pre>
         <p className="mt-3 text-[15px] leading-relaxed text-ink-2">
           Vous pouvez aussi nous écrire à{" "}
-          <a href={`mailto:${EDITOR.email}`} className="text-accent hover:underline">
+          <a href={`mailto:${EDITOR.email}`} className="text-flame hover:underline">
             {EDITOR.email}
           </a>{" "}
           pour demander l&apos;exclusion de votre domaine.

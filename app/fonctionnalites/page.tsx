@@ -246,7 +246,7 @@ export default function FeaturesPage() {
           {MODULES.map((m) => (
             <article
               key={m.tag}
-              className="grid gap-6 rounded-xl bg-surface p-7 ring-1 ring-line lg:grid-cols-[1fr_1fr]"
+              className="grid gap-6 rounded-xl bg-surface p-7 ring-1 ring-line shadow-md lg:grid-cols-[1fr_1fr]"
             >
               <div>
                 <div className="flex items-center gap-3">
@@ -279,7 +279,7 @@ export default function FeaturesPage() {
 
       {/* ── Ce qui reste conditionné à une infrastructure ── */}
       <section className="mx-auto max-w-7xl px-5 pb-14">
-        <div className="rounded-xl border-l-2 border-warn bg-surface p-6 ring-1 ring-line">
+        <div className="rounded-xl border-l-2 border-warn bg-surface p-6 ring-1 ring-line shadow-md">
           <p className="tech text-[10px] text-warn">Limites assumées</p>
           <h2 className="display mt-2 text-xl text-ink-2">
             Ce qui suppose une base de données
@@ -304,13 +304,13 @@ export default function FeaturesPage() {
         <div className="flex flex-wrap justify-center gap-3">
           <Link
             href="/#scan"
-            className="tech rounded bg-flame px-7 py-3.5 text-[11px] text-white transition hover:bg-flame-dark"
+            className="tech rounded-full bg-flame shadow-md px-7 py-3.5 text-[11px] text-white transition hover:bg-flame-dark"
           >
             Auditer mon site
           </Link>
           <Link
             href="/regles"
-            className="tech rounded border border-ink/20 px-7 py-3.5 text-[11px] text-ink-2 transition hover:border-flame hover:text-accent"
+            className="tech rounded-full border-2 border-flame px-7 py-3.5 text-[11px] text-flame transition hover:bg-surface-high"
           >
             Parcourir le référentiel
           </Link>

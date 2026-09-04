@@ -52,7 +52,7 @@ export default function TcfDecoderPage() {
           </li>
           <li className="rounded-lg border border-slate-200 p-5">
             <strong className="text-ink">Par le scan.</strong> Un{" "}
-            <Link href="/scan" className="font-medium text-accent underline underline-offset-4">
+            <Link href="/scan" className="font-medium text-flame underline underline-offset-4">
               audit complet
             </Link>{" "}
             relève la chaîne à chacune des trois phases, et signale notamment le cas le plus grave :

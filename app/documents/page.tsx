@@ -70,10 +70,10 @@ export default async function DocumentsPage({
                     {url ? (
                       <Link
                         href={`/documents/${t.slug}?url=${encodeURIComponent(url)}`}
-                        className="group flex h-full flex-col rounded-lg bg-surface p-5 ring-1 ring-line transition hover:ring-flame"
+                        className="group flex h-full flex-col rounded-lg bg-surface p-5 ring-1 ring-line shadow-md transition hover:ring-flame"
                       >
                         <div className="flex items-start justify-between gap-2">
-                          <span className="text-[16px] font-bold leading-snug text-ink-2 group-hover:text-accent">
+                          <span className="text-[16px] font-bold leading-snug text-ink-2 group-hover:text-flame">
                             {t.title}
                           </span>
                           <span className="tech shrink-0 rounded bg-paper px-1.5 py-0.5 text-[9px] text-muted">
@@ -88,7 +88,7 @@ export default async function DocumentsPage({
                         </p>
                       </Link>
                     ) : (
-                      <div className="flex h-full flex-col rounded-lg bg-surface p-5 ring-1 ring-line">
+                      <div className="flex h-full flex-col rounded-lg bg-surface p-5 ring-1 ring-line shadow-md">
                         <div className="flex items-start justify-between gap-2">
                           <span className="text-[16px] font-bold leading-snug text-ink-2">
                             {t.title}
@@ -110,7 +110,7 @@ export default async function DocumentsPage({
           );
         })}
 
-        <section className="rounded-xl border-l-2 border-warn bg-surface p-6 ring-1 ring-line">
+        <section className="rounded-xl border-l-2 border-warn bg-surface p-6 ring-1 ring-line shadow-md">
           <p className="tech text-[10px] text-warn">Ce que ces documents ne sont pas</p>
           <p className="mt-2 text-[14.5px] leading-relaxed text-ink-2">
             Ce sont des modèles, pas des documents prêts à publier. Chaque champ que nous ne

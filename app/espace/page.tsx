@@ -133,13 +133,13 @@ export default async function AccountPage() {
       <div className="mt-12 flex flex-wrap gap-3">
         <Link
           href="/surveillance"
-          className="rounded-lg border border-line px-4 py-2 text-sm font-semibold text-ink-2 transition hover:border-flame hover:text-accent"
+          className="rounded-full border-2 border-flame px-4 py-2 text-sm font-semibold text-flame transition hover:bg-surface-high"
         >
           Domaines surveillés
         </Link>
         <Link
           href="/tarifs"
-          className="rounded-lg border border-line px-4 py-2 text-sm font-semibold text-ink-2 transition hover:border-flame hover:text-accent"
+          className="rounded-full border-2 border-flame px-4 py-2 text-sm font-semibold text-flame transition hover:bg-surface-high"
         >
           Offres
         </Link>

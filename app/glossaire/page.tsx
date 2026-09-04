@@ -33,9 +33,9 @@ export default function GlossaryPage() {
               <li key={t.slug}>
                 <Link
                   href={`/glossaire/${t.slug}`}
-                  className="group flex h-full flex-col rounded-lg bg-surface p-5 ring-1 ring-line transition hover:ring-flame"
+                  className="group flex h-full flex-col rounded-lg bg-surface p-5 ring-1 ring-line shadow-md transition hover:ring-flame"
                 >
-                  <span className="text-[16px] font-bold leading-snug text-ink-2 group-hover:text-accent">
+                  <span className="text-[16px] font-bold leading-snug text-ink-2 group-hover:text-flame">
                     {t.term}
                   </span>
                   <p className="mt-1.5 text-[13.5px] leading-relaxed text-muted">{t.short}</p>

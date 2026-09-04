@@ -30,7 +30,7 @@ export function BaselineInput({ initialUrl = "" }: { initialUrl?: string }) {
   }
 
   return (
-    <form onSubmit={submit} className="rounded-xl bg-surface p-6 ring-1 ring-line" noValidate>
+    <form onSubmit={submit} className="rounded-xl bg-surface p-6 ring-1 ring-line shadow-md" noValidate>
       <h2 className="display text-xl text-ink-2">Comparer à une référence</h2>
 
       <div className="mt-5 space-y-4">
@@ -75,7 +75,7 @@ export function BaselineInput({ initialUrl = "" }: { initialUrl?: string }) {
       <button
         type="submit"
         disabled={pending}
-        className="tech mt-5 w-full rounded bg-flame px-6 py-3.5 text-[11px] text-white transition hover:bg-flame-dark disabled:cursor-wait disabled:opacity-70"
+        className="tech mt-5 w-full rounded-full bg-flame shadow-md px-6 py-3.5 text-[11px] text-white transition hover:bg-flame-dark disabled:cursor-wait disabled:opacity-70"
       >
         {pending ? "Analyse en cours…" : "Détecter les changements"}
       </button>
@@ -98,7 +98,7 @@ export function BaselineExport({ token }: { token: string }) {
   }
 
   return (
-    <div className="rounded-xl bg-surface p-6 ring-1 ring-line">
+    <div className="rounded-xl bg-surface p-6 ring-1 ring-line shadow-md">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="tech text-[10px] text-accent">Surveillance</p>
@@ -112,7 +112,7 @@ export function BaselineExport({ token }: { token: string }) {
         <button
           type="button"
           onClick={copy}
-          className="tech shrink-0 rounded border border-ink/20 px-4 py-2 text-[10px] text-ink-2 transition hover:border-flame hover:text-accent"
+          className="tech shrink-0 rounded-full border-2 border-flame px-4 py-2 text-[10px] text-flame transition hover:bg-surface-high"
         >
           {copied ? "Copié ✓" : "Copier"}
         </button>

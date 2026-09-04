@@ -86,12 +86,12 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl px-5 py-16 sm:py-24">
           <div className="grid items-center gap-12 lg:grid-cols-[1fr_1.05fr]">
             <div className="rise">
-              <p className="tech inline-flex items-center gap-2 rounded border border-flame/35 bg-flame-bg px-3 py-1.5 text-[10px] text-flame-dark">
+              <p className="tech inline-flex items-center gap-2 rounded-full bg-flame-bg px-3 py-1.5 text-[10px] text-flame-deep">
                 <span className="inline-block h-1.5 w-1.5 rounded-full bg-flame" />
                 Référentiel {RULEPACK.version} · {RULEPACK.total} règles publiques
               </p>
 
-              <h1 className="display mt-6 text-[2.6rem] text-ink-2 sm:text-[3.75rem]">
+              <h1 className="display mt-6 text-[2.6rem] text-ink-2 sm:text-[4rem]">
                 Votre bandeau gère le consentement.
                 <br />
                 <span className="underline-flame">Il ne vérifie pas</span> ce qui passe
@@ -139,7 +139,7 @@ export default function HomePage() {
           {BLIND_SPOTS.map((b) => (
             <article
               key={b.title}
-              className="border-l-2 border-flame bg-surface p-6 shadow-card ring-1 ring-line"
+              className="border-l-2 border-secondary bg-surface p-6 shadow-md ring-1 ring-line shadow-md"
             >
               <svg viewBox="0 0 24 24" className="h-6 w-6 text-accent" fill="none" aria-hidden="true">
                 <path
@@ -222,13 +222,13 @@ export default function HomePage() {
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <Link
             href="/fonctionnalites"
-            className="tech rounded border border-ink/20 px-5 py-2.5 text-[11px] text-ink-2 transition hover:border-flame hover:text-accent"
+            className="tech rounded-full border-2 border-flame px-5 py-2.5 text-[11px] text-flame transition hover:bg-surface-high"
           >
             Toutes les fonctionnalités
           </Link>
           <Link
             href="/comparatif"
-            className="tech rounded border border-ink/20 px-5 py-2.5 text-[11px] text-ink-2 transition hover:border-flame hover:text-accent"
+            className="tech rounded-full border-2 border-flame px-5 py-2.5 text-[11px] text-flame transition hover:bg-surface-high"
           >
             Comparatif face aux CMP
           </Link>
@@ -317,11 +317,11 @@ export default function HomePage() {
             <div
               key={p.name}
               className={`relative flex flex-col rounded-xl bg-surface p-7 ${
-                p.featured ? "ring-2 ring-flame" : "ring-1 ring-line"
+                p.featured ? "ring-2 ring-secondary" : "ring-1 ring-line"
               }`}
             >
               {p.featured ? (
-                <span className="tech absolute -top-2.5 left-7 rounded bg-flame px-2.5 py-1 text-[9px] text-white">
+                <span className="tech absolute -top-2.5 left-7 rounded-full bg-flame shadow-md px-2.5 py-1 text-[9px] text-white">
                   Recommandé
                 </span>
               ) : null}
@@ -356,7 +356,7 @@ export default function HomePage() {
                 className={`tech mt-7 rounded px-5 py-3 text-center text-[11px] transition ${
                   p.featured
                     ? "bg-flame text-white hover:bg-flame-dark"
-                    : "border border-ink/20 text-ink-2 hover:border-flame hover:text-accent"
+                    : "border-2 border-flame text-flame hover:bg-surface-high"
                 }`}
               >
                 {p.cta}
@@ -366,7 +366,7 @@ export default function HomePage() {
         </div>
 
         <p className="mt-6 text-center text-sm text-muted">
-          <Link href="/tarifs" className="text-accent hover:underline">
+          <Link href="/tarifs" className="text-flame hover:underline">
             Voir la grille complète et les prestations de correction
           </Link>
         </p>

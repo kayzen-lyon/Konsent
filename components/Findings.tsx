@@ -53,7 +53,7 @@ function FindingRow({
           {spec.showNormative ? (
             <Link
               href={`/regles/${rule.id.toLowerCase()}`}
-              className="font-mono text-[11px] text-muted underline decoration-dotted underline-offset-2 hover:text-accent"
+              className="font-mono text-[11px] text-muted underline decoration-dotted underline-offset-2 hover:text-flame"
             >
               {rule.id}
             </Link>
@@ -77,7 +77,7 @@ function FindingRow({
              reste repliée ne prouve rien. Le forçage est dans `globals.css` :
              l'état d'un <details> ne se pilote pas par une classe utilitaire. */
           <details className="group mt-2.5">
-            <summary className="tech cursor-pointer list-none text-[9px] text-accent hover:underline">
+            <summary className="tech cursor-pointer list-none text-[9px] text-flame hover:underline">
               <span className="group-open:hidden">Voir la preuve ▾</span>
               <span className="hidden group-open:inline">Réduire ▴</span>
             </summary>
@@ -175,7 +175,7 @@ export function FindingsByPillar({
 }) {
   if (findings.length === 0) {
     return (
-      <div className="rounded-lg border-l-2 border-ok bg-surface p-6 ring-1 ring-line">
+      <div className="rounded-lg border-l-2 border-ok bg-surface p-6 ring-1 ring-line shadow-md">
         <p className="font-bold text-ink-2">Aucun écart relevé par ce mode d&apos;analyse.</p>
         <p className="mt-1.5 text-sm text-muted">
           Cela ne vaut pas certification : les règles nécessitant un navigateur restent à
@@ -193,7 +193,7 @@ export function FindingsByPillar({
           .sort((a, b) => SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity]);
 
         return (
-          <section key={pillar.id} className="overflow-hidden rounded-xl bg-surface ring-1 ring-line">
+          <section key={pillar.id} className="overflow-hidden rounded-xl bg-surface ring-1 ring-line shadow-md">
             <header className="flex flex-wrap items-center justify-between gap-3 bg-ink px-5 py-4">
               <div className="min-w-0">
                 <h3 className="display text-lg text-white">

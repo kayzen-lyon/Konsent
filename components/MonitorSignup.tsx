@@ -75,7 +75,7 @@ export function MonitorSignup() {
 
   if (registration) {
     return (
-      <div className="rounded-xl bg-surface p-6 ring-1 ring-line">
+      <div className="rounded-xl bg-surface p-6 ring-1 ring-line shadow-md">
         <p className="tech text-[10px] text-accent">Étape 2 sur 2</p>
         <h2 className="display mt-2 text-xl text-ink-2">
           Prouvez que ce domaine est le vôtre
@@ -116,7 +116,7 @@ export function MonitorSignup() {
             type="button"
             onClick={verify}
             disabled={busy || registration.verified}
-            className="tech rounded bg-flame px-5 py-3 text-[11px] text-white transition hover:bg-flame-dark disabled:opacity-60"
+            className="tech rounded-full bg-flame shadow-md px-5 py-3 text-[11px] text-white transition hover:bg-flame-dark disabled:opacity-60"
           >
             {registration.verified
               ? "Vérifié ✓"
@@ -130,7 +130,7 @@ export function MonitorSignup() {
               setRegistration(null);
               setMessage(null);
             }}
-            className="tech rounded border border-line px-5 py-3 text-[11px] text-muted transition hover:border-flame hover:text-accent"
+            className="tech rounded border border-line px-5 py-3 text-[11px] text-muted transition hover:border-flame hover:text-flame"
           >
             Recommencer
           </button>
@@ -146,7 +146,7 @@ export function MonitorSignup() {
   }
 
   return (
-    <form onSubmit={register} className="rounded-xl bg-surface p-6 ring-1 ring-line" noValidate>
+    <form onSubmit={register} className="rounded-xl bg-surface p-6 ring-1 ring-line shadow-md" noValidate>
       <p className="tech text-[10px] text-accent">Étape 1 sur 2</p>
       <h2 className="display mt-2 text-xl text-ink-2">Surveiller un domaine</h2>
       <p className="mt-2 text-[14.5px] leading-relaxed text-muted">
@@ -228,7 +228,7 @@ export function MonitorSignup() {
       <button
         type="submit"
         disabled={busy}
-        className="tech mt-6 w-full rounded bg-flame px-6 py-3.5 text-[11px] text-white transition hover:bg-flame-dark disabled:opacity-60"
+        className="tech mt-6 w-full rounded-full bg-flame shadow-md px-6 py-3.5 text-[11px] text-white transition hover:bg-flame-dark disabled:opacity-60"
       >
         {busy ? "Inscription…" : "Continuer"}
       </button>
@@ -237,7 +237,7 @@ export function MonitorSignup() {
         Nous conserverons le domaine, votre adresse et l&apos;historique des analyses pendant
         395 jours, puis purge automatique. Aucune donnée relative aux visiteurs de votre site
         n&apos;est collectée : un audit observe un serveur, pas des personnes. Voir notre{" "}
-        <a href="/confidentialite" className="text-accent hover:underline">
+        <a href="/confidentialite" className="text-flame hover:underline">
           politique de confidentialité
         </a>
         .

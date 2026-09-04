@@ -110,7 +110,7 @@ facteur = 1 + ln(occurrences) / 4`}
         <p className="mt-2 text-[15px] leading-relaxed text-ink-2">
           Ils existent. Chaque règle susceptible d&apos;en produire porte une note explicite
           décrivant sa limite, consultable sur sa fiche dans le{" "}
-          <Link href="/regles" className="text-accent hover:underline">
+          <Link href="/regles" className="text-flame hover:underline">
             référentiel
           </Link>
           . Lorsqu&apos;une page légale ne livre pas de texte exploitable — cas fréquent des

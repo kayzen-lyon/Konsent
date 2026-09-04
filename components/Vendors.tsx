@@ -51,7 +51,7 @@ export function VendorTable({ vendors }: { vendors: readonly TrackerEntity[] }) 
               <div className="flex flex-wrap items-center gap-2">
                 <Link
                   href={`/traceurs/${v.slug}`}
-                  className="text-[15px] font-semibold text-ink-2 hover:text-accent hover:underline"
+                  className="text-[15px] font-semibold text-ink-2 hover:text-flame hover:underline"
                 >
                   {v.name}
                 </Link>
@@ -95,7 +95,7 @@ export function VendorTable({ vendors }: { vendors: readonly TrackerEntity[] }) 
           <p className="mt-2 text-xs text-muted">{ADEQUACY_LABELS[v.adequacy]}</p>
 
           {v.alternativesEu && v.alternativesEu.length > 0 ? (
-            <p className="mt-3 rounded-md bg-flame-bg px-3 py-2 text-[13px] text-flame-dark">
+            <p className="mt-3 rounded-md bg-flame-bg px-3 py-2 text-[13px] text-flame-deep">
               <span className="font-semibold">Alternatives européennes : </span>
               {v.alternativesEu.join(", ")}.
             </p>

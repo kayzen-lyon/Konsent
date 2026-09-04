@@ -33,7 +33,7 @@ export default async function RulePage({ params }: { params: Promise<{ id: strin
   return (
     <div className="mx-auto max-w-3xl px-5 py-12 sm:py-16">
       <nav className="mb-6 text-sm">
-        <Link href="/regles" className="text-accent hover:underline">
+        <Link href="/regles" className="text-flame hover:underline">
           ← Référentiel
         </Link>
       </nav>

@@ -70,7 +70,7 @@ export default function LoginForm() {
       <button
         type="submit"
         disabled={state === "pending"}
-        className="mt-4 w-full rounded-lg bg-flame px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-flame-dark disabled:opacity-60"
+        className="mt-4 w-full rounded-full bg-flame shadow-md px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-flame-dark disabled:opacity-60"
       >
         {state === "pending" ? "Envoi en cours…" : "Recevoir un lien de connexion"}
       </button>

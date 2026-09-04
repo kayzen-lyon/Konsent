@@ -77,7 +77,7 @@ export default function SimulatorPage() {
               </div>
             </div>
 
-            <div className="mt-8 rounded-lg bg-surface p-5 ring-1 ring-line">
+            <div className="mt-8 rounded-lg bg-surface p-5 ring-1 ring-line shadow-md">
               <p className="tech text-[10px] text-muted">Sources des montants</p>
               <ul className="mt-3 space-y-2.5">
                 {cited.map((f) => (
@@ -94,7 +94,7 @@ export default function SimulatorPage() {
               </ul>
               <Link
                 href="/sources"
-                className="tech mt-4 inline-block text-[10px] text-accent hover:underline"
+                className="tech mt-4 inline-block text-[10px] text-flame hover:underline"
               >
                 Toutes nos sources →
               </Link>

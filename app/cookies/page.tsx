@@ -54,7 +54,7 @@ export default function CookieIndexPage() {
             <a
               key={l}
               href={`#lettre-${l}`}
-              className="tech rounded border border-line px-2.5 py-1.5 text-[10px] text-muted transition hover:border-flame hover:text-accent"
+              className="tech rounded border border-line px-2.5 py-1.5 text-[10px] text-muted transition hover:border-flame hover:text-flame"
             >
               {l}
             </a>
@@ -69,10 +69,10 @@ export default function CookieIndexPage() {
                 <li key={c.slug}>
                   <Link
                     href={`/cookies/${c.slug}`}
-                    className="group flex h-full flex-col rounded-lg bg-surface p-4 ring-1 ring-line transition hover:ring-flame"
+                    className="group flex h-full flex-col rounded-lg bg-surface p-4 ring-1 ring-line shadow-md transition hover:ring-flame"
                   >
                     <div className="flex items-start justify-between gap-2">
-                      <span className="font-mono text-[14px] font-bold text-ink-2 group-hover:text-accent">
+                      <span className="font-mono text-[14px] font-bold text-ink-2 group-hover:text-flame">
                         {c.name}
                       </span>
                       <Pill tone={c.requiresConsent ? "danger" : "ok"}>
@@ -104,7 +104,7 @@ export default function CookieIndexPage() {
           </p>
           <Link
             href="/#scan"
-            className="tech mt-5 inline-block rounded bg-white px-5 py-2.5 text-[11px] text-ink transition hover:bg-flame-soft"
+            className="tech mt-5 inline-block rounded-full bg-flame shadow-md px-5 py-2.5 text-[11px] text-white transition hover:bg-flame-dark"
           >
             Auditer mon site
           </Link>

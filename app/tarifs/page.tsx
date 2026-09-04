@@ -63,11 +63,11 @@ export default function PricingPage() {
             <div
               key={p.id}
               className={`flex flex-col rounded-xl border bg-surface p-5 ${
-                p.highlighted ? "border-flame ring-1 ring-flame" : "border-line"
+                p.highlighted ? "border-secondary ring-1 ring-secondary" : "border-line"
               }`}
             >
               {p.highlighted ? (
-                <span className="mb-2 inline-flex w-fit rounded-full bg-flame-bg px-2 py-0.5 text-[11px] font-semibold text-flame-dark">
+                <span className="mb-2 inline-flex w-fit rounded-full bg-flame-bg px-2 py-0.5 text-[11px] font-semibold text-flame-deep">
                   Le plus demandé
                 </span>
               ) : null}
@@ -108,7 +108,7 @@ export default function PricingPage() {
                 className={`mt-5 rounded-lg px-4 py-2 text-center text-sm font-semibold transition ${
                   p.highlighted
                     ? "bg-flame text-white hover:bg-flame-dark"
-                    : "border border-line text-ink-2 hover:border-flame hover:text-accent"
+                    : "border-2 border-flame text-flame hover:bg-surface-high"
                 }`}
               >
                 {p.amountCents === null

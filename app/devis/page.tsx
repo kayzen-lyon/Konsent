@@ -26,7 +26,7 @@ export default async function QuotePage({
       <div className="mx-auto max-w-3xl px-5 py-16">
         <p className="text-muted">
           Aucune adresse fournie.{" "}
-          <Link href="/" className="text-accent hover:underline">
+          <Link href="/" className="text-flame hover:underline">
             Lancer un audit
           </Link>
         </p>
@@ -40,7 +40,7 @@ export default async function QuotePage({
   } catch (error) {
     return (
       <div className="mx-auto max-w-3xl px-5 py-16">
-        <div className="rounded-xl border-l-2 border-warn bg-surface p-6 ring-1 ring-line">
+        <div className="rounded-xl border-l-2 border-warn bg-surface p-6 ring-1 ring-line shadow-md">
           <h1 className="display text-xl text-ink-2">Devis impossible</h1>
           <p className="mt-2 text-[15px] text-muted">
             {error instanceof ScanError ? error.message : "L'analyse préalable n'a pas abouti."}
@@ -59,7 +59,7 @@ export default async function QuotePage({
   return (
     <div className="mx-auto max-w-4xl px-5 py-12 sm:py-16">
       <nav className="mb-6 text-sm print:hidden">
-        <Link href={`/scan?url=${encodeURIComponent(url)}`} className="text-accent hover:underline">
+        <Link href={`/scan?url=${encodeURIComponent(url)}`} className="text-flame hover:underline">
           ← Retour au rapport
         </Link>
       </nav>
@@ -91,7 +91,7 @@ export default async function QuotePage({
           ["Coefficient appliqué", `× ${quote.coefficient}`],
           ["Validité", `${quote.validityDays} jours`],
         ].map(([label, value]) => (
-          <div key={label} className="rounded-lg bg-surface p-4 ring-1 ring-line">
+          <div key={label} className="rounded-lg bg-surface p-4 ring-1 ring-line shadow-md">
             <p className="tech text-[9px] text-muted">{label}</p>
             <p className="mt-1 text-[15px] font-bold text-ink-2">{value}</p>
           </div>
@@ -107,7 +107,7 @@ export default async function QuotePage({
             className={`tech rounded border px-2.5 py-1 text-[9px] transition ${
               s.id === quote.stack
                 ? "border-flame bg-flame text-white"
-                : "border-line text-muted hover:border-flame hover:text-accent"
+                : "border-line text-muted hover:border-flame hover:text-flame"
             }`}
           >
             {s.label}
@@ -116,7 +116,7 @@ export default async function QuotePage({
       </div>
 
       {/* ── Lignes ── */}
-      <section className="mt-8 overflow-hidden rounded-xl bg-surface ring-1 ring-line">
+      <section className="mt-8 overflow-hidden rounded-xl bg-surface ring-1 ring-line shadow-md">
         <div className="hidden grid-cols-[1fr_auto_auto] gap-6 bg-paper px-5 py-3 sm:grid">
           <span className="tech text-[9px] text-muted">Prestation</span>
           <span className="tech text-[9px] text-muted">Gravité</span>
@@ -170,7 +170,7 @@ export default async function QuotePage({
 
       {/* ── Ce qui n'est pas facturé ── */}
       {quote.selfServiceCount > 0 ? (
-        <section className="mt-5 rounded-xl border-l-2 border-ok bg-surface p-5 ring-1 ring-line">
+        <section className="mt-5 rounded-xl border-l-2 border-ok bg-surface p-5 ring-1 ring-line shadow-md">
           <p className="tech text-[10px] text-ok">Non facturé</p>
           <p className="mt-2 text-[15px] leading-relaxed text-ink-2">
             {quote.selfServiceCount} constat{quote.selfServiceCount > 1 ? "s" : ""} relevé
@@ -182,7 +182,7 @@ export default async function QuotePage({
       ) : null}
 
       {/* ── Mentions ── */}
-      <section className="mt-8 rounded-xl bg-surface p-6 ring-1 ring-line">
+      <section className="mt-8 rounded-xl bg-surface p-6 ring-1 ring-line shadow-md">
         <h2 className="display text-lg text-ink-2">Mentions</h2>
         <dl className="mt-4 space-y-3 text-[13.5px] leading-relaxed">
           <div>
@@ -233,13 +233,13 @@ export default async function QuotePage({
       <div className="mt-8 flex flex-wrap gap-3 print:hidden">
         <a
           href={`mailto:${EDITOR.email}?subject=${encodeURIComponent(`Devis de mise en conformité — ${quote.hostname}`)}&body=${encodeURIComponent(`Bonjour,\n\nJe souhaite faire corriger les écarts relevés sur ${quote.hostname}.\nRéférence du rapport : ${quote.scanId}\nEstimation affichée : ${formatEur(quote.totalLow)} à ${formatEur(quote.totalHigh)}\n\n`)}`}
-          className="tech rounded bg-flame px-6 py-3 text-[11px] text-white transition hover:bg-flame-dark"
+          className="tech rounded-full bg-flame shadow-md px-6 py-3 text-[11px] text-white transition hover:bg-flame-dark"
         >
           Demander un devis ferme
         </a>
         <Link
           href={`/scan?url=${encodeURIComponent(url)}`}
-          className="tech rounded border border-ink/20 px-6 py-3 text-[11px] text-ink-2 transition hover:border-flame hover:text-accent"
+          className="tech rounded-full border-2 border-flame px-6 py-3 text-[11px] text-flame transition hover:bg-surface-high"
         >
           Revoir le rapport
         </Link>

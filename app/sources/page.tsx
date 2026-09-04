@@ -45,7 +45,7 @@ export default function SourcesPage() {
                 ·{" "}
                 <a
                   href={f.sourceUrl}
-                  className="text-accent hover:underline"
+                  className="text-flame hover:underline"
                   rel="noopener noreferrer nofollow"
                   target="_blank"
                 >

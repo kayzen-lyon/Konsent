@@ -40,8 +40,8 @@ export function ScanForm({
   return (
     <form onSubmit={submit} className="w-full" noValidate>
       <div
-        className={`flex flex-col gap-2 sm:flex-row sm:gap-0 sm:rounded-lg sm:p-1.5 ${
-          dark ? "sm:bg-white/10" : "sm:bg-surface sm:shadow-card sm:ring-1 sm:ring-ink/10"
+        className={`flex flex-col gap-2 sm:flex-row sm:gap-0 sm:rounded-full sm:p-1.5 ${
+          dark ? "sm:bg-white/10" : "sm:bg-surface sm:shadow-md sm:ring-1 sm:ring-ink/10"
         }`}
       >
         <label htmlFor="scan-url" className="sr-only">
@@ -60,7 +60,7 @@ export function ScanForm({
           onChange={(e) => setValue(e.target.value)}
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? "scan-error" : undefined}
-          className={`min-w-0 flex-1 rounded-lg px-4 py-3.5 font-mono text-[15px] outline-none transition sm:rounded-md ${
+          className={`min-w-0 flex-1 rounded-full px-5 py-3.5 font-mono text-[15px] outline-none transition ${
             dark
               ? "bg-white/5 text-white placeholder:text-white/35 focus:bg-white/10"
               : "bg-white text-ink-2 placeholder:text-slate-400"
@@ -69,7 +69,7 @@ export function ScanForm({
         <button
           type="submit"
           disabled={pending}
-          className="tech shrink-0 rounded-lg bg-flame px-6 py-3.5 text-[11px] text-white transition hover:bg-flame-dark disabled:cursor-wait disabled:opacity-70 sm:rounded-md"
+          className="tech shrink-0 rounded-full bg-flame shadow-md px-6 py-3.5 text-[11px] text-white transition hover:bg-flame-dark disabled:cursor-wait disabled:opacity-70"
         >
           {pending ? "Analyse…" : "Lancer l'audit gratuit"}
         </button>

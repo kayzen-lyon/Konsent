@@ -29,7 +29,7 @@ export default function TermsOfUsePage() {
             Les présentes conditions régissent l&apos;<strong>accès et l&apos;usage</strong> du
             service {EDITOR.product}. Les conditions de <strong>vente</strong> des abonnements font
             l&apos;objet d&apos;un document distinct :{" "}
-            <Link href="/cgv" className="text-accent hover:underline">
+            <Link href="/cgv" className="text-flame hover:underline">
               conditions générales de vente
             </Link>
             .
@@ -103,7 +103,7 @@ export default function TermsOfUsePage() {
           <li>
             s&apos;identifie sous le user-agent <code className="font-mono">KonsentBot/1.0</code>,
             avec un lien vers la page{" "}
-            <Link href="/bot" className="text-accent hover:underline">
+            <Link href="/bot" className="text-flame hover:underline">
               /bot
             </Link>{" "}
             qui décrit son comportement ;
@@ -145,7 +145,7 @@ export default function TermsOfUsePage() {
       <Article id="donnees" number={6} heading="Données personnelles">
         <p>
           Le traitement des données personnelles est décrit dans la{" "}
-          <Link href="/confidentialite" className="text-accent hover:underline">
+          <Link href="/confidentialite" className="text-flame hover:underline">
             politique de confidentialité
           </Link>
           , qui fait partie intégrante des présentes conditions.

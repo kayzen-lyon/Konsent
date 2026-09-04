@@ -38,7 +38,7 @@ async function DiffReport({ url, token }: { url: string; token: string }) {
 
   if (!baseline) {
     return (
-      <div className="rounded-xl border-l-2 border-warn bg-surface p-6 ring-1 ring-line">
+      <div className="rounded-xl border-l-2 border-warn bg-surface p-6 ring-1 ring-line shadow-md">
         <h2 className="display text-xl text-ink-2">Référence illisible</h2>
         <p className="mt-2 text-[15px] leading-relaxed text-muted">
           Ce jeton de référence est invalide ou a été modifié. Reprenez celui affiché en bas
@@ -53,7 +53,7 @@ async function DiffReport({ url, token }: { url: string; token: string }) {
     current = (await runVerdictScan(url)).result;
   } catch (error) {
     return (
-      <div className="rounded-xl border-l-2 border-warn bg-surface p-6 ring-1 ring-line">
+      <div className="rounded-xl border-l-2 border-warn bg-surface p-6 ring-1 ring-line shadow-md">
         <h2 className="display text-xl text-ink-2">Nouvelle analyse impossible</h2>
         <p className="mt-2 text-[15px] leading-relaxed text-muted">
           {error instanceof ScanError ? error.message : "L'analyse n'a pas abouti."}
@@ -64,7 +64,7 @@ async function DiffReport({ url, token }: { url: string; token: string }) {
 
   if (baseline.h !== current.hostname) {
     return (
-      <div className="rounded-xl border-l-2 border-warn bg-surface p-6 ring-1 ring-line">
+      <div className="rounded-xl border-l-2 border-warn bg-surface p-6 ring-1 ring-line shadow-md">
         <h2 className="display text-xl text-ink-2">Comparaison refusée</h2>
         <p className="mt-2 text-[15px] leading-relaxed text-muted">
           La référence porte sur <strong>{baseline.h}</strong> et l&apos;analyse demandée sur{" "}
@@ -81,7 +81,7 @@ async function DiffReport({ url, token }: { url: string; token: string }) {
   return (
     <div className="space-y-6">
       {/* Synthèse */}
-      <div className="overflow-hidden rounded-xl bg-surface ring-1 ring-line">
+      <div className="overflow-hidden rounded-xl bg-surface ring-1 ring-line shadow-md">
         {diff.regressions > 0 ? <div className="hazard-top h-1.5" /> : null}
         <div className="p-6">
           <div className="flex flex-wrap items-start justify-between gap-4">
@@ -155,7 +155,7 @@ async function DiffReport({ url, token }: { url: string; token: string }) {
           </p>
         </div>
       ) : diff.conclusive ? (
-        <div className="rounded-xl border-l-2 border-ok bg-surface p-6 ring-1 ring-line">
+        <div className="rounded-xl border-l-2 border-ok bg-surface p-6 ring-1 ring-line shadow-md">
           <p className="font-bold text-ink-2">Aucune régression détectée.</p>
           <p className="mt-1 text-sm text-muted">
             L&apos;état du site n&apos;a pas empiré depuis l&apos;analyse de référence.
@@ -165,7 +165,7 @@ async function DiffReport({ url, token }: { url: string; token: string }) {
         /* Sans cette branche, une comparaison impossible s'afficherait en
            « aucune régression » — un faux soulagement, plus nuisible qu'une
            fausse alerte parce qu'il ne se corrige jamais. */
-        <div className="rounded-xl border-l-2 border-warn bg-surface p-6 ring-1 ring-line">
+        <div className="rounded-xl border-l-2 border-warn bg-surface p-6 ring-1 ring-line shadow-md">
           <p className="font-bold text-ink-2">Comparaison non concluante.</p>
           <p className="mt-1 text-sm text-muted">
             Nous ne pouvons pas dire si l&apos;état du site a empiré : les deux analyses n&apos;ont
@@ -176,7 +176,7 @@ async function DiffReport({ url, token }: { url: string; token: string }) {
 
       {/* Détail */}
       {diff.changes.length > 0 ? (
-        <div className="overflow-hidden rounded-xl bg-surface ring-1 ring-line">
+        <div className="overflow-hidden rounded-xl bg-surface ring-1 ring-line shadow-md">
           <header className="bg-paper px-5 py-3">
             <h3 className="tech text-[10px] text-muted">Détail des changements</h3>
           </header>
@@ -207,7 +207,7 @@ async function DiffReport({ url, token }: { url: string; token: string }) {
       <div className="text-center">
         <Link
           href={`/scan?url=${encodeURIComponent(url)}`}
-          className="tech inline-block rounded border border-ink/20 px-6 py-3 text-[11px] text-ink-2 transition hover:border-flame hover:text-accent"
+          className="tech inline-block rounded-full border-2 border-flame px-6 py-3 text-[11px] text-flame transition hover:bg-surface-high"
         >
           Voir le rapport complet actuel
         </Link>
@@ -258,7 +258,7 @@ export default async function MonitoringPage({
 
             <BaselineInput initialUrl={url ?? ""} />
 
-            <section className="mt-12 rounded-xl bg-surface p-6 ring-1 ring-line">
+            <section className="mt-12 rounded-xl bg-surface p-6 ring-1 ring-line shadow-md">
               <h2 className="display text-xl text-ink-2">Où trouver une référence</h2>
               <ol className="mt-4 space-y-3">
                 {[

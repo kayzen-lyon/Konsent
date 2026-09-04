@@ -27,7 +27,7 @@ export function OwnedDomains({
 }) {
   if (domains.length === 0) {
     return (
-      <div className="rounded-xl bg-surface p-5 ring-1 ring-line">
+      <div className="rounded-xl bg-surface p-5 ring-1 ring-line shadow-md">
         <p className="tech text-[10px] text-muted">Portefeuille</p>
         <p className="mt-2 text-sm leading-relaxed text-muted">{emptyHint}</p>
       </div>
@@ -37,7 +37,7 @@ export function OwnedDomains({
   const verified = domains.filter((d) => d.verifiedAt).length;
 
   return (
-    <div className="overflow-hidden rounded-xl bg-surface ring-1 ring-line">
+    <div className="overflow-hidden rounded-xl bg-surface ring-1 ring-line shadow-md">
       <header className="flex flex-wrap items-baseline justify-between gap-2 bg-paper px-5 py-3">
         <p className="tech text-[10px] text-muted">Portefeuille</p>
         <p className="tabular text-[12px] text-muted">
@@ -76,7 +76,7 @@ export function OwnedDomains({
 
             <Link
               href={`/scan?url=${encodeURIComponent(domain.hostname)}`}
-              className="tech shrink-0 rounded border border-line px-3 py-1.5 text-[9px] text-muted transition hover:border-flame hover:text-accent"
+              className="tech shrink-0 rounded border border-line px-3 py-1.5 text-[9px] text-muted transition hover:border-flame hover:text-flame"
             >
               Rapport
             </Link>

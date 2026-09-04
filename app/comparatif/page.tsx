@@ -103,7 +103,7 @@ export default function ComparisonPage() {
       </section>
 
       <div className="mx-auto max-w-7xl px-5 py-14">
-        <div className="overflow-hidden rounded-xl bg-surface ring-1 ring-line">
+        <div className="overflow-hidden rounded-xl bg-surface ring-1 ring-line shadow-md">
           <div className="hidden grid-cols-[1fr_1.3fr_1.3fr] gap-6 bg-paper px-6 py-3 md:grid">
             <span className="tech text-[9px] text-muted">Dimension</span>
             <span className="tech text-[9px] text-muted">
@@ -137,7 +137,7 @@ export default function ComparisonPage() {
         </div>
 
         <section className="mt-12 grid gap-5 md:grid-cols-2">
-          <div className="rounded-xl bg-surface p-6 ring-1 ring-line">
+          <div className="rounded-xl bg-surface p-6 ring-1 ring-line shadow-md">
             <h2 className="display text-xl text-ink-2">Ce que nous ne prétendons pas</h2>
             <ul className="mt-4 space-y-2.5 text-[14px] leading-relaxed text-muted">
               <li>· Nous ne remplaçons pas une plateforme de consentement.</li>
@@ -164,7 +164,7 @@ export default function ComparisonPage() {
         <div className="mt-12 text-center">
           <Link
             href="/#scan"
-            className="tech inline-block rounded bg-flame px-7 py-3.5 text-[11px] text-white transition hover:bg-flame-dark"
+            className="tech inline-block rounded-full bg-flame shadow-md px-7 py-3.5 text-[11px] text-white transition hover:bg-flame-dark"
           >
             Auditer mon site gratuitement
           </Link>

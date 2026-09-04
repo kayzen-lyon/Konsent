@@ -65,7 +65,7 @@ export function ContactCard() {
         onClick={() => setOpen(true)}
         aria-haspopup="dialog"
         aria-expanded={open}
-        className="tech hidden rounded border border-white/25 px-3.5 py-2 text-[11px] text-white transition hover:border-white/60 md:block"
+        className="tech hidden rounded-full px-4 py-2 text-[11px] text-ink-2 transition hover:bg-surface-high md:block"
       >
         Contact
       </button>
@@ -89,7 +89,7 @@ export function ContactCard() {
           // sans écouter le document entier.
           if (e.target === dialogRef.current) setOpen(false);
         }}
-        className="w-[min(92vw,30rem)] rounded-xl bg-white p-0 text-ink-2 shadow-elevated backdrop:bg-ink/60 backdrop:backdrop-blur-sm"
+        className="w-[min(92vw,30rem)] rounded-xl bg-white p-0 text-ink-2 shadow-lg backdrop:bg-ink/60 backdrop:backdrop-blur-sm"
       >
         <div className="flex items-start justify-between gap-4 border-b border-line px-6 py-4">
           <div className="min-w-0">
@@ -130,12 +130,12 @@ export function ContactCard() {
               {EDITOR.postalCode} {EDITOR.city}
             </p>
             <p className="text-[14px]">
-              <a href={`tel:${EDITOR.phoneE164}`} className="text-accent hover:underline">
+              <a href={`tel:${EDITOR.phoneE164}`} className="text-flame hover:underline">
                 {EDITOR.phone}
               </a>
             </p>
             <p className="text-[14px]">
-              <a href={`mailto:${EDITOR.email}`} className="text-accent hover:underline">
+              <a href={`mailto:${EDITOR.email}`} className="text-flame hover:underline">
                 {EDITOR.email}
               </a>
             </p>
@@ -173,13 +173,13 @@ export function ContactCard() {
             <a
               href="/api/vcard"
               download
-              className="tech rounded bg-flame px-4 py-2.5 text-[11px] text-white transition hover:bg-flame-dark"
+              className="tech rounded-full bg-flame shadow-md px-4 py-2.5 text-[11px] text-white transition hover:bg-flame-dark"
             >
               Ajouter aux contacts
             </a>
             <a
               href="/mentions-legales"
-              className="tech rounded border border-ink/20 px-4 py-2.5 text-[11px] text-ink-2 transition hover:border-flame hover:text-accent"
+              className="tech rounded-full border-2 border-flame px-4 py-2.5 text-[11px] text-flame transition hover:bg-surface-high"
             >
               Mentions légales
             </a>

@@ -58,7 +58,7 @@ export default async function DocumentPage({
         </p>
         <Link
           href="/documents"
-          className="tech mt-6 inline-block rounded bg-flame px-5 py-2.5 text-[11px] text-white transition hover:bg-flame-dark"
+          className="tech mt-6 inline-block rounded-full bg-flame shadow-md px-5 py-2.5 text-[11px] text-white transition hover:bg-flame-dark"
         >
           Retour aux documents
         </Link>
@@ -72,7 +72,7 @@ export default async function DocumentPage({
   } catch (error) {
     return (
       <div className="mx-auto max-w-3xl px-5 py-16">
-        <div className="rounded-xl border-l-2 border-warn bg-surface p-6 ring-1 ring-line">
+        <div className="rounded-xl border-l-2 border-warn bg-surface p-6 ring-1 ring-line shadow-md">
           <h1 className="display text-xl text-ink-2">Génération impossible</h1>
           <p className="mt-2 text-[15px] text-muted">
             {error instanceof ScanError ? error.message : "L'analyse préalable n'a pas abouti."}
@@ -90,10 +90,10 @@ export default async function DocumentPage({
   return (
     <div className="mx-auto max-w-3xl px-5 py-12 sm:py-16">
       <nav className="mb-6 flex flex-wrap gap-4 text-sm print:hidden">
-        <Link href={`/scan?url=${encodeURIComponent(url)}`} className="text-accent hover:underline">
+        <Link href={`/scan?url=${encodeURIComponent(url)}`} className="text-flame hover:underline">
           ← Rapport d&apos;audit
         </Link>
-        <Link href={`/documents?url=${encodeURIComponent(url)}`} className="text-accent hover:underline">
+        <Link href={`/documents?url=${encodeURIComponent(url)}`} className="text-flame hover:underline">
           Tous les documents
         </Link>
       </nav>
@@ -114,7 +114,7 @@ export default async function DocumentPage({
       </header>
 
       {doc.todos.length > 0 ? (
-        <div className="mt-8 rounded-xl border-l-2 border-warn bg-surface p-5 ring-1 ring-line">
+        <div className="mt-8 rounded-xl border-l-2 border-warn bg-surface p-5 ring-1 ring-line shadow-md">
           <p className="tech text-[10px] text-warn">
             {doc.todos.length} information(s) que nous ne pouvons pas deviner
           </p>
@@ -157,7 +157,7 @@ export default async function DocumentPage({
             ) : null}
 
             {s.table ? (
-              <div className="mt-4 overflow-x-auto rounded-xl bg-surface ring-1 ring-line">
+              <div className="mt-4 overflow-x-auto rounded-xl bg-surface ring-1 ring-line shadow-md">
                 <table className="w-full text-left text-sm">
                   <thead className="bg-paper">
                     <tr>
@@ -192,7 +192,7 @@ export default async function DocumentPage({
         ))}
       </article>
 
-      <footer className="mt-12 rounded-xl bg-surface p-5 ring-1 ring-line">
+      <footer className="mt-12 rounded-xl bg-surface p-5 ring-1 ring-line shadow-md">
         <p className="text-[13px] leading-relaxed text-muted">{doc.footer}</p>
       </footer>
 
@@ -203,7 +203,7 @@ export default async function DocumentPage({
             <Link
               key={o.slug}
               href={`/documents/${o.slug}?url=${encodeURIComponent(url)}`}
-              className="tech rounded border border-line px-3 py-2 text-[10px] text-ink-2 transition hover:border-flame hover:text-accent"
+              className="tech rounded border border-line px-3 py-2 text-[10px] text-ink-2 transition hover:border-flame hover:text-flame"
             >
               {o.title}
             </Link>

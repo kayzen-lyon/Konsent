@@ -26,7 +26,7 @@ export default function PrivacyPage() {
         <h2 className="text-lg font-semibold text-ink-2">Responsable de traitement</h2>
         <p className="mt-2 text-[15px] leading-relaxed text-ink-2">
           {EDITOR.legalName}, SIREN {EDITOR.siren}, {EDITOR.address}. Contact :{" "}
-          <a href={`mailto:${EDITOR.email}`} className="text-accent hover:underline">
+          <a href={`mailto:${EDITOR.email}`} className="text-flame hover:underline">
             {EDITOR.email}
           </a>
           .
@@ -128,7 +128,7 @@ export default function PrivacyPage() {
         </p>
         <p className="mt-3 text-[15px] leading-relaxed text-ink-2">
           Un <strong>référent RGPD</strong> est néanmoins désigné et joignable à{" "}
-          <a href={`mailto:${EDITOR.email}`} className="text-accent hover:underline">
+          <a href={`mailto:${EDITOR.email}`} className="text-flame hover:underline">
             {EDITOR.email}
           </a>
           . Notre propre scanner relevait cette absence — nous préférons la corriger que la
@@ -141,7 +141,7 @@ export default function PrivacyPage() {
         <p className="mt-2 text-[15px] leading-relaxed text-ink-2">
           Vous disposez d&apos;un droit d&apos;accès, de rectification, d&apos;effacement, de
           limitation, d&apos;opposition et de portabilité. Ces droits s&apos;exercent auprès de{" "}
-          <a href={`mailto:${EDITOR.email}`} className="text-accent hover:underline">
+          <a href={`mailto:${EDITOR.email}`} className="text-flame hover:underline">
             {EDITOR.email}
           </a>
           .

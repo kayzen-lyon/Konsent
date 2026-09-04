@@ -75,7 +75,7 @@ export default function ContactPage() {
         </dl>
         <p className="text-[14px] text-muted">
           Le détail figure dans la{" "}
-          <Link href="/confidentialite" className="text-accent hover:underline">
+          <Link href="/confidentialite" className="text-flame hover:underline">
             politique de confidentialité
           </Link>
           .
@@ -103,12 +103,12 @@ export default function ContactPage() {
       <Article id="direct" heading="Nous joindre directement">
         <p>
           Courriel :{" "}
-          <a href={`mailto:${EDITOR.email}`} className="text-accent hover:underline">
+          <a href={`mailto:${EDITOR.email}`} className="text-flame hover:underline">
             {EDITOR.email}
           </a>
           <br />
           Téléphone :{" "}
-          <a href={`tel:${EDITOR.phoneE164}`} className="text-accent hover:underline">
+          <a href={`tel:${EDITOR.phoneE164}`} className="text-flame hover:underline">
             {EDITOR.phone}
           </a>
           <br />

@@ -59,7 +59,7 @@ export default function RulesPage() {
                       <SeverityBadge severity={rule.severity} />
                       <span className="min-w-0 flex-1">
                         <span className="font-mono text-xs text-muted">{rule.id}</span>
-                        <span className="mt-0.5 block text-[15px] font-medium leading-snug text-ink-2 group-hover:text-accent">
+                        <span className="mt-0.5 block text-[15px] font-medium leading-snug text-ink-2 group-hover:text-flame">
                           {rule.title}
                         </span>
                       </span>

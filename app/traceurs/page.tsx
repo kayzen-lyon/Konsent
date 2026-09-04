@@ -44,7 +44,7 @@ export default function TrackersPage() {
               className="group flex h-full flex-col rounded-xl border border-line bg-surface p-4 transition hover:border-flame"
             >
               <div className="flex items-start justify-between gap-2">
-                <span className="text-[15px] font-semibold leading-snug text-ink-2 group-hover:text-accent">
+                <span className="text-[15px] font-semibold leading-snug text-ink-2 group-hover:text-flame">
                   {t.name}
                 </span>
                 <span
@@ -52,7 +52,7 @@ export default function TrackersPage() {
                     t.adequacy === "EEA"
                       ? "bg-green-50 text-green-800"
                       : t.adequacy === "ADEQUATE"
-                        ? "bg-flame-bg text-flame-dark"
+                        ? "bg-flame-bg text-flame-deep"
                         : t.adequacy === "DPF_CONDITIONAL"
                           ? "bg-amber-50 text-amber-800"
                           : "bg-red-50 text-red-800"
