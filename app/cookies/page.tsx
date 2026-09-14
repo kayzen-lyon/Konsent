@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import CountUp from "@/components/bits/CountUp";
 import { Pill } from "@/components/primitives";
 import { COOKIES, lifetimeLabel } from "@/lib/seo/cookies";
 
@@ -37,11 +38,15 @@ export default function CookieIndexPage() {
 
           <div className="mt-8 flex flex-wrap gap-3">
             <div className="rounded-lg bg-white/10 px-4 py-2.5">
-              <span className="tabular display text-xl text-white">{requiring}</span>
+              <span className="tabular display text-xl text-white">
+                <CountUp to={requiring} />
+              </span>
               <span className="tech ml-2 text-[9px] text-white/60">soumis à consentement</span>
             </div>
             <div className="rounded-lg bg-white/10 px-4 py-2.5">
-              <span className="tabular display text-xl text-white">{exempt}</span>
+              <span className="tabular display text-xl text-white">
+                <CountUp to={exempt} />
+              </span>
               <span className="tech ml-2 text-[9px] text-white/60">exemptés</span>
             </div>
           </div>

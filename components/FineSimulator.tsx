@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { formatEur, formatEurCompact } from "@/lib/format";
 
 /**
  * Simulateur d'exposition théorique.
@@ -76,13 +77,9 @@ const REVENUE_STEPS = [
   10_000_000, 15_000_000, 25_000_000, 50_000_000, 100_000_000, 250_000_000, 500_000_000,
 ];
 
+/** Formatage déterministe (voir lib/format.ts) : identique serveur et client. */
 function eur(value: number, compact = false): string {
-  return new Intl.NumberFormat("fr-FR", {
-    style: "currency",
-    currency: "EUR",
-    maximumFractionDigits: 0,
-    ...(compact ? { notation: "compact", maximumFractionDigits: 1 } : {}),
-  }).format(value);
+  return compact ? formatEurCompact(value) : formatEur(value);
 }
 
 export function FineSimulator({ compact = false }: { compact?: boolean }) {

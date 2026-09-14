@@ -1,9 +1,22 @@
 import Link from "next/link";
+import BlurText from "@/components/bits/BlurText";
+import CountUp from "@/components/bits/CountUp";
+import FadeContent from "@/components/bits/FadeContent";
+import ShinyText from "@/components/bits/ShinyText";
+import SpotlightCard from "@/components/bits/SpotlightCard";
 import { Faq } from "@/components/Faq";
+import { JsonLd } from "@/components/JsonLd";
 import { FineSimulator } from "@/components/FineSimulator";
 import { ScanForm } from "@/components/ScanForm";
 import { ScanTerminal } from "@/components/ScanTerminal";
 import { RULEPACK } from "@/lib/rulepack";
+import { COOKIES } from "@/lib/seo/cookies";
+import {
+  faqPageJsonLd,
+  organizationJsonLd,
+  softwareApplicationJsonLd,
+  webSiteJsonLd,
+} from "@/lib/seo/jsonld";
 import { TRACKERS } from "@/lib/trackers/db";
 
 const BLIND_SPOTS = [
@@ -81,6 +94,15 @@ const FAQ_ITEMS = [
 export default function HomePage() {
   return (
     <>
+      <JsonLd
+        data={[
+          organizationJsonLd(),
+          webSiteJsonLd(),
+          softwareApplicationJsonLd(),
+          faqPageJsonLd(FAQ_ITEMS),
+        ]}
+      />
+
       {/* ═══════════════════════ HÉROS ═══════════════════════ */}
       <section className="grid-bg border-b border-line bg-paper">
         <div className="mx-auto max-w-7xl px-5 py-16 sm:py-24">
@@ -88,15 +110,21 @@ export default function HomePage() {
             <div className="rise">
               <p className="tech inline-flex items-center gap-2 rounded-full bg-flame-bg px-3 py-1.5 text-[10px] text-flame-deep">
                 <span className="inline-block h-1.5 w-1.5 rounded-full bg-flame" />
-                Référentiel {RULEPACK.version} · {RULEPACK.total} règles publiques
+                <ShinyText
+                  text={`Référentiel ${RULEPACK.version} · ${RULEPACK.total} règles publiques`}
+                  color="#5a2817"
+                  shineColor="#b74831"
+                  speed={5}
+                />
               </p>
 
-              <h1 className="display mt-6 text-[2.6rem] text-ink-2 sm:text-[4rem]">
-                Votre bandeau gère le consentement.
-                <br />
-                <span className="underline-flame">Il ne vérifie pas</span> ce qui passe
-                derrière.
-              </h1>
+              <BlurText
+                as="h1"
+                className="display mt-6 text-[2.6rem] text-ink-2 sm:text-[4rem]"
+                text="Votre bandeau gère le consentement. Il ne vérifie pas ce qui passe derrière."
+                highlight="Il ne vérifie pas"
+                delay={70}
+              />
 
               <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted">
                 Konsent observe votre site comme le ferait un contrôleur : ce qui se dépose
@@ -113,6 +141,22 @@ export default function HomePage() {
                 <span>Sans inscription</span>
                 <span>Références normatives</span>
               </div>
+
+              <dl className="mt-8 grid max-w-xl grid-cols-2 gap-px overflow-hidden rounded-lg bg-line ring-1 ring-line sm:grid-cols-4">
+                {[
+                  [RULEPACK.total, "règles publiques"],
+                  [TRACKERS.length, "destinataires décrits"],
+                  [COOKIES.length, "cookies documentés"],
+                  [3, "phases d'analyse"],
+                ].map(([n, label]) => (
+                  <div key={label} className="bg-surface px-4 py-3">
+                    <dt className="tech text-[9px] text-muted">{label}</dt>
+                    <dd className="tabular display mt-1 text-2xl text-secondary">
+                      <CountUp to={n as number} />
+                    </dd>
+                  </div>
+                ))}
+              </dl>
             </div>
 
             <div className="rise" style={{ animationDelay: "120ms" }}>
@@ -124,7 +168,7 @@ export default function HomePage() {
 
       {/* ══════════════ CE QUE LES BANDEAUX NE VOIENT PAS ══════════════ */}
       <section className="mx-auto max-w-7xl px-5 py-20">
-        <div className="mx-auto max-w-2xl text-center">
+        <FadeContent className="mx-auto max-w-2xl text-center">
           <h2 className="display text-3xl text-ink-2 sm:text-4xl">
             Ce que les bandeaux ne voient pas
           </h2>
@@ -133,26 +177,28 @@ export default function HomePage() {
             tarteaucitron — gère le consentement de surface. Konsent regarde le comportement
             réel du code.
           </p>
-        </div>
+        </FadeContent>
 
         <div className="mt-12 grid gap-5 md:grid-cols-3">
-          {BLIND_SPOTS.map((b) => (
-            <article
-              key={b.title}
-              className="border-l-2 border-secondary bg-surface p-6 shadow-md ring-1 ring-line shadow-md"
-            >
-              <svg viewBox="0 0 24 24" className="h-6 w-6 text-accent" fill="none" aria-hidden="true">
-                <path
-                  d={b.icon}
-                  stroke="currentColor"
-                  strokeWidth="1.7"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              <h3 className="mt-4 text-lg font-bold text-ink-2">{b.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted">{b.body}</p>
-            </article>
+          {BLIND_SPOTS.map((b, i) => (
+            <FadeContent key={b.title} delay={i * 120}>
+              <SpotlightCard
+                as="article"
+                className="h-full rounded-xl border-l-2 border-secondary bg-surface p-6 shadow-md ring-1 ring-line"
+              >
+                <svg viewBox="0 0 24 24" className="h-6 w-6 text-accent" fill="none" aria-hidden="true">
+                  <path
+                    d={b.icon}
+                    stroke="currentColor"
+                    strokeWidth="1.7"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                <h3 className="mt-4 text-lg font-bold text-ink-2">{b.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted">{b.body}</p>
+              </SpotlightCard>
+            </FadeContent>
           ))}
         </div>
       </section>
@@ -200,22 +246,22 @@ export default function HomePage() {
 
       {/* ═══════════════════ ARSENAL ═══════════════════ */}
       <section className="mx-auto max-w-7xl px-5 py-20">
-        <div className="mx-auto max-w-2xl text-center">
+        <FadeContent className="mx-auto max-w-2xl text-center">
           <p className="tech text-[10px] text-accent">Le produit</p>
           <h2 className="display mt-3 text-3xl text-ink-2 sm:text-4xl">
             Ce qui distingue un audit d&apos;un scanner
           </h2>
-        </div>
+        </FadeContent>
 
         <div className="mt-12 grid gap-px overflow-hidden rounded-xl bg-line ring-1 ring-line sm:grid-cols-2 lg:grid-cols-3">
           {ARSENAL.map((f, i) => (
-            <article key={f.title} className="bg-surface p-7">
+            <SpotlightCard key={f.title} as="article" className="bg-surface p-7">
               <span className="tech text-[10px] text-accent">
                 {String(i + 1).padStart(2, "0")}
               </span>
               <h3 className="mt-3 text-[17px] font-bold leading-snug text-ink-2">{f.title}</h3>
               <p className="mt-2.5 text-sm leading-relaxed text-muted">{f.body}</p>
-            </article>
+            </SpotlightCard>
           ))}
         </div>
 
@@ -237,7 +283,7 @@ export default function HomePage() {
 
       {/* ═══════════════ POSITION / NEUTRALITÉ ═══════════════ */}
       <section className="border-y border-line bg-surface">
-        <div className="mx-auto max-w-4xl px-5 py-20 text-center">
+        <FadeContent blur className="mx-auto max-w-4xl px-5 py-20 text-center">
           <svg
             viewBox="0 0 24 24"
             className="mx-auto h-8 w-8 text-accent"
@@ -254,7 +300,7 @@ export default function HomePage() {
           <p className="tech mt-8 text-[10px] text-muted">
             Konsent n&apos;édite ni ne revend aucune plateforme de consentement
           </p>
-        </div>
+        </FadeContent>
       </section>
 
       {/* ═══════════════════ TARIFS ═══════════════════ */}
@@ -353,9 +399,9 @@ export default function HomePage() {
               </ul>
               <Link
                 href={p.href}
-                className={`tech mt-7 rounded px-5 py-3 text-center text-[11px] transition ${
+                className={`tech mt-7 rounded-full px-5 py-3 text-center text-[11px] transition ${
                   p.featured
-                    ? "bg-flame text-white hover:bg-flame-dark"
+                    ? "bg-flame text-white shadow-md hover:bg-flame-dark"
                     : "border-2 border-flame text-flame hover:bg-surface-high"
                 }`}
               >

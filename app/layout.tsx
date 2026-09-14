@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Outfit, Plus_Jakarta_Sans } from "next/font/google";
 import Link from "next/link";
 import { EDITOR } from "@/lib/disclaimer";
+import Magnet from "@/components/bits/Magnet";
+import { MotionProvider } from "@/components/bits/MotionProvider";
 import { ContactCard } from "@/components/ContactCard";
 import { Logo } from "@/components/Logo";
 import "./globals.css";
@@ -38,12 +40,22 @@ export const metadata: Metadata = {
   },
   description:
     "Votre plateforme de consentement gère le consentement. Konsent vérifie ce qui se dépose vraiment avant que vos visiteurs aient pu répondre — traceurs, destinataires, juridictions. Auditeur indépendant de toute CMP.",
+  /* Canonique relative : chaque page se déclare elle-même, sans paramètre
+   * d'URL. Évite les doublons d'indexation entre `?url=` et la page nue. */
+  alternates: { canonical: "./" },
   openGraph: {
+    siteName: "Konsent",
     title: "Konsent — l'audit RGPD que votre bandeau ne fait pas",
     description:
       "Que dépose votre site avant que vos visiteurs aient pu répondre ? Vérifiez-le gratuitement.",
     locale: "fr_FR",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Konsent — l'audit RGPD que votre bandeau ne fait pas",
+    description:
+      "Que dépose votre site avant que vos visiteurs aient pu répondre ? Vérifiez-le gratuitement.",
   },
   robots: { index: true, follow: true },
 };
@@ -86,12 +98,14 @@ function Header() {
           >
             Référentiel
           </Link>
-          <Link
-            href="/#scan"
-            className="tech rounded-full bg-flame px-5 py-2.5 text-[11px] text-white shadow-md transition hover:bg-flame-dark"
-          >
-            Auditer mon site
-          </Link>
+          <Magnet padding={40} magnetStrength={4}>
+            <Link
+              href="/#scan"
+              className="tech block rounded-full bg-flame px-5 py-2.5 text-[11px] text-white shadow-md transition hover:bg-flame-dark"
+            >
+              Auditer mon site
+            </Link>
+          </Magnet>
         </div>
       </div>
     </header>
@@ -226,9 +240,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           Aller au contenu
         </a>
-        <Header />
-        <main id="contenu">{children}</main>
-        <Footer />
+        <MotionProvider>
+          <Header />
+          <main id="contenu">{children}</main>
+          <Footer />
+        </MotionProvider>
       </body>
     </html>
   );
