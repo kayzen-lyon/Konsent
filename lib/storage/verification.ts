@@ -51,7 +51,7 @@ async function checkFile(hostname: string, token: string): Promise<boolean> {
     const res = await fetch(`https://${hostname}${WELL_KNOWN_PATH}`, {
       signal: controller.signal,
       redirect: "follow",
-      headers: { "User-Agent": "KonsentBot/1.0 (+https://konsent.fr/bot)" },
+      headers: { "User-Agent": "KonsentBot/1.0 (+https://konsent.kayzen-lyon.com/bot)" },
       cache: "no-store",
     });
     if (!res.ok) return false;

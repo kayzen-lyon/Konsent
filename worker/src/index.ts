@@ -13,7 +13,7 @@ import { ACCEPT_WORDS, REJECT_WORDS, clickByLexicon, resolveBanner, type BannerI
  */
 
 const USER_AGENT =
-  "Mozilla/5.0 (compatible; KonsentBot/1.0; +https://konsent.fr/bot) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0 Safari/537.36";
+  "Mozilla/5.0 (compatible; KonsentBot/1.0; +https://konsent.kayzen-lyon.com/bot) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0 Safari/537.36";
 
 const SETTLE_MS = 6_000;
 

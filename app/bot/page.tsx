@@ -26,7 +26,7 @@ export default function BotPage() {
       <section className="mt-10">
         <h2 className="text-lg font-semibold text-ink-2">Comment il s&apos;identifie</h2>
         <pre className="mt-3 overflow-x-auto rounded-lg border border-line bg-surface p-4 font-mono text-[13px] text-ink-2">
-          Mozilla/5.0 (compatible; KonsentBot/1.0; +https://konsent.fr/bot) AppleWebKit/537.36
+          Mozilla/5.0 (compatible; KonsentBot/1.0; +https://konsent.kayzen-lyon.com/bot) AppleWebKit/537.36
         </pre>
         <p className="mt-3 text-[15px] leading-relaxed text-ink-2">
           Nous ne dissimulons jamais notre identité et n&apos;utilisons aucune technique

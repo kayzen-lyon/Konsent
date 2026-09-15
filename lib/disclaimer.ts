@@ -51,7 +51,7 @@ export const EDITOR = {
   phoneE164: "+33487776861",
   email: "contact@kayzen-lyon.fr",
   product: "Konsent",
-  productSite: "https://konsent-zeta.vercel.app",
+  productSite: "https://konsent.kayzen-lyon.com",
   agencySite: "https://internet.kayzen-lyon.fr",
   agencyName: "Kayzen Web",
 } as const;

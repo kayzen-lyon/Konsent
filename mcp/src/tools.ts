@@ -19,7 +19,7 @@
  * pas été vérifiées » — sans cette information, il conclura à tort.
  */
 
-const BASE_URL = process.env["KONSENT_API_URL"] ?? "https://konsent-zeta.vercel.app";
+const BASE_URL = process.env["KONSENT_API_URL"] ?? "https://konsent.kayzen-lyon.com";
 
 export interface ToolDefinition {
   name: string;

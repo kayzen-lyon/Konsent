@@ -12,7 +12,7 @@ import { RULEPACK } from "@/lib/rulepack";
  * inventerait une `aggregateRating` serait exactement le genre de déclaration
  * que ce produit reproche aux autres.
  */
-const BASE = "https://konsent.fr";
+const BASE = EDITOR.productSite;
 const ORG_ID = `${BASE}/#organisation`;
 const SITE_ID = `${BASE}/#site`;
 const APP_ID = `${BASE}/#logiciel`;

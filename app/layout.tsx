@@ -33,7 +33,7 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://konsent.fr"),
+  metadataBase: new URL(EDITOR.productSite),
   title: {
     default: "Konsent — l'audit RGPD que votre bandeau ne fait pas",
     template: "%s · Konsent",

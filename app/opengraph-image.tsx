@@ -75,7 +75,7 @@ export default function OpenGraphImage() {
               fontWeight: 700,
             }}
           >
-            konsent.fr
+            konsent.kayzen-lyon.com
           </div>
         </div>
       </div>

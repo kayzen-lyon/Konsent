@@ -36,7 +36,7 @@ import type {
  * (§5.6) : on se présente, on ne se dissimule pas.
  */
 const USER_AGENT =
-  "Mozilla/5.0 (compatible; KonsentBot/1.0; +https://konsent.fr/bot) AppleWebKit/537.36";
+  "Mozilla/5.0 (compatible; KonsentBot/1.0; +https://konsent.kayzen-lyon.com/bot) AppleWebKit/537.36";
 
 const FETCH_TIMEOUT_MS = 12_000;
 const TOTAL_BUDGET_MS = 45_000;

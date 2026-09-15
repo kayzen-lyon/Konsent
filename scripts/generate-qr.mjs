@@ -24,7 +24,7 @@ const EDITOR = {
   street: "6 rue Pierre Termier",
   postalCode: "69009",
   city: "Lyon",
-  productSite: "https://konsent-zeta.vercel.app",
+  productSite: "https://konsent.kayzen-lyon.com",
 };
 
 /**
