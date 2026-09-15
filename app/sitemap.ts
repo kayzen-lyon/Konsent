@@ -1,11 +1,12 @@
 import type { MetadataRoute } from "next";
+import { EDITOR } from "@/lib/disclaimer";
 import { RULES } from "@/lib/rulepack";
 import { TRACKERS } from "@/lib/trackers/db";
 import { COOKIES } from "@/lib/seo/cookies";
 import { GLOSSARY } from "@/lib/seo/glossary";
 import { GUIDES } from "@/lib/seo/guides";
 
-const BASE = "https://konsent.fr";
+const BASE = EDITOR.productSite;
 
 /**
  * Socle du référencement programmatique (§17.1) : chaque règle et chaque

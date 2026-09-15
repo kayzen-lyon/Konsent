@@ -11,7 +11,7 @@
  * système qu'on ne contrôle pas.
  */
 
-const BASE_URL = process.env["KONSENT_API_URL"] ?? "https://konsent-zeta.vercel.app";
+const BASE_URL = process.env["KONSENT_API_URL"] ?? "https://konsent.kayzen-lyon.com";
 
 export const RESOURCES = [
   {

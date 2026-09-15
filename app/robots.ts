@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { EDITOR } from "@/lib/disclaimer";
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -9,6 +10,6 @@ export default function robots(): MetadataRoute.Robots {
       // vocation à être indexées.
       disallow: ["/scan", "/api/", "/documents/", "/devis"],
     },
-    sitemap: "https://konsent.fr/sitemap.xml",
+    sitemap: `${EDITOR.productSite}/sitemap.xml`,
   };
 }

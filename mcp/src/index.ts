@@ -29,7 +29,7 @@ import { TOOLS } from "./tools.js";
  * devient, dans sa bouche, une affirmation juridique que personne n'a écrite.
  */
 
-const BASE_URL = process.env["KONSENT_API_URL"] ?? "https://konsent-zeta.vercel.app";
+const BASE_URL = process.env["KONSENT_API_URL"] ?? "https://konsent.kayzen-lyon.com";
 
 const DISCLAIMER =
   "Analyse technique automatisée — résultat indicatif, non juridique. Ne constitue ni une consultation ni une certification.";
