@@ -133,10 +133,15 @@ const MAX_REDIRECTS = 5;
 /**
  * `fetch` limité à l'internet public, redirections comprises.
  * Renvoie la dernière réponse et l'URL finale effectivement jointe.
+ *
+ * `followRedirects: false` (envois sortants : webhooks) : une redirection
+ * n'est pas suivie et la réponse 3xx est rendue telle quelle — un corps
+ * signé ne doit jamais repartir vers une autre adresse que celle déclarée.
  */
 export async function safeFetch(
   input: string,
   init: Omit<UndiciInit, "redirect" | "dispatcher"> = {},
+  options: { followRedirects?: boolean } = {},
 ): Promise<{ response: Awaited<ReturnType<typeof undiciFetch>>; finalUrl: string }> {
   let current = new URL(input);
   for (let hop = 0; hop <= MAX_REDIRECTS; hop += 1) {
@@ -147,7 +152,7 @@ export async function safeFetch(
 
     const response = await undiciFetch(current, { ...init, redirect: "manual", dispatcher });
     const location = response.headers.get("location");
-    if (response.status >= 300 && response.status < 400 && location) {
+    if (response.status >= 300 && response.status < 400 && location && options.followRedirects !== false) {
       // Le corps d'une redirection n'est pas lu : on libère la connexion.
       await response.body?.cancel().catch(() => undefined);
       current = new URL(location, current);

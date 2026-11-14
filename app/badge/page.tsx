@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { BadgeBuilder } from "@/components/BadgeBuilder";
 import { Disclaimer } from "@/components/primitives";
 import { EDITOR } from "@/lib/disclaimer";
+import { JsonLd } from "@/components/JsonLd";
+import { toolJsonLd } from "@/lib/seo/jsonld";
+import { getTool } from "@/lib/tools/catalog";
 
 export const metadata: Metadata = {
   title: "Afficher votre badge Konsent",
@@ -12,6 +15,7 @@ export const metadata: Metadata = {
 export default function BadgePage() {
   return (
     <div className="mx-auto max-w-3xl px-6 py-16">
+      <JsonLd data={toolJsonLd(getTool("badge")!)} />
       <p className="tech text-[10px] text-accent">Badge</p>
       <h1 className="display mt-2 text-4xl text-ink-2">Afficher votre badge Konsent</h1>
       <p className="mt-5 text-lg leading-relaxed text-muted">

@@ -99,6 +99,24 @@ export const FREE_TOOLS: readonly FreeTool[] = [
     available: true,
   },
   {
+    slug: "registre-traitements",
+    title: "Générateur de registre des traitements",
+    question: "Comment constituer mon registre des activités de traitement (article 30 du RGPD) ?",
+    description:
+      "Une fiche par traitement selon le modèle de la CNIL : finalités, personnes, données, destinataires, transferts hors UE, durées, sécurité. Traitements types préremplis et modifiables. Export HTML, Markdown et CSV.",
+    processing: "navigateur",
+    available: true,
+  },
+  {
+    slug: "procedure-cnil",
+    title: "Simulateur de procédure CNIL",
+    question: "Que se passe-t-il après une plainte ou un contrôle de la CNIL ?",
+    description:
+      "La procédure étape par étape (contrôle, mise en demeure, procédure simplifiée, formation restreinte, astreinte, recours), ses délais et vos marges d'action, avec un scénario pédagogique fondé sur l'article 83 du RGPD.",
+    processing: "navigateur",
+    available: true,
+  },
+  {
     slug: "comparer",
     title: "Comparateur de deux sites",
     question: "Mon site fait-il mieux ou moins bien que celui de mon concurrent ?",

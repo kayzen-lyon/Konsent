@@ -58,6 +58,7 @@ export function LegalPage({
               ["/confidentialite", "Politique de confidentialité"],
               ["/confidentialite#cookies", "Cookies"],
               ["/accessibilite", "Accessibilité"],
+              ["/securite", "Sécurité"],
               ["/plan-du-site", "Plan du site"],
               ["/contact", "Nous écrire"],
             ] as const

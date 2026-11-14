@@ -74,6 +74,14 @@ export function OwnedDomains({
               </span>
             )}
 
+            {/* Double opt-in : sans confirmation, aucune alerte ne part par
+                courriel. Le dire évite d'attendre un message qui ne viendra pas. */}
+            {domain.alertEmailConfirmedAt ? null : (
+              <span className="tech shrink-0 rounded bg-warn-bg px-2 py-1 text-[9px] text-warn">
+                Adresse d&apos;alerte à confirmer
+              </span>
+            )}
+
             <Link
               href={`/scan?url=${encodeURIComponent(domain.hostname)}`}
               className="tech shrink-0 rounded border border-line px-3 py-1.5 text-[9px] text-muted transition hover:border-flame hover:text-flame"

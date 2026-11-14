@@ -11,6 +11,9 @@ import { ScanError } from "@/lib/engine/scan";
 import { FAMILY_LABELS, PILLARS } from "@/lib/rulepack";
 import type { Finding } from "@/lib/rulepack/types";
 import type { TrackerEntity } from "@/lib/trackers/types";
+import { JsonLd } from "@/components/JsonLd";
+import { toolJsonLd } from "@/lib/seo/jsonld";
+import { getTool } from "@/lib/tools/catalog";
 
 // Résultats jamais mis en cache : chaque comparaison relance deux analyses.
 export const dynamic = "force-dynamic";
@@ -443,6 +446,7 @@ export default async function ComparePage({
 
   return (
     <>
+      <JsonLd data={toolJsonLd(getTool("comparer")!)} />
       <section className="grid-bg-dark bg-ink">
         <div className="mx-auto max-w-7xl px-5 py-10">
           <p className="tech text-[10px] text-flame-soft">Comparaison</p>

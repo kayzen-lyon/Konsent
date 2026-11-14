@@ -17,3 +17,7 @@ worker/dist/
 mcp/node_modules/
 mcp/dist/
 .env*
+
+# Playwright
+test-results/
+playwright-report/

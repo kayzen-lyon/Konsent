@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 import { Article, EditorIdentity, LegalPage } from "@/components/Legal";
 import { EDITOR } from "@/lib/disclaimer";
@@ -148,13 +149,13 @@ export default function LegalNoticePage() {
         </p>
         <p>
           Le traitement des données personnelles est décrit dans la{" "}
-          <a href="/confidentialite" className="text-flame hover:underline">
+          <Link href="/confidentialite" className="text-flame hover:underline">
             politique de confidentialité
-          </a>{" "}
+          </Link>{" "}
           et l&apos;usage des cookies dans la{" "}
-          <a href="/cookies" className="text-flame hover:underline">
+          <Link href="/confidentialite#cookies" className="text-flame hover:underline">
             page dédiée
-          </a>
+          </Link>
           .
         </p>
       </Article>

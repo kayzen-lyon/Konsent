@@ -2,6 +2,9 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { Disclaimer, SectionTitle } from "@/components/primitives";
 import EvidenceVerifier from "@/components/tools/EvidenceVerifier";
+import { JsonLd } from "@/components/JsonLd";
+import { toolJsonLd } from "@/lib/seo/jsonld";
+import { getTool } from "@/lib/tools/catalog";
 
 export const metadata: Metadata = {
   title: "Vérificateur d'archive de preuve",
@@ -12,6 +15,7 @@ export const metadata: Metadata = {
 export default function EvidenceVerifierPage() {
   return (
     <div className="mx-auto max-w-5xl px-6 py-16">
+      <JsonLd data={toolJsonLd(getTool("verificateur-preuve")!)} />
       <p className="tech text-[10px] text-accent">Outil libre</p>
       <h1 className="display mt-2 text-4xl text-ink-2">Vérificateur d&apos;archive de preuve</h1>
       <p className="mt-5 max-w-3xl text-lg leading-relaxed text-muted">

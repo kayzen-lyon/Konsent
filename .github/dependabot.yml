@@ -1,0 +1,56 @@
+# Mises à jour de dépendances, hebdomadaires.
+#
+# Les mises à jour mineures et correctifs sont regroupées en une seule PR par
+# écosystème et par dossier ; les majeures restent isolées (une PR chacune),
+# parce qu'elles demandent une lecture du journal des changements.
+#
+# Seules les PR de type CORRECTIF (semver patch) sont fusionnées
+# automatiquement, une fois la CI verte : voir workflows/dependabot-auto-merge.yml.
+version: 2
+
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      timezone: Europe/Paris
+    open-pull-requests-limit: 10
+    groups:
+      npm-mineures-correctifs:
+        update-types: [minor, patch]
+
+  - package-ecosystem: npm
+    directory: "/mcp"
+    schedule:
+      interval: weekly
+      day: monday
+      timezone: Europe/Paris
+    open-pull-requests-limit: 5
+    groups:
+      mcp-mineures-correctifs:
+        update-types: [minor, patch]
+
+  - package-ecosystem: npm
+    directory: "/worker"
+    schedule:
+      interval: weekly
+      day: monday
+      timezone: Europe/Paris
+    open-pull-requests-limit: 5
+    groups:
+      worker-mineures-correctifs:
+        update-types: [minor, patch]
+
+  # Les workflows ET l'action composite du dépôt (actions/setup-node…).
+  - package-ecosystem: github-actions
+    directories:
+      - "/"
+      - "/.github/actions/konsent-scan"
+    schedule:
+      interval: weekly
+      day: monday
+      timezone: Europe/Paris
+    groups:
+      actions-mineures-correctifs:
+        update-types: [minor, patch]

@@ -368,7 +368,7 @@ export default function HomePage() {
       </section>
 
       {/* ═══════════════════ SIMULATEUR ═══════════════════ */}
-      <section className="grid-bg-dark bg-ink">
+      <section className="grid-bg-dark bg-ink [content-visibility:auto] [contain-intrinsic-size:auto_900px] print:[content-visibility:visible]">
         <div className="mx-auto max-w-7xl px-5 py-20">
           <div className="grid items-center gap-12 lg:grid-cols-2">
             <div>
@@ -409,7 +409,7 @@ export default function HomePage() {
       </section>
 
       {/* ═══════════════════ ARSENAL ═══════════════════ */}
-      <section className="mx-auto max-w-7xl px-5 py-20">
+      <section className="mx-auto max-w-7xl px-5 py-20 [content-visibility:auto] [contain-intrinsic-size:auto_1100px] print:[content-visibility:visible]">
         <FadeContent className="mx-auto max-w-2xl text-center">
           <p className="tech text-[10px] text-accent">Le produit</p>
           <h2 className="display mt-3 text-3xl text-ink-2 sm:text-4xl">
@@ -468,7 +468,7 @@ export default function HomePage() {
       </section>
 
       {/* ═══════════════════ TARIFS ═══════════════════ */}
-      <section className="mx-auto max-w-7xl px-5 py-20">
+      <section className="mx-auto max-w-7xl px-5 py-20 [content-visibility:auto] [contain-intrinsic-size:auto_1200px] print:[content-visibility:visible]">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="display text-3xl text-ink-2 sm:text-4xl">Tarifs</h2>
           <p className="mt-4 text-[15px] leading-relaxed text-muted">
@@ -583,7 +583,7 @@ export default function HomePage() {
       </section>
 
       {/* ═══════════════════ FAQ ═══════════════════ */}
-      <section className="border-t border-line bg-surface">
+      <section className="border-t border-line bg-surface [content-visibility:auto] [contain-intrinsic-size:auto_900px] print:[content-visibility:visible]">
         <div className="mx-auto max-w-7xl px-5 py-20">
           <div className="mx-auto mb-12 max-w-2xl text-center">
             <h2 className="display text-3xl text-ink-2 sm:text-4xl">Questions fréquentes</h2>
@@ -593,7 +593,7 @@ export default function HomePage() {
       </section>
 
       {/* ═══════════════════ APPEL FINAL ═══════════════════ */}
-      <section className="bg-ink-2">
+      <section className="bg-ink-2 [content-visibility:auto] [contain-intrinsic-size:auto_420px] print:[content-visibility:visible]">
         <div className="mx-auto max-w-3xl px-5 py-20 text-center">
           <h2 className="display text-3xl text-white sm:text-4xl">
             Vous saurez en moins d&apos;une minute.

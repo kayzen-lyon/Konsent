@@ -4,6 +4,7 @@ import { EDITOR } from "@/lib/disclaimer";
 import { MotionProvider } from "@/components/bits/MotionProvider";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
+import { Toaster } from "@/components/site/Toaster";
 import { THEME_BOOT_SCRIPT } from "@/components/site/theme";
 import "./globals.css";
 
@@ -93,6 +94,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             {children}
           </main>
           <Footer />
+          <Toaster />
         </MotionProvider>
       </body>
     </html>

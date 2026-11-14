@@ -43,6 +43,7 @@ const COLUMNS: Record<string, FooterLink[]> = {
     { label: "Analyse en lot", href: "/analyse-en-lot" },
     { label: "Mentions légales : générateur", href: "/outils/generateur-mentions-legales" },
     { label: "Badge Konsent", href: "/badge" },
+    { label: "Intégrations (API, MCP, GitHub)", href: "/integrations" },
     { label: "Tous les outils", href: "/outils" },
   ],
   Konsent: [
@@ -70,6 +71,8 @@ const COLUMNS: Record<string, FooterLink[]> = {
     { label: "Cookies : aucun traceur", href: "/confidentialite#cookies" },
     { label: "Index des cookies", href: "/cookies" },
     { label: "Accessibilité : partiellement conforme", href: "/accessibilite" },
+    { label: "Version facile à lire", href: "/facile-a-lire" },
+    { label: "Signaler une vulnérabilité", href: "/securite" },
     { label: "Plan du site", href: "/plan-du-site" },
   ],
 };
@@ -99,6 +102,7 @@ function ShareLinks() {
   ];
 
   return (
+    <>
     <ul className="flex flex-wrap gap-2.5">
       {items.map(({ label, href, Icon }) => (
         <li key={label}>
@@ -134,10 +138,11 @@ function ShareLinks() {
           <span className="sr-only">Copier le lien de la page</span>
         </button>
       </li>
-      <li role="status" className="sr-only">
-        {copied ? "Lien copié" : ""}
-      </li>
     </ul>
+    <p role="status" className="sr-only">
+      {copied ? "Lien copié" : ""}
+    </p>
+    </>
   );
 }
 

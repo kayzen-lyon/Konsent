@@ -13,10 +13,14 @@ import {
 } from "@/lib/seo/cookies";
 import { SeeAlso } from "@/components/SeeAlso";
 import { relatedForCookie } from "@/lib/seo/related";
+import { createAutolinker } from "@/lib/seo/autolink";
 
 export function generateStaticParams() {
   return COOKIES.map((c) => ({ name: c.slug }));
 }
+
+/* Toutes les fiches sont connues au build : un nom hors base répond 404. */
+export const dynamicParams = false;
 
 export async function generateMetadata({
   params,
@@ -39,6 +43,7 @@ export default async function CookiePage({ params }: { params: Promise<{ name: s
   if (!cookie) notFound();
 
   const vendor = vendorOf(cookie);
+  const autolink = createAutolinker();
   const tooLong = exceedsRecommendedLifetime(cookie);
   const siblings = COOKIES.filter(
     (c) => c.vendorSlug && c.vendorSlug === cookie.vendorSlug && c.slug !== cookie.slug,
@@ -66,10 +71,10 @@ export default async function CookiePage({ params }: { params: Promise<{ name: s
 
       <section className="mt-8">
         <h2 className="tech text-[10px] text-muted">À quoi il sert</h2>
-        <p className="mt-2 text-[17px] leading-relaxed text-ink-2">{cookie.purposeFr}</p>
+        <p className="mt-2 text-[17px] leading-relaxed text-ink-2">{autolink(cookie.purposeFr)}</p>
         {cookie.noteFr ? (
           <p className="mt-3 rounded-lg border-l-2 border-secondary bg-surface p-4 text-[14.5px] leading-relaxed text-ink-2 ring-1 ring-line shadow-md">
-            {cookie.noteFr}
+            {autolink(cookie.noteFr)}
           </p>
         ) : null}
       </section>
@@ -148,7 +153,7 @@ export default async function CookiePage({ params }: { params: Promise<{ name: s
               Société mère ultime : {vendor.ultimateParent}
             </p>
           ) : null}
-          <p className="mt-3 text-[14.5px] leading-relaxed text-ink-2">{vendor.riskNotesFr}</p>
+          <p className="mt-3 text-[14.5px] leading-relaxed text-ink-2">{autolink(vendor.riskNotesFr)}</p>
           <p className="mt-3 text-[13px] text-muted">{ADEQUACY_LABELS[vendor.adequacy]}</p>
           <div className="mt-4 flex flex-wrap gap-2">
             <Link

@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Disclaimer, SectionTitle } from "@/components/primitives";
 import RetentionCalculator from "@/components/tools/RetentionCalculator";
+import { JsonLd } from "@/components/JsonLd";
+import { toolJsonLd } from "@/lib/seo/jsonld";
+import { getTool } from "@/lib/tools/catalog";
 
 export const metadata: Metadata = {
   title: "Calculateur de durée de conservation RGPD",
@@ -11,6 +14,7 @@ export const metadata: Metadata = {
 export default function RetentionPage() {
   return (
     <div className="mx-auto max-w-6xl px-6 py-16">
+      <JsonLd data={toolJsonLd(getTool("duree-conservation")!)} />
       <p className="tech text-[10px] text-accent">Outil libre</p>
       <h1 className="display mt-2 text-4xl text-ink-2">Calculateur de durée de conservation</h1>
       <p className="mt-5 max-w-3xl text-lg leading-relaxed text-muted">

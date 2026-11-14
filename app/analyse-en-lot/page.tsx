@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { BulkScan } from "@/components/BulkScan";
 import { Disclaimer } from "@/components/primitives";
+import { JsonLd } from "@/components/JsonLd";
+import { toolJsonLd } from "@/lib/seo/jsonld";
+import { BULK_SCAN_TOOL } from "@/lib/seo/og";
 
 export const metadata: Metadata = {
   title: "Analyse en lot",
@@ -12,6 +15,7 @@ export const metadata: Metadata = {
 export default function BulkScanPage() {
   return (
     <>
+      <JsonLd data={toolJsonLd(BULK_SCAN_TOOL)} />
       <section className="grid-bg-dark bg-ink">
         <div className="mx-auto max-w-7xl px-5 py-10">
           <p className="tech text-[10px] text-flame-soft">Analyse en lot</p>

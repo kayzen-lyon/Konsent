@@ -5,7 +5,8 @@ import { runVerdictScan } from "@/lib/engine/orchestrate";
 import { ScanError } from "@/lib/engine/scan";
 import { createBaseline } from "@/lib/monitoring/baseline";
 import { alertSummary, diffAgainstBaseline } from "@/lib/monitoring/diff";
-import { getStorage, nextRun } from "@/lib/storage";
+import { getStorage, nextRun, type MonitoredDomain, type Storage } from "@/lib/storage";
+import { deliverWebhook, type WebhookAlert } from "@/lib/webhooks";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -22,6 +23,31 @@ function authorised(request: Request): boolean {
   if (provided.length !== expected.length) return false;
 
   return timingSafeEqual(Buffer.from(provided), Buffer.from(expected));
+}
+
+/**
+ * Envoi au webhook du domaine, s'il y en a un. `null` : aucun webhook.
+ * Ne lève jamais : un webhook en panne ne coûte pas son tour aux suivants.
+ */
+async function notifyWebhook(
+  storage: Storage,
+  domain: MonitoredDomain,
+  alert: WebhookAlert,
+): Promise<boolean | null> {
+  try {
+    const hook = await storage.getWebhook(domain.id);
+    if (!hook) return null;
+    const delivery = await deliverWebhook(hook, alert);
+    const status = delivery.sent
+      ? `alerte envoyée (${delivery.status})`
+      : `échec : ${delivery.reason ?? "motif inconnu"}`;
+    if (!delivery.sent) console.error(`Webhook non délivré pour ${domain.hostname} : ${status}.`);
+    await storage.recordWebhookAttempt(domain.id, status).catch(() => undefined);
+    return delivery.sent;
+  } catch (error) {
+    console.error(`Webhook non délivré pour ${domain.hostname}.`, error);
+    return false;
+  }
 }
 
 /**
@@ -78,6 +104,7 @@ export async function GET(request: Request) {
 
       let regressions = 0;
       let delivered = false;
+      let webhookDelivered: boolean | null = null;
       if (previous) {
         const diff = diffAgainstBaseline(previous.baseline, scan);
         regressions = diff.regressions;
@@ -98,19 +125,34 @@ export async function GET(request: Request) {
           // tenté ici, et son ÉCHEC est journalisé plutôt que tu — une alerte
           // réputée partie mais jamais envoyée donne une fausse assurance,
           // ce qui est pire que pas d'alerte.
-          const message = alertEmail({
+          const reportUrl = `${origin}/surveillance?domaine=${encodeURIComponent(domain.hostname)}`;
+          const observedAt = new Date().toLocaleDateString("fr-FR");
+
+          // Double opt-in : une adresse non confirmée ne reçoit RIEN. Sans
+          // cette garde, inscrire l'adresse d'un tiers suffirait à lui faire
+          // recevoir des alertes qu'il n'a jamais demandées.
+          if (domain.alertEmailConfirmedAt) {
+            const message = alertEmail({ hostname: domain.hostname, summary, observedAt, reportUrl });
+            const delivery = await sendEmail({ ...message, to: domain.alertEmail });
+            if (!delivery.sent) {
+              console.error(
+                `Alerte non délivrée pour ${domain.hostname} : ${delivery.reason ?? "motif inconnu"}.`,
+              );
+            }
+            delivered = delivery.sent;
+          } else {
+            console.error(`Alerte non envoyée pour ${domain.hostname} : adresse d'alerte non confirmée.`);
+          }
+
+          // Webhook : tenté indépendamment du courriel, jamais bloquant. Son
+          // échec est journalisé et noté sur le webhook, pas propagé.
+          webhookDelivered = await notifyWebhook(storage, domain, {
             hostname: domain.hostname,
             summary,
-            observedAt: new Date().toLocaleDateString("fr-FR"),
-            reportUrl: `${origin}/surveillance?domaine=${encodeURIComponent(domain.hostname)}`,
+            regressions: diff.regressions,
+            observedAt,
+            reportUrl,
           });
-          const delivery = await sendEmail({ ...message, to: domain.alertEmail });
-          if (!delivery.sent) {
-            console.error(
-              `Alerte non délivrée pour ${domain.hostname} : ${delivery.reason ?? "motif inconnu"}.`,
-            );
-          }
-          delivered = delivery.sent;
         }
       }
 
@@ -123,6 +165,7 @@ export async function GET(request: Request) {
         grade: scan.grade,
         regressions,
         alertDelivered: delivered,
+        webhookDelivered,
         firstRun: previous === null,
       });
     } catch (error) {

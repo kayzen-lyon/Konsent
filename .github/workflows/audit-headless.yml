@@ -22,7 +22,7 @@ on:
       url:
         description: "URL à auditer"
         required: false
-        default: "https://konsent-zeta.vercel.app"
+        default: "https://konsent.kayzen-lyon.com"
 
 jobs:
   auto-audit:
@@ -35,7 +35,7 @@ jobs:
         id: audit
         uses: ./.github/actions/konsent-scan
         with:
-          url: ${{ inputs.url || 'https://konsent-zeta.vercel.app' }}
+          url: ${{ inputs.url || 'https://konsent.kayzen-lyon.com' }}
           # Sur notre propre site, le moindre écart critique doit faire échouer
           # la chaîne. Un auditeur qui tolère chez lui ce qu'il relève chez les
           # autres n'a plus d'argument.
