@@ -161,7 +161,7 @@ export default async function QuotePage({
         </div>
 
         <div className="flex items-baseline justify-between gap-4 bg-ink px-5 py-4">
-          <span className="tech text-[10px] text-white/60">Total estimé, hors taxes</span>
+          <span className="tech text-[10px] text-white/60">Total estimé, TVA non applicable</span>
           <span className="tabular display text-2xl text-white">
             {formatEur(quote.totalLow)} – {formatEur(quote.totalHigh)}
           </span>
@@ -215,8 +215,8 @@ export default async function QuotePage({
           <div>
             <dt className="font-bold text-ink-2">Prestataire</dt>
             <dd className="text-muted">
-              {EDITOR.legalName}, SIREN {EDITOR.siren}, {EDITOR.address}. Montants exprimés hors
-              taxes.
+              {EDITOR.legalName} ({EDITOR.tradeName}), SIREN {EDITOR.siren}, {EDITOR.address}.
+              {EDITOR.vatMention}.
             </dd>
           </div>
           <div>

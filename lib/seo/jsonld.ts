@@ -28,7 +28,7 @@ export function organizationJsonLd() {
     logo: `${BASE}/opengraph-image`,
     email: EDITOR.email,
     telephone: EDITOR.phoneE164,
-    vatID: EDITOR.vatNumber,
+    taxID: EDITOR.siret.replace(/\s/g, ""),
     address: {
       "@type": "PostalAddress",
       streetAddress: EDITOR.street,
@@ -36,7 +36,7 @@ export function organizationJsonLd() {
       addressLocality: EDITOR.city,
       addressCountry: "FR",
     },
-    sameAs: [EDITOR.agencySite],
+    sameAs: [EDITOR.groupSite, EDITOR.agencySite],
   };
 }
 

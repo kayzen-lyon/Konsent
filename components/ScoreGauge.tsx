@@ -37,7 +37,7 @@ export function ScoreGauge({
             transform="rotate(-90 100 100)"
           />
         </svg>
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <div className="absolute inset-0 flex flex-col items-center justify-center" aria-hidden="true">
           <span className="tabular display text-[3.2rem] leading-none" style={{ color }}>
             {score}
           </span>

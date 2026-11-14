@@ -22,7 +22,7 @@ export default function JurisdictionsPage() {
   });
 
   return (
-    <main className="mx-auto max-w-5xl px-6 py-16">
+    <div className="mx-auto max-w-5xl px-6 py-16">
       <p className="tech text-[10px] text-accent">Portée</p>
       <h1 className="display mt-2 text-4xl text-ink-2">Juridictions couvertes</h1>
       <p className="mt-5 max-w-3xl text-lg leading-relaxed text-muted">
@@ -38,19 +38,22 @@ export default function JurisdictionsPage() {
 
       <div className="mt-10 overflow-x-auto">
         <table className="w-full min-w-[46rem] border-collapse text-left text-sm">
+          <caption className="sr-only">
+            Juridictions couvertes : autorité, régime, règles retenues et qualification
+          </caption>
           <thead>
             <tr className="border-b border-slate-300">
-              <th className="py-3 pr-4 font-medium text-ink-2">Juridiction</th>
-              <th className="py-3 pr-4 font-medium text-ink-2">Autorité</th>
-              <th className="py-3 pr-4 font-medium text-ink-2">Régime</th>
-              <th className="py-3 pr-4 font-medium text-ink-2">Règles retenues</th>
-              <th className="py-3 font-medium text-ink-2">Qualification</th>
+              <th scope="col" className="py-3 pr-4 font-medium text-ink-2">Juridiction</th>
+              <th scope="col" className="py-3 pr-4 font-medium text-ink-2">Autorité</th>
+              <th scope="col" className="py-3 pr-4 font-medium text-ink-2">Régime</th>
+              <th scope="col" className="py-3 pr-4 font-medium text-ink-2">Règles retenues</th>
+              <th scope="col" className="py-3 font-medium text-ink-2">Qualification</th>
             </tr>
           </thead>
           <tbody>
             {rows.map(({ jurisdiction: j, applicable }) => (
               <tr key={j.code} className="border-b border-slate-100 align-top">
-                <td className="py-3 pr-4 font-medium text-ink-2">{j.label}</td>
+                <th scope="row" className="py-3 pr-4 font-medium text-ink-2">{j.label}</th>
                 <td className="py-3 pr-4 text-muted">{j.authority}</td>
                 <td className="py-3 pr-4 text-muted">{REGIME_LABELS[j.regime]}</td>
                 <td className="py-3 pr-4 text-muted">
@@ -126,6 +129,6 @@ export default function JurisdictionsPage() {
       <div className="mt-14">
         <Disclaimer />
       </div>
-    </main>
+    </div>
   );
 }

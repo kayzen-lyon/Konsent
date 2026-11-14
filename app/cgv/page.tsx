@@ -46,8 +46,8 @@ export default function SalesTermsPage() {
     >
       <Article id="vendeur" number={1} heading="Identité du vendeur">
         <p>
-          {EDITOR.legalName}, {EDITOR.legalForm}, SIREN {EDITOR.siren}, RCS {EDITOR.rcs}, TVA{" "}
-          {EDITOR.vatNumber}, dont le siège social est situé {EDITOR.street}, {EDITOR.postalCode}{" "}
+          {EDITOR.legalName} ({EDITOR.tradeName}), {EDITOR.legalForm}, SIREN {EDITOR.siren},
+          SIRET {EDITOR.siret}, {EDITOR.vatMention}, dont le siège social est situé {EDITOR.street}, {EDITOR.postalCode}{" "}
           {EDITOR.city}.
         </p>
         <p>
@@ -64,8 +64,8 @@ export default function SalesTermsPage() {
 
       <Article id="offres" number={2} heading="Offres et prix">
         <p>
-          Les prix sont exprimés <strong>en euros et hors taxes</strong>, la TVA au taux en vigueur
-          étant appliquée lors de la facturation. Les abonnements sont mensuels et sans engagement
+          Les prix sont exprimés <strong>en euros, nets de taxes</strong> : l&apos;éditeur relève de
+          la franchise en base de TVA ({EDITOR.vatMention}), aucune TVA n&apos;est donc facturée. Les abonnements sont mensuels et sans engagement
           de durée.
         </p>
         <div className="overflow-x-auto">
@@ -77,7 +77,7 @@ export default function SalesTermsPage() {
                   Offre
                 </th>
                 <th scope="col" className="tech py-2 text-[10px] text-muted">
-                  Prix mensuel HT
+                  Prix mensuel net
                 </th>
                 <th scope="col" className="tech py-2 text-[10px] text-muted">
                   Souscription

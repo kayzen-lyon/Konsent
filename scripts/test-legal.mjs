@@ -195,7 +195,7 @@ const walk = (dir) => {
 walk("app");
 
 const layout = read("app/layout.tsx");
-check("la langue de la page est déclarée", /<html lang="fr"/.test(layout), "critère RGAA 8.3");
+check("la langue de la page est déclarée", /<html\s+lang="fr"/.test(layout), "critère RGAA 8.3");
 check("un lien d'évitement existe", layout.includes('href="#contenu"'), "critère RGAA 12.7");
 check("le contenu principal est identifiable", /id="contenu"/.test(layout), "critère RGAA 12.6");
 

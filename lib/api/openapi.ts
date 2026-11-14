@@ -118,7 +118,7 @@ export function buildOpenApiDocument(origin: string): Record<string, unknown> {
         "",
         API_ACCESS_NOTE,
       ].join("\n"),
-      contact: { name: "KAYZEN LYON SASU", url: `${origin}/mentions-legales` },
+      contact: { name: "KAYZEN", url: `${origin}/mentions-legales` },
       license: { name: "Conditions d'utilisation", url: `${origin}/mentions-legales` },
     },
     servers: [{ url: origin, description: "Production" }],

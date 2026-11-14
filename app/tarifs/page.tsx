@@ -128,14 +128,23 @@ export default function PricingPage() {
         </h2>
         <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-muted">
           Constater un écart ne le corrige pas. Ces prestations sont réalisées par l&apos;équipe
-          technique de KAYZEN LYON, puis validées par une nouvelle analyse.
+          technique de KAYZEN, puis validées par une nouvelle analyse.
         </p>
         <div className="mt-5 overflow-hidden rounded-xl border border-line bg-surface">
           <table className="w-full text-left text-sm">
+            <caption className="sr-only">Prestations de correction et tarifs indicatifs</caption>
+            <thead className="sr-only">
+              <tr>
+                <th scope="col">Prestation</th>
+                <th scope="col">Tarif</th>
+              </tr>
+            </thead>
             <tbody className="divide-y divide-line">
               {SERVICES.map(([label, price]) => (
                 <tr key={label}>
-                  <td className="px-5 py-3 text-ink-2">{label}</td>
+                  <th scope="row" className="px-5 py-3 font-normal text-ink-2">
+                    {label}
+                  </th>
                   <td className="tabular px-5 py-3 text-right font-semibold text-ink-2">
                     {price}
                   </td>
@@ -145,7 +154,7 @@ export default function PricingPage() {
           </table>
         </div>
         <p className="mt-3 text-xs text-muted">
-          Tarifs indicatifs hors taxes, susceptibles d&apos;évoluer selon le périmètre réel.
+          Tarifs indicatifs nets — TVA non applicable, art. 293 B du CGI — susceptibles d&apos;évoluer selon le périmètre réel.
         </p>
       </section>
 

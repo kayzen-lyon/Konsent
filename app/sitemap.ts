@@ -33,6 +33,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/sources",
     "/mentions-legales",
     "/confidentialite",
+    "/cgu",
+    "/cgv",
+    "/contact",
+    "/accessibilite",
+    "/plan-du-site",
   ].map((path) => ({
     url: `${BASE}${path}`,
     lastModified: new Date(),

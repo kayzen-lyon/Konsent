@@ -14,12 +14,24 @@ export default function PrivacyPage() {
         Politique de confidentialité
       </h1>
 
-      <p className="mt-4 rounded-xl border border-green-200 bg-green-50 p-5 text-[15px] leading-relaxed text-green-900">
+      <p
+        id="cookies"
+        className="mt-4 scroll-mt-28 rounded-xl border border-ok/30 bg-ok-bg p-5 text-[15px] leading-relaxed text-ink-2"
+      >
         Konsent signale le chargement de traceurs tiers comme un écart. Il serait incohérent
         d&apos;en déposer. Ce site <strong>ne dépose aucun cookie</strong>, n&apos;utilise{" "}
         <strong>aucun outil de mesure d&apos;audience tiers</strong> et ne charge{" "}
         <strong>aucune ressource externe</strong> — ni police, ni script, ni image. C&apos;est
         la raison pour laquelle vous ne voyez aucun bandeau.
+        <br />
+        <br />
+        Seule exception, et uniquement si vous la choisissez : la préférence de thème (clair,
+        sombre ou système) est conservée dans le stockage local de votre navigateur sous la clé{" "}
+        <code className="font-mono text-[13px]">konsent-theme</code>. Elle n&apos;est jamais
+        transmise à notre serveur, ne permet aucun suivi et relève des traceurs strictement
+        nécessaires à un service que vous demandez (article 82 de la loi Informatique et
+        Libertés) : elle n&apos;appelle donc aucun consentement. Revenir sur « Système » la
+        supprime.
       </p>
 
       <section className="mt-8">
@@ -121,9 +133,9 @@ export default function PrivacyPage() {
       <section className="mt-8">
         <h2 className="text-lg font-semibold text-ink-2">Référent RGPD</h2>
         <p className="mt-2 text-[15px] leading-relaxed text-ink-2">
-          KAYZEN LYON SASU n&apos;est pas tenue de désigner un délégué à la protection des données
-          au sens de l&apos;article 37 du RGPD : elle n&apos;est pas un organisme public, son
-          activité de base ne consiste pas en un suivi systématique à grande échelle, et elle ne
+          L&apos;éditeur n&apos;est pas tenu de désigner un délégué à la protection des données
+          au sens de l&apos;article 37 du RGPD : il n&apos;est pas un organisme public, son
+          activité de base ne consiste pas en un suivi systématique à grande échelle, et il ne
           traite pas de données sensibles à grande échelle.
         </p>
         <p className="mt-3 text-[15px] leading-relaxed text-ink-2">

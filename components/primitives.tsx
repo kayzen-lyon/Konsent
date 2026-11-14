@@ -50,7 +50,7 @@ export function Pill({
 }) {
   const tones = {
     neutral: "bg-surface-high text-ink-2",
-    danger: "bg-crit-bg text-crit",
+    danger: "bg-crit-bg text-crit-text",
     warn: "bg-warn-bg text-warn",
     ok: "bg-ok-bg text-ok",
     flame: "bg-flame-bg text-flame-deep",

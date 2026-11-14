@@ -86,11 +86,15 @@ for (const qr of generated) {
 
 /* ── ce que le générateur refuse de faire ── */
 
-const reviews = QR_CODES.find((q) => q.key === "reviews");
 check(
   "aucun QR n'est fabriqué sans adresse",
-  reviews && reviews.size === 0 && reviews.url === null,
-  "un QR pointant vers une adresse devinée serait pire qu'aucun QR",
+  QR_CODES.every((q) => (q.url === null) === (q.size === 0)),
+  "un QR sans adresse explicite serait pire qu'aucun QR",
+);
+const reviews = QR_CODES.find((q) => q.key === "reviews");
+check(
+  "le QR d'avis pointe vers Google, jamais vers une adresse devinée",
+  !!reviews?.url && /^https:\/\/(www\.google\.com\/search\?|search\.google\.com\/local\/writereview\?)/.test(reviews.url),
 );
 
 /* ── aucune ressource externe ── */

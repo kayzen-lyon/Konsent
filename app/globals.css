@@ -1,7 +1,10 @@
 @import "tailwindcss";
 
 /**
- * Système de design Konsent — aligné sur Kayzen Web (kayzen-lyon.com).
+ * Système de design Konsent — jetons de la fiche Kayzen (kayzen-lyon.com),
+ * communs aux services du groupe (Nexus, DocuSûr). Primaire #B7481F, encre
+ * #1F2937, corps #586474, surface #F2F5F7, filet #E0E5EB, bande marine
+ * #132944, doré #F3BD49.
  *
  * « Chaleur technique » : terracotta d'action (#b74831) réservée aux
  * interactions, marine profond (#1f3b61) pour la structure et les bandes,
@@ -45,7 +48,7 @@
  */
 @theme {
   /* Marine — bandes sombres, bannière, structure */
-  --color-ink: #1f3b61;
+  --color-ink: #132944;
   --color-ink-2: #1f2937;
   --color-ink-3: #0f1f35;
   --color-secondary: #1f3b61;
@@ -53,8 +56,8 @@
   --color-accent: #1f3b61;
 
   /* Terracotta — action et interaction uniquement */
-  --color-flame: #b74831;
-  --color-flame-dark: #a03d28;
+  --color-flame: #b7481f;
+  --color-flame-dark: #9a3c1a;
   --color-flame-bg: #e8d5cf;
   --color-flame-deep: #5a2817;
   --color-flame-soft: #ffb399;
@@ -62,6 +65,8 @@
   /* Constats — accordés à la fiche, distincts de la marque */
   --color-crit: #dc2626;
   --color-crit-bg: #fee2e2;
+  /* Texte critique sur fond crit-bg : #dc2626 n'y atteint que 3,95:1. */
+  --color-crit-text: #b91c1c;
   --color-warn: #a16207;
   --color-warn-bg: #fef9c3;
   --color-ok: #1a6b52;
@@ -70,13 +75,16 @@
   /* Surfaces claires */
   --color-paper: #ffffff;
   --color-surface: #ffffff;
-  --color-surface-dim: #f5f5f5;
-  --color-surface-low: #f0f0f0;
-  --color-surface-high: #e9ecef;
-  --color-line: #d0d0d0;
-  --color-line-2: #9ca3af;
-  --color-muted: #6c757d;
+  --color-surface-dim: #f2f5f7;
+  --color-surface-low: #f2f5f7;
+  --color-surface-high: #eaedef;
+  --color-line: #e0e5eb;
+  --color-line-2: #7d8ca1;
+  --color-muted: #586474;
   --color-on-primary: #ffffff;
+  /* Doré Kayzen : chiffres et surtitres sur fond marine uniquement */
+  --color-gold: #f3bd49;
+  --color-navy-deep: #132944;
 
   --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-outfit), var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
@@ -92,12 +100,13 @@
   /* Élévations Kayzen — sm pour les badges, md pour cartes et boutons,
    * lg pour les surfaces flottantes (modales, terminal du héros). */
   --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.06);
-  --shadow-md: 0 4px 12px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 16px 40px rgb(0 0 0 / 0.12);
+  --shadow-md: 0 2px 6px rgb(36 49 66 / 0.06), 0 1px 2px rgb(36 49 66 / 0.04);
+  --shadow-lg: 0 24px 48px -16px rgb(36 49 66 / 0.18), 0 4px 12px rgb(36 49 66 / 0.06);
+  --shadow-xl: 0 8px 20px -6px rgb(36 49 66 / 0.14), 0 2px 6px rgb(36 49 66 / 0.06);
   --shadow-header: 0 1px 3px rgb(0 0 0 / 0.08);
 
   /* Conteneur à 1400 px (max-w-7xl) */
-  --container-7xl: 87.5rem;
+  --container-7xl: 80rem;
 
   /* Mouvement Kayzen — 200 ms, courbe « ease » */
   --default-transition-duration: 200ms;
@@ -142,6 +151,16 @@ h3.display {
   line-height: 1.29;
 }
 
+/* Titre de héros — display-xl Kayzen : Outfit 800, 36 px en mobile jusqu'à
+ * 68 px, interlignage 1,06, approche -1,9 px (proportionnelle). */
+.hero-title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(2.25rem, 1.6rem + 2.8vw, 4.25rem);
+  line-height: 1.06;
+  letter-spacing: -0.028em;
+}
+
 /* Libellés (label-md Kayzen) : Outfit 700, en capitales espacées pour les
  * surtitres, statuts, en-têtes de tableau et textes de bouton. */
 .tech {
@@ -156,7 +175,7 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,
 textarea:focus,
 select:focus {
   border-color: var(--color-flame);
-  box-shadow: 0 0 0 3px rgb(183 72 49 / 0.1);
+  box-shadow: 0 0 0 3px rgb(183 72 31 / 0.12);
 }
 
 .tabular {
@@ -178,8 +197,25 @@ select:focus {
 }
 
 .bg-ink :focus-visible,
+.bg-ink-2 :focus-visible,
+.bg-navy-deep :focus-visible,
 .grid-bg-dark :focus-visible {
   outline-color: #fff;
+}
+
+/* Une carte claire posée sur une bande sombre retrouve l'anneau terracotta :
+ * un anneau blanc sur fond blanc serait invisible (RGAA 10.7). */
+:is(.bg-ink, .bg-ink-2, .bg-navy-deep, .grid-bg-dark) :is(.bg-surface, .bg-paper) :focus-visible {
+  outline-color: var(--color-flame);
+}
+
+/* Liens dans le texte : soulignés au repos, pas seulement colorés — la
+ * couleur seule ne les distingue pas assez du texte voisin (RGAA 10.6).
+ * Les liens en forme de bouton (pilules arrondies) ne sont pas concernés. */
+a.text-flame:not([class*="rounded"]) {
+  text-decoration-line: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
 }
 
 /**
@@ -255,24 +291,6 @@ select:focus {
 
 .rise {
   animation: rise 0.4s ease both;
-}
-
-/* Reflet de ShinyText (components/bits) : le dégradé est peint dans le texte
- * et glisse de droite à gauche. Coupé par la règle de mouvement réduit. */
-.shiny-text {
-  display: inline-block;
-  background-size: 200% 100%;
-  background-position: 100% 0;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: shine 4s linear infinite;
-}
-
-@keyframes shine {
-  to {
-    background-position: -100% 0;
-  }
 }
 
 @keyframes blink {
@@ -425,3 +443,94 @@ select:focus {
  * Sur une bande marine (`bg-ink`), les surtitres passent en `flame-soft`
  * (inverse-primary) et les boutons restent terracotta sur blanc.
  */
+
+/* ═══════════════════════ Boutons primaires Kayzen ═══════════════════════
+ * Pilule terracotta : ombre chaude au survol et au focus, légère pression
+ * au clic (scale 0.97), conformément à la fiche. */
+.btn-primary {
+  transition:
+    box-shadow 200ms ease,
+    transform 200ms ease,
+    background-color 200ms ease;
+}
+.btn-primary:hover,
+.btn-primary:focus-visible {
+  box-shadow:
+    0 18px 40px -14px rgb(183 72 31 / 0.55),
+    0 4px 12px -4px rgb(183 72 31 / 0.35);
+}
+.btn-primary:active {
+  transform: scale(0.97);
+}
+
+/* ═══════════════════════════ Thème sombre ════════════════════════════════
+ * Palette dérivée de la fiche Kayzen (themes.dark). Les jetons sont
+ * redéfinis ; les composants n'ont rien à savoir du thème.
+ *
+ * Le terracotta reste #B7481F en FOND (blanc dessus : 5,3:1) ; en TEXTE sur
+ * fond sombre il passe à #F08A5D (7,4:1 sur #130E0C), d'où la règle dédiée
+ * à `.text-flame` plutôt qu'un simple changement de jeton. */
+.dark {
+  color-scheme: dark;
+  --color-ink-2: #fcf8f6;
+  --color-ink-3: #fcf8f6;
+  --color-secondary: #a9c2e6;
+  --color-secondary-bg: #1c2b40;
+  --color-accent: #a9c2e6;
+  --color-flame-bg: #3a2018;
+  --color-flame-deep: #ffd2c0;
+
+  --color-crit: #f87171;
+  --color-crit-bg: #3b1515;
+  --color-crit-text: #fca5a5;
+  --color-warn: #facc15;
+  --color-warn-bg: #33290a;
+  --color-ok: #6ee7b7;
+  --color-ok-bg: #0f2e24;
+
+  --color-paper: #130e0c;
+  --color-surface: #211c1b;
+  --color-surface-dim: #1a1513;
+  --color-surface-low: #1a1513;
+  --color-surface-high: #2d2927;
+  --color-line: #393533;
+  --color-line-2: #6b6461;
+  --color-muted: #a39f9d;
+
+  --color-slate-50: #1a1513;
+  --color-slate-100: #211c1b;
+  --color-slate-200: #393533;
+  --color-slate-300: #4a4542;
+  --color-slate-400: #8a8583;
+  --color-slate-500: #a39f9d;
+  --color-slate-600: #bcb7b4;
+  --color-slate-700: #d6d1ce;
+
+  /* Teintes d'alerte codées en dur dans quelques encarts */
+  --color-amber-50: #33290a;
+  --color-amber-200: #5c4a12;
+  --color-amber-800: #fde68a;
+  --color-amber-900: #fef3c7;
+  --color-red-50: #3b1515;
+  --color-red-800: #fecaca;
+  --color-green-50: #0f2e24;
+  --color-green-800: #a7f3d0;
+
+  --shadow-md: 0 0 0 1px #393533;
+  --shadow-lg: 0 24px 48px -16px rgb(0 0 0 / 0.6), 0 0 0 1px #393533;
+  --shadow-xl: 0 8px 20px -6px rgb(0 0 0 / 0.5), 0 0 0 1px #393533;
+}
+.dark .text-flame {
+  color: #f08a5d;
+}
+/* Badges pleins de constat : en sombre, ces fonds deviennent clairs, le
+ * texte blanc codé en dur passe donc en encre sombre. */
+.dark :is(.bg-crit, .bg-ok, .bg-warn, .bg-secondary, .bg-accent).text-white {
+  color: #130e0c;
+}
+.dark :focus-visible {
+  outline-color: #f08a5d;
+}
+.dark .underline-flame {
+  background-image: linear-gradient(transparent 62%, #5a2817 62%);
+}

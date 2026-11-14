@@ -90,7 +90,7 @@ export function buildVCard(): string {
     `EMAIL;TYPE=work:${escapeValue(EDITOR.email)}`,
     `URL;TYPE=work:${escapeValue(EDITOR.agencySite)}`,
     `NOTE:${escapeValue(
-      `${EDITOR.legalForm} — SIREN ${EDITOR.siren}, SIRET ${EDITOR.siret}, RCS ${EDITOR.rcs}, TVA ${EDITOR.vatNumber}, APE ${EDITOR.apeCode}.`,
+      `${EDITOR.legalName}, ${EDITOR.legalForm} — SIREN ${EDITOR.siren}, SIRET ${EDITOR.siret}, APE ${EDITOR.apeCode}, ${EDITOR.vatMention}.`,
     )}`,
     // REV est figée à la date de dernière modification du bloc d'identité, et
     // non à `Date.now()` : une fiche dont l'horodatage change à chaque

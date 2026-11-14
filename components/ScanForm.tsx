@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useId, useState, useTransition } from "react";
 
 /**
  * Formulaire d'analyse. Aucune inscription, aucune adresse e-mail exigée
@@ -19,6 +19,10 @@ export function ScanForm({
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const router = useRouter();
+  // Identifiants uniques : le formulaire figure deux fois sur l'accueil.
+  const uid = useId();
+  const inputId = `scan-url-${uid}`;
+  const errorId = `scan-error-${uid}`;
 
   function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -41,14 +45,14 @@ export function ScanForm({
     <form onSubmit={submit} className="w-full" noValidate>
       <div
         className={`flex flex-col gap-2 sm:flex-row sm:gap-0 sm:rounded-full sm:p-1.5 ${
-          dark ? "sm:bg-white/10" : "sm:bg-surface sm:shadow-md sm:ring-1 sm:ring-ink/10"
+          dark ? "sm:bg-white/10 sm:ring-1 sm:ring-white/40" : "sm:bg-surface sm:shadow-md sm:ring-1 sm:ring-line-2"
         }`}
       >
-        <label htmlFor="scan-url" className="sr-only">
+        <label htmlFor={inputId} className="sr-only">
           Adresse du site à analyser
         </label>
         <input
-          id="scan-url"
+          id={inputId}
           name="url"
           type="text"
           inputMode="url"
@@ -59,11 +63,11 @@ export function ScanForm({
           value={value}
           onChange={(e) => setValue(e.target.value)}
           aria-invalid={error ? true : undefined}
-          aria-describedby={error ? "scan-error" : undefined}
-          className={`min-w-0 flex-1 rounded-full px-5 py-3.5 font-mono text-[15px] outline-none transition ${
+          aria-describedby={error ? errorId : undefined}
+          className={`min-w-0 flex-1 rounded-full px-5 py-3.5 font-mono text-[15px] transition ${
             dark
-              ? "bg-white/5 text-white placeholder:text-white/35 focus:bg-white/10"
-              : "bg-white text-ink-2 placeholder:text-slate-400"
+              ? "border border-white/40 bg-white/5 text-white placeholder:text-white/60 focus:bg-white/10 sm:border-0"
+              : "border border-line-2 bg-surface text-ink-2 placeholder:text-muted sm:border-0"
           }`}
         />
         <button
@@ -77,7 +81,7 @@ export function ScanForm({
 
       {error ? (
         <p
-          id="scan-error"
+          id={errorId}
           role="alert"
           className={`mt-2 text-sm ${dark ? "text-red-300" : "text-crit"}`}
         >

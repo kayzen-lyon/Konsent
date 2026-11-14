@@ -5,7 +5,7 @@ import { EDITOR } from "@/lib/disclaimer";
 export const metadata: Metadata = {
   title: "Mentions légales",
   description:
-    "Éditeur, directeur de la publication, hébergeur et propriété intellectuelle du site Konsent, édité par KAYZEN LYON SASU.",
+    "Éditeur, directeur de la publication, hébergeur et propriété intellectuelle du site Konsent, service édité par KAYZEN (Tarek BELHADJ, entrepreneur individuel).",
 };
 
 /**
@@ -21,7 +21,7 @@ export default function LegalNoticePage() {
   return (
     <LegalPage
       title="Mentions légales"
-      updatedAt="2026-08-09"
+      updatedAt="2026-11-14"
       intro={
         <>
           Les informations ci-dessous sont publiées en application de l&apos;article 6-III de la loi
@@ -35,13 +35,8 @@ export default function LegalNoticePage() {
 
       <Article id="publication" heading="Directeur de la publication">
         <p>
-          [[À COMPLÉTER : nom et prénom du président de la SASU]], en qualité de président de{" "}
-          {EDITOR.legalName}.
-        </p>
-        <p className="text-[14px] text-muted">
-          L&apos;article 6-III-1 de la LCEN exige le nom du directeur de la publication, pas
-          seulement sa qualité. Mentionner « le représentant légal » sans le nommer ne satisfait pas
-          l&apos;obligation.
+          {EDITOR.director}, entrepreneur individuel exerçant sous le nom commercial{" "}
+          {EDITOR.tradeName}.
         </p>
       </Article>
 
@@ -54,7 +49,7 @@ export default function LegalNoticePage() {
             rel="noopener noreferrer nofollow"
             target="_blank"
           >
-            vercel.com
+            vercel.com<span className="sr-only"> (nouvel onglet)</span>
           </a>
         </p>
         <p>
@@ -66,6 +61,20 @@ export default function LegalNoticePage() {
           Vercel Inc. est une société de droit américain. Ce point est mentionné parce que le
           présent site relève précisément les rattachements capitalistiques hors Union européenne
           chez les autres : le taire ici serait incohérent.
+        </p>
+      </Article>
+
+      <Article id="domaine" heading="Nom de domaine et DNS">
+        <p>
+          IONOS SARL, 7 place de la Gare, 57200 Sarreguemines, France — téléphone 0970 808 911 —{" "}
+          <a
+            href="https://www.ionos.fr"
+            className="text-flame hover:underline"
+            rel="noopener noreferrer nofollow"
+            target="_blank"
+          >
+            ionos.fr<span className="sr-only"> (nouvel onglet)</span>
+          </a>
         </p>
       </Article>
 
@@ -136,6 +145,17 @@ export default function LegalNoticePage() {
           Le présent site est soumis au droit français. Tout litige relatif à son utilisation relève
           de la compétence des tribunaux français, sous réserve des règles de compétence
           impératives applicables aux consommateurs.
+        </p>
+        <p>
+          Le traitement des données personnelles est décrit dans la{" "}
+          <a href="/confidentialite" className="text-flame hover:underline">
+            politique de confidentialité
+          </a>{" "}
+          et l&apos;usage des cookies dans la{" "}
+          <a href="/cookies" className="text-flame hover:underline">
+            page dédiée
+          </a>
+          .
         </p>
       </Article>
     </LegalPage>

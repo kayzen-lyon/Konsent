@@ -56,7 +56,7 @@ export function ContactForm({ token }: { token: string }) {
   }
 
   const field =
-    "mt-1.5 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-[15px] text-ink-2 placeholder:text-muted/70";
+    "mt-1.5 w-full rounded-lg border border-line-2 bg-surface px-3.5 py-2.5 text-[15px] text-ink-2 placeholder:text-muted";
 
   return (
     <form onSubmit={submit} noValidate={false} className="space-y-5">
@@ -74,6 +74,11 @@ export function ContactForm({ token }: { token: string }) {
       </div>
 
       <input type="hidden" name={TIMESTAMP_FIELD} defaultValue={token} />
+
+      <p className="text-[13px] text-muted">
+        Les champs marqués d&apos;un astérisque (<span aria-hidden="true">*</span>
+        <span className="sr-only">astérisque</span>) sont obligatoires.
+      </p>
 
       <div>
         <label htmlFor="nom" className="tech text-[10px] text-muted">
@@ -108,7 +113,15 @@ export function ContactForm({ token }: { token: string }) {
           Message <span aria-hidden="true">*</span>
           <span className="sr-only">(obligatoire)</span>
         </label>
-        <textarea id="message" name="message" required rows={6} maxLength={4000} className={field} />
+        <textarea
+          id="message"
+          name="message"
+          required
+          rows={6}
+          maxLength={4000}
+          aria-describedby="message-aide"
+          className={field}
+        />
         <p id="message-aide" className="mt-1.5 text-[12px] text-muted">
           4 000 caractères au plus. N&apos;indiquez aucune donnée sensible ni identifiant.
         </p>
@@ -124,11 +137,13 @@ export function ContactForm({ token }: { token: string }) {
           required
           checked={consent}
           onChange={(e) => setConsent(e.target.checked)}
-          className="mt-1 h-4 w-4 shrink-0 accent-[#2563eb]"
+          className="mt-1 h-4 w-4 shrink-0 accent-flame"
         />
         <label htmlFor="consentement" className="text-[14px] leading-relaxed text-ink-2">
           J&apos;accepte que les informations ci-dessus soient utilisées pour répondre à ma demande.
-          Elles ne servent à rien d&apos;autre et ne sont transmises à personne.
+          Elles ne servent à rien d&apos;autre et ne sont transmises à personne.{" "}
+          <span aria-hidden="true">*</span>
+          <span className="sr-only">(obligatoire)</span>
         </label>
       </div>
 

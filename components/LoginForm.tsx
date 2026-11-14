@@ -41,9 +41,9 @@ export default function LoginForm() {
 
   if (state === "sent") {
     return (
-      <div className="mt-8 rounded-lg border border-ok/30 bg-ok-bg/50 p-6">
+      <div className="mt-8 rounded-lg border border-ok/30 bg-ok-bg/50 p-6" role="status">
         <p className="font-medium text-ok">Demande enregistrée</p>
-        <p className="mt-2 text-[15px] leading-relaxed text-slate-700">{message}</p>
+        <p className="mt-2 text-[15px] leading-relaxed text-ink-2">{message}</p>
         <p className="mt-3 text-sm text-muted">
           Le lien expire dans 15 minutes et ne fonctionne qu&apos;une fois.
         </p>
@@ -64,7 +64,9 @@ export default function LoginForm() {
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder="vous@entreprise.fr"
-        className="mt-2 w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-[15px] text-ink outline-none focus:border-flame focus:ring-1 focus:ring-flame"
+        aria-invalid={state === "error" ? true : undefined}
+        aria-describedby={state === "error" && message ? "connexion-erreur" : undefined}
+        className="mt-2 w-full rounded-lg border border-line-2 bg-surface px-4 py-3 text-[15px] text-ink-2 focus:border-flame focus:ring-1 focus:ring-flame"
       />
 
       <button
@@ -76,7 +78,9 @@ export default function LoginForm() {
       </button>
 
       {state === "error" && message ? (
-        <p className="mt-3 text-sm text-crit">{message}</p>
+        <p id="connexion-erreur" role="alert" className="mt-3 text-sm text-crit">
+          {message}
+        </p>
       ) : null}
 
       <p className="mt-5 text-sm leading-relaxed text-muted">
