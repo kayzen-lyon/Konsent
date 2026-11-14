@@ -27,6 +27,11 @@ const SECTIONS: { title: string; links: [string, string][] }[] = [
     title: "Outils gratuits",
     links: [
       ["/outils", "Tous les outils"],
+      ["/comparer", "Comparer deux sites"],
+      ["/outils/generateur-bandeau", "Générateur de bandeau cookies"],
+      ["/auto-evaluation", "Auto-évaluation RGPD"],
+      ["/badge", "Badge Konsent pour votre site"],
+      ["/recherche", "Recherche"],
       ["/outils/decodeur-tcf", "Décodeur de chaîne TCF"],
       ["/simulateur", "Simulateur d'exposition"],
       ["/documents", "Documents et modèles"],

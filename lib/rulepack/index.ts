@@ -126,13 +126,7 @@ export const FAMILY_ORDER: readonly Family[] = [
   "TCF",
 ];
 
-export const SEVERITY_LABELS: Record<Severity, string> = {
-  CRITICAL: "Critique",
-  MAJOR: "Majeur",
-  MODERATE: "Modéré",
-  MINOR: "Mineur",
-  INFO: "Information",
-};
+export { SEVERITY_LABELS } from "./labels";
 
 export const SEVERITY_ORDER: Record<Severity, number> = {
   CRITICAL: 0,

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { SeverityBadge } from "@/components/primitives";
@@ -32,11 +32,12 @@ export default async function RulePage({ params }: { params: Promise<{ id: strin
 
   return (
     <div className="mx-auto max-w-3xl px-5 py-12 sm:py-16">
-      <nav className="mb-6 text-sm">
-        <Link href="/regles" className="text-flame hover:underline">
-          ← Référentiel
-        </Link>
-      </nav>
+      <Breadcrumbs
+        items={[
+          { href: "/regles", label: "Référentiel" },
+          { href: `/regles/${rule.id}`, label: rule.id },
+        ]}
+      />
 
       <header>
         <div className="flex flex-wrap items-center gap-2.5">

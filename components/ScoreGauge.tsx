@@ -1,4 +1,4 @@
-import { gradeColor } from "@/lib/risk/score";
+import { gradeColor } from "@/lib/risk/grade";
 
 /** Jauge de score, en SVG pur — aucune bibliothèque, aucune ressource externe. */
 export function ScoreGauge({
@@ -24,7 +24,7 @@ export function ScoreGauge({
           role="img"
           aria-label={`Score de conformité : ${score} sur 100, note ${grade}, ${gradeLabel}`}
         >
-          <circle cx="100" cy="100" r={radius} fill="none" stroke="#e2e8f0" strokeWidth="16" />
+          <circle cx="100" cy="100" r={radius} fill="none" stroke="var(--color-line)" strokeWidth="16" />
           <circle
             cx="100"
             cy="100"

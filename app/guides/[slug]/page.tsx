@@ -1,3 +1,4 @@
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -35,11 +36,12 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
 
   return (
     <div className="mx-auto max-w-3xl px-5 py-12 sm:py-16">
-      <nav className="mb-6 text-sm">
-        <Link href="/guides" className="text-flame hover:underline">
-          ← Tous les guides
-        </Link>
-      </nav>
+      <Breadcrumbs
+        items={[
+          { href: "/guides", label: "Guides" },
+          { href: `/guides/${slug}`, label: guide.title },
+        ]}
+      />
 
       <header>
         <div className="flex flex-wrap items-center gap-2">

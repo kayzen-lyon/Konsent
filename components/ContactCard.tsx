@@ -72,7 +72,7 @@ export function ContactCard() {
           <circle cx="8" cy="11" r="2" />
           <path d="M5 16a3 3 0 0 1 6 0M14 10h4M14 14h3" />
         </svg>
-        <span className="sr-only whitespace-nowrap xl:not-sr-only">Carte de contact</span>
+        <span className="sr-only whitespace-nowrap 2xl:not-sr-only">Carte de contact</span>
       </button>
 
       <dialog

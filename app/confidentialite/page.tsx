@@ -59,6 +59,14 @@ export default function PrivacyPage() {
           fonctionnement du service. Ils relèvent de l&apos;intérêt légitime au sens de
           l&apos;article 6(1)(f) du RGPD.
         </p>
+        <p className="mt-3 text-[15px] leading-relaxed text-ink-2">
+          Pour empêcher l&apos;usage abusif du service (analyses en rafale, envois de liens de
+          connexion en masse), nous comptons les demandes par adresse IP. L&apos;adresse
+          n&apos;est jamais enregistrée en clair : seule une empreinte cryptographique, qui change
+          chaque jour et ne permet pas de retrouver l&apos;adresse, est conservée{" "}
+          <strong>au plus deux jours</strong>. Base légale : intérêt légitime à la sécurité du
+          service (article 6(1)(f) du RGPD).
+        </p>
       </section>
 
       <section className="mt-8">

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ContactCard } from "@/components/ContactCard";
+import { CommandPalette } from "./CommandPalette";
 import { Logo } from "@/components/Logo";
 import { Close, Menu, Moon, Sun } from "./icons";
 import { applyTheme } from "./theme";
@@ -119,6 +120,7 @@ export function Header() {
           </nav>
 
           <div className="flex items-center gap-1">
+            <CommandPalette />
             <ContactCard />
 
             <button

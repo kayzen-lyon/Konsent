@@ -86,6 +86,9 @@ export const INTERNAL_ROUTES: readonly string[] = [
   "/api/agence/sous-comptes",
   // Réponse du titulaire à une invitation d'agence : session uniquement.
   "/api/agence/invitation",
+  // Recherche du site, utilisée par la palette Ctrl+K : contenu public,
+  // aucune donnée d'audit, hors API documentée.
+  "/api/recherche",
   "/api/auth/lien",
   "/api/auth/session",
   // Fiche de contact de l'éditeur. Ne sert aucune donnée d'audit et ne
@@ -111,6 +114,25 @@ export const API_ROUTES: readonly ApiRoute[] = [
     scope: "scan:read",
     open: true,
     params: [URL_PARAM],
+  },
+  {
+    path: "/api/badge",
+    method: "GET",
+    summary: "Badge SVG du score",
+    description:
+      "Image SVG « Konsent | score/100 note », toujours en 200 (« indisponible » en gris si l'analyse échoue). Analyse automatisée indicative, pas une certification ; mise en cache 24 h.",
+    scope: "scan:read",
+    open: true,
+    params: [
+      URL_PARAM,
+      {
+        name: "style",
+        in: "query",
+        required: false,
+        description: "Forme du badge : « flat » (défaut) ou « pill ».",
+        schema: { type: "string" },
+      },
+    ],
   },
   {
     path: "/api/rulepack",

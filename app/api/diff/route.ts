@@ -4,6 +4,7 @@ import { runVerdictScan } from "@/lib/engine/orchestrate";
 import { ScanError } from "@/lib/engine/scan";
 import { decodeBaseline } from "@/lib/monitoring/baseline";
 import { alertSummary, diffAgainstBaseline } from "@/lib/monitoring/diff";
+import { RATE_RULES, limitAnonymousByIp } from "@/lib/security/rate-limit";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -14,6 +15,9 @@ export const maxDuration = 60;
  *   GET /api/diff?url=exemple.fr&ref=<jeton>
  */
 async function handleGET(request: Request) {
+  const limited = await limitAnonymousByIp(request, RATE_RULES.diff);
+  if (limited) return limited;
+
   const params = new URL(request.url).searchParams;
   const target = params.get("url");
   const token = params.get("ref");

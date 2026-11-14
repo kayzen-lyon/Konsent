@@ -6,6 +6,7 @@ import {
 } from "@/lib/contact/antispam";
 import { EDITOR } from "@/lib/disclaimer";
 import { isPlausibleAddress, sendEmail } from "@/lib/email";
+import { RATE_RULES, limitByIp } from "@/lib/security/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -22,13 +23,18 @@ export const dynamic = "force-dynamic";
  * **Minimisation.** Trois champs sont lus, et trois seulement. Ni adresse IP,
  * ni empreinte de navigateur, ni horodatage de frappe : rien de ce qui ne
  * sert pas strictement à répondre. Le message n'est pas non plus conservé en
- * base — il est relayé par courriel, puis oublié.
+ * base — il est relayé par courriel, puis oublié. Seule exception, la
+ * limitation de débit : elle compte les envois par empreinte HMAC journalière
+ * de l'IP, jamais l'IP elle-même, purgée sous deux jours.
  *
  * **Refus muet.** Un envoi écarté reçoit un message neutre. Détailler le motif
  * — « pot de miel rempli », « trop rapide » — indiquerait au robot comment
  * passer au coup suivant.
  */
 export async function POST(request: Request) {
+  const limited = await limitByIp(request, RATE_RULES.contact);
+  if (limited) return limited;
+
   let body: Record<string, unknown>;
   try {
     body = (await request.json()) as Record<string, unknown>;
