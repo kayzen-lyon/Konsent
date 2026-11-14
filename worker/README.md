@@ -145,3 +145,12 @@ n'effectue aucune écriture sur le site analysé. Voir la page `/bot` du site.
 Lorsque le bandeau n'est pas résolu, le worker renvoie
 `bannerResolution: "UNRESOLVED"`. Le rapport le signale explicitement plutôt
 que de produire un faux négatif silencieux.
+
+## Sortie réseau
+
+Le worker annule toute requête du navigateur dont l'hôte résout vers une
+plage non publique (`src/network.ts`), redirections et sous-ressources
+comprises. Ce contrôle applicatif ne suffit pas seul : déployez le worker
+derrière une sortie réseau qui interdit les plages privées (RFC 1918,
+100.64.0.0/10, 169.254.0.0/16, fc00::/7) et l'adresse des métadonnées de
+l'hébergeur.

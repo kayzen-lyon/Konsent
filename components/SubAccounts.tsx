@@ -40,16 +40,19 @@ export function SubAccounts({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
-      const data = (await res.json()) as { subAccount?: SubAccount; error?: string };
-      if (!res.ok || !data.subAccount) {
-        setMessage({ tone: "error", text: data.error ?? "Rattachement impossible." });
+      const data = (await res.json()) as { invited?: boolean; message?: string; error?: string };
+      if (!res.ok || !data.invited) {
+        setMessage({ tone: "error", text: data.error ?? "Invitation impossible." });
         return;
       }
-      setList((current) => [...current, data.subAccount!]);
+      // Rien n'est ajouté à la liste : le rattachement n'existe qu'une fois
+      // l'invitation acceptée par le titulaire de l'adresse.
       setEmail("");
       setMessage({
         tone: "ok",
-        text: `${data.subAccount.email} est rattaché. Ce client ne voit que ses propres domaines, ni les vôtres ni ceux de vos autres clients.`,
+        text:
+          data.message ??
+          "Invitation enregistrée. Le client apparaîtra ici dès qu'il l'aura acceptée depuis son espace.",
       });
     } catch {
       setMessage({ tone: "error", text: "Le service n'a pas répondu." });
@@ -125,7 +128,7 @@ export function SubAccounts({
 
       <form onSubmit={attach} className="mt-4 flex flex-wrap gap-2">
         <label className="sr-only" htmlFor="client-email">
-          Adresse du client à rattacher
+          Adresse du client à inviter
         </label>
         <input
           id="client-email"
@@ -142,7 +145,7 @@ export function SubAccounts({
           disabled={busy || full}
           className="tech rounded-full bg-flame shadow-md px-4 py-2 text-[10px] text-white transition hover:bg-flame-dark disabled:opacity-50"
         >
-          {busy ? "…" : "Rattacher"}
+          {busy ? "…" : "Inviter"}
         </button>
       </form>
 

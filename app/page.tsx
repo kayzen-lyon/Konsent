@@ -1,14 +1,13 @@
 import Link from "next/link";
-import BlurText from "@/components/bits/BlurText";
 import CountUp from "@/components/bits/CountUp";
 import FadeContent from "@/components/bits/FadeContent";
-import ShinyText from "@/components/bits/ShinyText";
 import SpotlightCard from "@/components/bits/SpotlightCard";
 import { Faq } from "@/components/Faq";
 import { JsonLd } from "@/components/JsonLd";
 import { FineSimulator } from "@/components/FineSimulator";
 import { ScanForm } from "@/components/ScanForm";
-import { ScanTerminal } from "@/components/ScanTerminal";
+import { HeroMotion } from "@/components/HeroMotion";
+import { Heart, Scale, ShieldCheck, Zap } from "@/components/site/icons";
 import { RULEPACK } from "@/lib/rulepack";
 import { COOKIES } from "@/lib/seo/cookies";
 import {
@@ -103,65 +102,87 @@ export default function HomePage() {
         ]}
       />
 
-      {/* ═══════════════════════ HÉROS ═══════════════════════ */}
-      <section className="grid-bg border-b border-line bg-paper">
-        <div className="mx-auto max-w-7xl px-5 py-16 sm:py-24">
-          <div className="grid items-center gap-12 lg:grid-cols-[1fr_1.05fr]">
-            <div className="rise">
-              <p className="tech inline-flex items-center gap-2 rounded-full bg-flame-bg px-3 py-1.5 text-[10px] text-flame-deep">
-                <span className="inline-block h-1.5 w-1.5 rounded-full bg-flame" />
-                <ShinyText
-                  text={`Référentiel ${RULEPACK.version} · ${RULEPACK.total} règles publiques`}
-                  color="#5a2817"
-                  shineColor="#b74831"
-                  speed={5}
-                />
-              </p>
+      {/* ═══════════════════════ HÉROS ═══════════════════════
+          Gabarit Nexus : surtitres en pilule, promesse avec une phrase en
+          terracotta, formulaire dans le héros, réassurances, signature, et
+          à droite la démonstration animée d'un audit. */}
+      <section className="border-b border-line bg-paper px-4 pb-12 pt-10 sm:px-6 md:pb-16 md:pt-16 lg:px-8">
+        <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-16">
+          <div className="rise">
+            <ul className="mb-6 flex flex-wrap gap-2.5">
+              <li className="font-display inline-flex items-center gap-1.5 rounded-full border border-line px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider text-ink-2">
+                <Zap className="h-3.5 w-3.5 text-flame" />
+                Gratuit, sans inscription
+              </li>
+              <li className="font-display inline-flex items-center gap-1.5 rounded-full bg-flame-bg px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider text-flame-deep">
+                <Heart className="h-3.5 w-3.5" />
+                Conçu à Lyon par KAYZEN
+              </li>
+            </ul>
 
-              <BlurText
-                as="h1"
-                className="display mt-6 text-[2.6rem] text-ink-2 sm:text-[4rem]"
-                text="Votre bandeau gère le consentement. Il ne vérifie pas ce qui passe derrière."
-                highlight="Il ne vérifie pas"
-                delay={70}
-              />
+            <h1 className="hero-title text-balance text-ink-2">
+              Votre bandeau gère le consentement.{" "}
+              <span className="text-flame">Konsent vérifie ce qui passe derrière.</span>
+            </h1>
 
-              <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted">
-                Konsent observe votre site comme le ferait un contrôleur : ce qui se dépose
-                avant que vos visiteurs aient pu répondre, qui reçoit leurs données, et sous
-                quelle juridiction. Constats factuels, références à l&apos;appui.
-              </p>
+            <p className="mt-5 max-w-xl text-pretty text-lg leading-relaxed text-muted md:text-xl">
+              Konsent observe votre site comme le ferait un contrôleur : ce qui se dépose avant
+              que vos visiteurs aient pu répondre, qui reçoit leurs données, et sous quelle
+              juridiction. Constats factuels, références à l&apos;appui.
+            </p>
 
-              <div id="scan" className="mt-8 max-w-xl scroll-mt-24">
-                <ScanForm autoFocus />
-              </div>
-
-              <div className="tech mt-7 flex flex-wrap gap-x-6 gap-y-2 text-[10px] text-muted">
-                <span>Indépendant de toute CMP</span>
-                <span>Sans inscription</span>
-                <span>Références normatives</span>
-              </div>
-
-              <dl className="mt-8 grid max-w-xl grid-cols-2 gap-px overflow-hidden rounded-lg bg-line ring-1 ring-line sm:grid-cols-4">
-                {[
-                  [RULEPACK.total, "règles publiques"],
-                  [TRACKERS.length, "destinataires décrits"],
-                  [COOKIES.length, "cookies documentés"],
-                  [3, "phases d'analyse"],
-                ].map(([n, label]) => (
-                  <div key={label} className="bg-surface px-4 py-3">
-                    <dt className="tech text-[9px] text-muted">{label}</dt>
-                    <dd className="tabular display mt-1 text-2xl text-secondary">
-                      <CountUp to={n as number} />
-                    </dd>
-                  </div>
-                ))}
-              </dl>
+            <div id="scan" className="mt-8 max-w-xl scroll-mt-28">
+              <ScanForm />
             </div>
 
-            <div className="rise" style={{ animationDelay: "120ms" }}>
-              <ScanTerminal />
-            </div>
+            <ul className="mt-6 flex flex-wrap gap-2.5">
+              {[
+                { Icon: ShieldCheck, text: "Indépendant de toute CMP" },
+                { Icon: Zap, text: "Aucune inscription requise" },
+                { Icon: Scale, text: `${RULEPACK.total} règles publiques` },
+              ].map(({ Icon, text }) => (
+                <li
+                  key={text}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-surface-low px-3 py-1.5 text-sm text-ink-2"
+                >
+                  <Icon className="h-3.5 w-3.5 text-flame" />
+                  {text}
+                </li>
+              ))}
+            </ul>
+
+            <dl className="mt-8 grid max-w-xl grid-cols-2 gap-px overflow-hidden rounded-xl bg-line ring-1 ring-line sm:grid-cols-4">
+              {[
+                [RULEPACK.total, "règles publiques"],
+                [TRACKERS.length, "destinataires décrits"],
+                [COOKIES.length, "cookies documentés"],
+                [3, "phases d'analyse"],
+              ].map(([n, label]) => (
+                <div key={label} className="bg-surface px-4 py-3">
+                  <dt className="tech text-[9px] text-muted">{label}</dt>
+                  <dd className="tabular display mt-1 text-2xl text-secondary">
+                    <CountUp to={n as number} />
+                  </dd>
+                </div>
+              ))}
+            </dl>
+
+            <p className="mt-6 text-sm text-muted">
+              Développé par{" "}
+              <a
+                href="https://www.kayzen-lyon.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-ink-2 underline underline-offset-2 transition-colors hover:text-flame"
+              >
+                KAYZEN<span className="sr-only"> (nouvel onglet)</span>
+              </a>{" "}
+              — agence web &amp; IA à Lyon
+            </p>
+          </div>
+
+          <div className="rise order-last" style={{ animationDelay: "120ms" }}>
+            <HeroMotion />
           </div>
         </div>
       </section>

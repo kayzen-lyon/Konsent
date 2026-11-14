@@ -1,3 +1,4 @@
+import { safeFetch } from "../security/network";
 import { promises as dns } from "node:dns";
 import {
   extractInlineScripts,
@@ -67,8 +68,9 @@ async function fetchPage(url: string, signal?: AbortSignal): Promise<FetchOutcom
   signal?.addEventListener("abort", onParentAbort, { once: true });
 
   try {
-    const res = await fetch(url, {
-      redirect: "follow",
+    // `safeFetch` refuse les adresses internes, y compris après résolution
+    // DNS et à chaque redirection (SSRF).
+    const { response: res, finalUrl } = await safeFetch(url, {
       signal: controller.signal,
       headers: {
         "User-Agent": USER_AGENT,
@@ -83,9 +85,9 @@ async function fetchPage(url: string, signal?: AbortSignal): Promise<FetchOutcom
     return {
       ok: res.ok,
       status: res.status,
-      finalUrl: res.url || url,
+      finalUrl,
       html,
-      headers: res.headers,
+      headers: res.headers as unknown as Headers,
       durationMs: Date.now() - started,
     };
   } finally {

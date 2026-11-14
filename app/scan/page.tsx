@@ -28,8 +28,8 @@ export const metadata: Metadata = {
 
 function ScanSkeleton({ target }: { target: string }) {
   return (
-    <div className="mx-auto max-w-7xl px-5 py-16">
-      <div className="pulse-soft space-y-4">
+    <div className="mx-auto max-w-7xl px-5 py-16" role="status" aria-busy="true">
+      <div className="pulse-soft space-y-4" aria-hidden="true">
         <div className="h-3 w-52 rounded bg-line" />
         <div className="h-10 w-80 max-w-full rounded bg-line" />
         <div className="mt-8 h-40 w-40 rounded-full bg-line" />
@@ -106,7 +106,7 @@ async function ScanReport({ target, level }: { target: string; level: ReadingLev
               <h1 className="display mt-2 break-all text-3xl text-white sm:text-4xl">
                 {observation.hostname}
               </h1>
-              <p className="mt-2 font-mono text-[12px] text-white/45">
+              <p className="mt-2 font-mono text-[12px] text-white/70">
                 réf. {result.id} · référentiel {result.rulepackVersion} ·{" "}
                 {new Date(result.scannedAt).toLocaleString("fr-FR", {
                   dateStyle: "long",

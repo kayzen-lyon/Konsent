@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 import { SESSION_COOKIE, getAccounts } from "@/lib/accounts";
+import { siteOrigin } from "@/lib/security/origin";
+import { LOGIN_BINDING_COOKIE, bindingMatches } from "@/lib/security/login-binding";
+import { cookies } from "next/headers";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -20,7 +23,7 @@ const THIRTY_DAYS = 60 * 60 * 24 * 30;
 
 export async function GET(request: Request) {
   const accounts = getAccounts();
-  const origin = new URL(request.url).origin;
+  const origin = siteOrigin();
 
   if (!accounts.available) {
     return NextResponse.redirect(`${origin}/connexion?erreur=indisponible`, 303);
@@ -29,6 +32,18 @@ export async function GET(request: Request) {
   const token = new URL(request.url).searchParams.get("jeton");
   if (!token) {
     return NextResponse.redirect(`${origin}/connexion?erreur=jeton-absent`, 303);
+  }
+
+  // Le lien n'est valable que dans le navigateur qui l'a demandé. Contrôlé
+  // AVANT la consommation : un lien ouvert ailleurs reste utilisable.
+  let bound = false;
+  try {
+    bound = bindingMatches(token, (await cookies()).get(LOGIN_BINDING_COOKIE)?.value);
+  } catch (error) {
+    console.error("Liaison du lien de connexion impossible :", error);
+  }
+  if (!bound) {
+    return NextResponse.redirect(`${origin}/connexion?erreur=autre-navigateur`, 303);
   }
 
   let result: Awaited<ReturnType<typeof accounts.consumeMagicLink>>;
@@ -53,6 +68,7 @@ export async function GET(request: Request) {
     path: "/",
     maxAge: THIRTY_DAYS,
   });
+  response.cookies.set(LOGIN_BINDING_COOKIE, "", { path: "/api/auth", maxAge: 0 });
   return response;
 }
 

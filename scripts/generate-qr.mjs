@@ -43,14 +43,16 @@ const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComp
  * Renseigner `KONSENT_GOOGLE_PLACE_ID` suffit à l'activer.
  */
 const placeId = process.env.KONSENT_GOOGLE_PLACE_ID ?? null;
+/* Sans identifiant de lieu, même repli que la carte de contact de Nexus :
+ * la recherche Google de la fiche KAYZEN, qui ouvre ses avis. */
 const reviewsUrl = placeId
   ? `https://search.google.com/local/writereview?placeid=${encodeURIComponent(placeId)}`
-  : null;
+  : "https://www.google.com/search?q=Kayzen+Lyon+6+rue+Pierre+Termier+avis&hl=fr";
 
 const TARGETS = [
   { key: "site", label: "Site Konsent", url: EDITOR.productSite },
   { key: "maps", label: "Nous situer", url: mapsUrl },
-  { key: "reviews", label: "Laisser un avis", url: reviewsUrl },
+  { key: "reviews", label: "Avis Google", url: reviewsUrl },
 ];
 
 /** Fusionne les modules noirs contigus d'une ligne en segments horizontaux. */

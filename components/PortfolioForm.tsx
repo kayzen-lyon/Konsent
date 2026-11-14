@@ -84,7 +84,7 @@ export function PortfolioForm({ max }: { max: number }) {
               type="color"
               value={colour}
               onChange={(e) => setColour(e.target.value)}
-              className="h-10 w-16 cursor-pointer rounded border border-line bg-white p-1"
+              className="h-10 w-16 cursor-pointer rounded border border-line bg-surface p-1"
             />
             <span className="font-mono text-[13px] text-muted">{colour}</span>
           </div>

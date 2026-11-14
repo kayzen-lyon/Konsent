@@ -46,7 +46,7 @@ export function BaselineInput({ initialUrl = "" }: { initialUrl?: string }) {
             placeholder="exemple.fr"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            className="mt-1.5 w-full rounded-lg border border-line px-4 py-3 font-mono text-[15px] text-ink-2 outline-none transition placeholder:text-slate-400 focus:border-flame"
+            className="mt-1.5 w-full rounded-lg border border-line-2 px-4 py-3 font-mono text-[15px] text-ink-2 transition placeholder:text-muted focus:border-flame"
           />
         </div>
 
@@ -61,7 +61,7 @@ export function BaselineInput({ initialUrl = "" }: { initialUrl?: string }) {
             placeholder="eyJ2IjoxLCJoIjoi…"
             value={token}
             onChange={(e) => setToken(e.target.value)}
-            className="mt-1.5 w-full resize-y rounded-lg border border-line px-4 py-3 font-mono text-[12px] text-ink-2 outline-none transition placeholder:text-slate-400 focus:border-flame"
+            className="mt-1.5 w-full resize-y rounded-lg border border-line-2 px-4 py-3 font-mono text-[12px] text-ink-2 transition placeholder:text-muted focus:border-flame"
           />
         </div>
       </div>
@@ -116,6 +116,9 @@ export function BaselineExport({ token }: { token: string }) {
         >
           {copied ? "Copié ✓" : "Copier"}
         </button>
+        <span role="status" className="sr-only">
+          {copied ? "Jeton copié dans le presse-papiers" : ""}
+        </span>
       </div>
 
       <textarea

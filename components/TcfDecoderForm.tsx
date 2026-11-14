@@ -33,7 +33,7 @@ export default function TcfDecoderForm() {
         rows={3}
         spellCheck={false}
         placeholder="CPXxRfAPXxRfAAfKABENB-CgAAAAAAAAAAYgAAAAAAAA"
-        className="mt-2 w-full rounded-lg border border-slate-300 bg-white px-4 py-3 font-mono text-sm text-ink outline-none focus:border-flame focus:ring-1 focus:ring-flame"
+        className="mt-2 w-full rounded-lg border border-slate-300 bg-surface px-4 py-3 font-mono text-sm text-ink outline-none focus:border-flame focus:ring-1 focus:ring-flame"
       />
 
       {result === null ? null : !result.ok ? (

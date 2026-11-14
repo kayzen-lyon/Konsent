@@ -173,7 +173,7 @@ export function FineSimulator({ compact = false }: { compact?: boolean }) {
                   <span className="block text-[13px] font-medium leading-snug text-ink-2">
                     {b.label}
                   </span>
-                  <span className="block font-mono text-[11px] text-muted">{b.reference}</span>
+                  <span className="block font-mono text-[11px] text-ink-2">{b.reference}</span>
                 </span>
               </label>
             );

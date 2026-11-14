@@ -14,7 +14,7 @@ export default function ToolsPage() {
   const planned = FREE_TOOLS.filter((t) => !t.available);
 
   return (
-    <main className="mx-auto max-w-4xl px-6 py-16">
+    <div className="mx-auto max-w-4xl px-6 py-16">
       <p className="tech text-[10px] text-accent">Outils libres</p>
       <h1 className="display mt-2 text-4xl text-ink-2">
         Des réponses, pas des formulaires
@@ -73,6 +73,6 @@ export default function ToolsPage() {
       <div className="mt-14">
         <Disclaimer variant="short" />
       </div>
-    </main>
+    </div>
   );
 }

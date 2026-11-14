@@ -56,7 +56,9 @@ export function LegalPage({
               ["/cgu", "Conditions générales d'utilisation"],
               ["/cgv", "Conditions générales de vente"],
               ["/confidentialite", "Politique de confidentialité"],
-              ["/cookies", "Politique cookies"],
+              ["/confidentialite#cookies", "Cookies"],
+              ["/accessibilite", "Accessibilité"],
+              ["/plan-du-site", "Plan du site"],
               ["/contact", "Nous écrire"],
             ] as const
           ).map(([href, label]) => (
@@ -100,15 +102,15 @@ export function EditorIdentity() {
   return (
     <dl className="grid gap-x-6 gap-y-2 sm:grid-cols-[auto_1fr]">
       {[
-        ["Raison sociale", EDITOR.tradeName],
+        ["Entrepreneur", `${EDITOR.director}, entrepreneur individuel`],
+        ["Nom commercial", EDITOR.tradeName],
         ["Forme juridique", EDITOR.legalForm],
-        ["Capital social", "[[À COMPLÉTER : montant du capital social]]"],
         ["SIREN", EDITOR.siren],
-        ["SIRET (siège)", EDITOR.siret],
-        ["RCS", EDITOR.rcs],
-        ["TVA intracommunautaire", EDITOR.vatNumber],
+        ["SIRET", EDITOR.siret],
         ["Code APE", EDITOR.apeCode],
+        ["TVA", EDITOR.vatMention],
         ["Siège social", `${EDITOR.street}, ${EDITOR.postalCode} ${EDITOR.city}, ${EDITOR.country}`],
+        ["Locaux", `${EDITOR.premises}, ${EDITOR.country}`],
       ].map(([label, value]) => (
         <div key={label} className="contents">
           <dt className="tech text-[10px] text-muted sm:pt-1">{label}</dt>

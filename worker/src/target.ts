@@ -14,9 +14,16 @@
  * testable seul.
  */
 
+import { isIP } from "node:net";
+import { isBlockedAddress } from "./network.ts";
+
 /** L'hôte est-il routable sur l'internet public ? */
 export function isPublicHost(host: string): boolean {
-  const h = host.toLowerCase();
+  const h = host.toLowerCase().replace(/\.+$/, "");
+  // Littéral IP (y compris IPv6 « mappé » ::ffff:127.0.0.1) : contrôle par
+  // plages, plus complet que les motifs textuels ci-dessous.
+  const bare = h.replace(/^\[|\]$/g, "");
+  if (isIP(bare)) return !isBlockedAddress(bare);
   // Un nom sans point n'est pas un domaine public ; les littéraux IPv6 sont
   // entre crochets et échappent donc à cette règle.
   if (!h.includes(".") && !h.startsWith("[")) return false;

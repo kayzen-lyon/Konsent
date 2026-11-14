@@ -142,7 +142,7 @@ export function alertEmail(input: {
       `Pour ne plus recevoir ces alertes, retirez le domaine de la surveillance`,
       `depuis votre espace, ou répondez à ce message.`,
       ``,
-      `Konsent — KAYZEN LYON SASU`,
+      `Konsent — KAYZEN (Tarek BELHADJ EI)`,
     ].join("\n"),
   };
 }
@@ -166,7 +166,7 @@ export function magicLinkEmail(input: {
       `Si vous n'avez pas demandé à vous connecter, ignorez ce message : personne`,
       `ne peut accéder à votre espace sans ce lien.`,
       ``,
-      `Konsent — KAYZEN LYON SASU`,
+      `Konsent — KAYZEN (Tarek BELHADJ EI)`,
     ].join("\n"),
   };
 }

@@ -65,9 +65,14 @@ export function ContactCard() {
         onClick={() => setOpen(true)}
         aria-haspopup="dialog"
         aria-expanded={open}
-        className="tech hidden rounded-full px-4 py-2 text-[11px] text-ink-2 transition hover:bg-surface-high md:block"
+        className="font-display inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-full px-3 text-sm font-semibold text-ink-2 transition hover:bg-surface-high hover:text-flame"
       >
-        Contact
+        <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <rect x="2" y="5" width="20" height="14" rx="2" />
+          <circle cx="8" cy="11" r="2" />
+          <path d="M5 16a3 3 0 0 1 6 0M14 10h4M14 14h3" />
+        </svg>
+        <span className="sr-only whitespace-nowrap xl:not-sr-only">Carte de contact</span>
       </button>
 
       <dialog
@@ -89,7 +94,7 @@ export function ContactCard() {
           // sans écouter le document entier.
           if (e.target === dialogRef.current) setOpen(false);
         }}
-        className="w-[min(92vw,30rem)] rounded-xl bg-white p-0 text-ink-2 shadow-lg backdrop:bg-ink/60 backdrop:backdrop-blur-sm"
+        className="w-[min(92vw,30rem)] rounded-3xl border border-line bg-surface p-0 text-ink-2 shadow-lg backdrop:bg-ink/60 backdrop:backdrop-blur-sm"
       >
         <div className="flex items-start justify-between gap-4 border-b border-line px-6 py-4">
           <div className="min-w-0">
@@ -145,7 +150,7 @@ export function ContactCard() {
             {[
               { code: "site", legende: "Le site" },
               { code: "maps", legende: "Nous situer" },
-              { code: "reviews", legende: "Laisser un avis" },
+              { code: "reviews", legende: "Avis Google" },
             ].map((item) => (
               <figure key={item.code} className="space-y-1.5">
                 <QrCode code={item.code} size={112} className="w-full rounded-lg ring-1 ring-line" />
@@ -186,8 +191,7 @@ export function ContactCard() {
           </div>
 
           <p className="text-[11px] leading-relaxed text-muted">
-            SIREN {EDITOR.siren} · SIRET {EDITOR.siret} · RCS {EDITOR.rcs} · TVA{" "}
-            {EDITOR.vatNumber}
+            {EDITOR.legalName} · SIREN {EDITOR.siren} · SIRET {EDITOR.siret} · {EDITOR.vatMention}
           </p>
         </div>
       </dialog>

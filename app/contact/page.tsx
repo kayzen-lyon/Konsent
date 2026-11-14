@@ -8,7 +8,7 @@ import { EDITOR } from "@/lib/disclaimer";
 export const metadata: Metadata = {
   title: "Nous écrire",
   description:
-    "Formulaire de contact de KAYZEN LYON, éditeur de Konsent. Aucune donnée conservée au-delà de la réponse, aucun traceur, aucun CAPTCHA tiers.",
+    "Formulaire de contact de KAYZEN, éditeur de Konsent. Aucune donnée conservée au-delà de la réponse, aucun traceur, aucun CAPTCHA tiers.",
 };
 
 // Le jeton est daté à l'affichage : il sert à mesurer le délai de saisie.
