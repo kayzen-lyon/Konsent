@@ -144,12 +144,12 @@ export const PLANS: readonly Plan[] = [
       {
         label: "Sous-comptes clients cloisonnés",
         delivered: true,
-        requiresEnv: ["SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"],
+        requiresEnv: ["DATABASE_URL"],
       },
       {
         label: "25 domaines",
         delivered: true,
-        requiresEnv: ["SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"],
+        requiresEnv: ["DATABASE_URL"],
       },
     ],
     highlighted: false,

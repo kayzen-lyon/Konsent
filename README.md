@@ -47,7 +47,7 @@ en silence :
 | Fonction | Variables | Sans elles |
 |---|---|---|
 | Protocole en trois phases | `KONSENT_WORKER_URL`, `KONSENT_WORKER_SECRET` | 43 règles décidées au lieu de 78, et le rapport le dit |
-| Surveillance planifiée, comptes, sous-comptes agence | `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `CRON_SECRET` | Analyse sans trace, comptes et portefeuille persistant désactivés |
+| Surveillance planifiée, comptes, sous-comptes agence | `DATABASE_URL` (Neon, posée par l'intégration Vercel), `CRON_SECRET` | Analyse sans trace, comptes et portefeuille persistant désactivés |
 | Alertes et liens de connexion | `RESEND_API_KEY`, `KONSENT_MAIL_FROM` | Aucun message ne part |
 | Souscription en ligne | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_*` | Paiement fermé |
 
@@ -117,7 +117,7 @@ Trois décisions valent d'être connues :
   la plus courante de laisser fuir des données par une ligne mal migrée.
 
 Le cloisonnement s'arrête à un niveau, et c'est la base qui l'impose
-([migration 0004](supabase/migrations/0004_sous_comptes.sql)) : une règle
+([schéma](db/schema.sql), appliqué par `npm run db:schema`) : une règle
 applicative se contourne dès qu'une requête est écrite ailleurs.
 
 Le portefeuille en découle mécaniquement : un domaine inscrit à la surveillance

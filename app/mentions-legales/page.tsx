@@ -54,11 +54,11 @@ export default function LegalNoticePage() {
         </p>
         <p>
           Les fonctions du site sont exécutées dans la région <code className="font-mono">cdg1</code>{" "}
-          (Paris) et la base de données est hébergée par Supabase en région{" "}
-          <code className="font-mono">eu-west-3</code> (Paris).
+          (Paris). La base de données est opérée par Neon Inc. (société de droit américain), en
+          région <code className="font-mono">aws-eu-central-1</code> (Francfort).
         </p>
         <p className="text-[14px] text-muted">
-          Vercel Inc. est une société de droit américain. Ce point est mentionné parce que le
+          Vercel Inc. et Neon Inc. sont des sociétés de droit américain. Ce point est mentionné parce que le
           présent site relève précisément les rattachements capitalistiques hors Union européenne
           chez les autres : le taire ici serait incohérent.
         </p>

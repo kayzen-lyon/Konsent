@@ -70,30 +70,19 @@ check(
 );
 check(
   "les colonnes de jeton sont alimentées par une empreinte",
-  (source.match(/token_hash:\s*fingerprint\(/g) ?? []).length >= 2,
+  (source.match(/\$\{fingerprint\((token|sessionToken)\)\}/g) ?? []).length >= 4,
 );
 check("le mot « password » n'apparaît nulle part", !/password/i.test(source));
 
-const migration = readFileSync(
-  new URL("../supabase/migrations/0002_comptes.sql", import.meta.url),
-  "utf8",
-);
+const schema = readFileSync(new URL("../db/schema.sql", import.meta.url), "utf8");
 
+check("le schéma est rejouable (create … if not exists)", !/create table (?!if not exists)/i.test(schema));
+check("aucune fonction SECURITY DEFINER (pas d'élévation de droits)", !/security definer/i.test(schema));
+check("les fonctions sont retirées au rôle public", /revoke all on function[\s\S]*from public/i.test(schema));
+check("aucune politique permissive n'est créée", !/create policy/i.test(schema));
 check(
-  "RLS est activé sur les trois tables",
-  (migration.match(/enable row level security/g) ?? []).length === 3,
-);
-check(
-  "aucune politique permissive n'est créée",
-  !/create policy/i.test(migration),
-);
-check(
-  "la fonction SECURITY DEFINER est retirée au rôle anonyme",
-  /revoke execute[\s\S]*from anon/i.test(migration),
-);
-check(
-  "la fonction SECURITY DEFINER est réservée au rôle de service",
-  /grant\s+execute[\s\S]*to service_role/i.test(migration),
+  "les sous-comptes passent par une invitation (parent_id jamais écrit à l'invitation)",
+  /set invited_parent_id = \$\{parentId\}/.test(source),
 );
 
 /* -------------------------------------------------------------- durées de vie */

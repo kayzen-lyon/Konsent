@@ -1,5 +1,6 @@
 import type { ApiKeyRecord } from "./keys";
 import type { Scope } from "./registry";
+import { dbConfigured, getSql, iso, isoOrNull, type Sql } from "../db";
 
 /**
  * Persistance des clés, de leur consommation et du journal d'appels.
@@ -57,8 +58,6 @@ export interface ApiKeyStoreUnavailable {
   readonly reason: string;
 }
 
-const SUPABASE_URL = process.env["SUPABASE_URL"];
-const SERVICE_KEY = process.env["SUPABASE_SERVICE_ROLE_KEY"];
 
 function toRecord(row: Record<string, unknown>): ApiKeyRecord {
   return {
@@ -69,44 +68,19 @@ function toRecord(row: Record<string, unknown>): ApiKeyRecord {
     fingerprint: String(row["fingerprint"]),
     scopes: (row["scopes"] as Scope[] | null) ?? [],
     monthlyQuota: Number(row["monthly_quota"] ?? 0),
-    createdAt: String(row["created_at"]),
-    lastUsedAt: (row["last_used_at"] as string | null) ?? null,
-    revokedAt: (row["revoked_at"] as string | null) ?? null,
+    createdAt: iso(row["created_at"]),
+    lastUsedAt: isoOrNull(row["last_used_at"]),
+    revokedAt: isoOrNull(row["revoked_at"]),
   };
 }
 
-class SupabaseApiKeyStore implements ApiKeyStore {
+class PostgresApiKeyStore implements ApiKeyStore {
   readonly available = true as const;
 
-  constructor(
-    private readonly url: string,
-    private readonly key: string,
-  ) {}
-
-  private async request<T>(path: string, init: RequestInit = {}): Promise<T> {
-    const res = await fetch(`${this.url}/rest/v1/${path}`, {
-      ...init,
-      headers: {
-        apikey: this.key,
-        Authorization: `Bearer ${this.key}`,
-        "Content-Type": "application/json",
-        Prefer: "return=representation",
-        ...init.headers,
-      },
-      cache: "no-store",
-    });
-    if (!res.ok) {
-      const detail = await res.text();
-      throw new Error(`Supabase ${res.status} sur ${path} : ${detail.slice(0, 200)}`);
-    }
-    if (res.status === 204) return undefined as T;
-    return (await res.json()) as T;
-  }
+  constructor(private readonly sql: Sql) {}
 
   async findByFingerprint(fingerprint: string): Promise<ApiKeyRecord | null> {
-    const rows = await this.request<Record<string, unknown>[]>(
-      `api_keys?fingerprint=eq.${encodeURIComponent(fingerprint)}&limit=1`,
-    );
+    const rows = await this.sql`select * from api_keys where fingerprint = ${fingerprint} limit 1`;
     return rows[0] ? toRecord(rows[0]) : null;
   }
 
@@ -118,44 +92,23 @@ class SupabaseApiKeyStore implements ApiKeyStore {
     scopes: readonly Scope[];
     monthlyQuota: number;
   }): Promise<ApiKeyRecord> {
-    const rows = await this.request<Record<string, unknown>[]>("api_keys", {
-      method: "POST",
-      body: JSON.stringify({
-        org_id: input.orgId,
-        label: input.label,
-        hint: input.hint,
-        fingerprint: input.fingerprint,
-        scopes: input.scopes,
-        monthly_quota: input.monthlyQuota,
-      }),
-    });
+    const rows = await this.sql`
+      insert into api_keys (org_id, label, hint, fingerprint, scopes, monthly_quota)
+      values (${input.orgId}, ${input.label}, ${input.hint}, ${input.fingerprint},
+              ${[...input.scopes]}::text[], ${input.monthlyQuota})
+      returning *`;
     return toRecord(rows[0]!);
   }
 
   async revoke(id: string): Promise<void> {
-    await this.request(`api_keys?id=eq.${encodeURIComponent(id)}`, {
-      method: "PATCH",
-      body: JSON.stringify({ revoked_at: new Date().toISOString() }),
-    });
+    await this.sql`update api_keys set revoked_at = now() where id = ${id}`;
   }
 
   async usage(record: ApiKeyRecord): Promise<UsageWindow> {
-    const since = new Date(Date.now() - 30 * 86_400_000).toISOString();
-    const res = await fetch(
-      `${this.url}/rest/v1/api_calls?key_id=eq.${encodeURIComponent(record.id)}&at=gte.${since}&select=key_id`,
-      {
-        headers: {
-          apikey: this.key,
-          Authorization: `Bearer ${this.key}`,
-          // `count=exact` renvoie le total en en-tête sans rapatrier les lignes.
-          Prefer: "count=exact",
-          Range: "0-0",
-        },
-        cache: "no-store",
-      },
-    );
-    const range = res.headers.get("content-range") ?? "*/0";
-    const used = Number(range.split("/")[1] ?? 0);
+    const rows = await this.sql`
+      select count(*)::int as used from api_calls
+      where key_id = ${record.id} and at >= now() - interval '30 days'`;
+    const used = Number(rows[0]?.["used"] ?? 0);
     return {
       used,
       quota: record.monthlyQuota,
@@ -164,40 +117,27 @@ class SupabaseApiKeyStore implements ApiKeyStore {
   }
 
   async record(call: CallRecord): Promise<void> {
-    await this.request("api_calls", {
-      method: "POST",
-      headers: { Prefer: "return=minimal" },
-      body: JSON.stringify({
-        key_id: call.keyId,
-        org_id: call.orgId,
-        path: call.path,
-        method: call.method,
-        status: call.status,
-        refusal: call.refusal,
-        at: call.at,
-      }),
-    });
+    await this.sql`
+      insert into api_calls (key_id, org_id, path, method, status, refusal, at)
+      values (${call.keyId}, ${call.orgId}, ${call.path}, ${call.method}, ${call.status},
+              ${call.refusal}, ${call.at})`;
   }
 
   async touch(id: string, at: string): Promise<void> {
-    await this.request(`api_keys?id=eq.${encodeURIComponent(id)}`, {
-      method: "PATCH",
-      headers: { Prefer: "return=minimal" },
-      body: JSON.stringify({ last_used_at: at }),
-    });
+    await this.sql`update api_keys set last_used_at = ${at} where id = ${id}`;
   }
 }
 
 export function getApiKeyStore(): ApiKeyStore | ApiKeyStoreUnavailable {
-  if (!SUPABASE_URL || !SERVICE_KEY) {
+  if (!dbConfigured()) {
     return {
       available: false,
       reason:
-        "Les clés d'API supposent une base : définissez SUPABASE_URL et SUPABASE_SERVICE_ROLE_KEY. " +
-        "Sans elles, les routes restent ouvertes et aucune clé n'est reconnue.",
+        "Les clés d'API supposent une base : définissez DATABASE_URL. " +
+        "Sans elle, les routes restent ouvertes et aucune clé n'est reconnue.",
     };
   }
-  return new SupabaseApiKeyStore(SUPABASE_URL, SERVICE_KEY);
+  return new PostgresApiKeyStore(getSql());
 }
 
 /**
