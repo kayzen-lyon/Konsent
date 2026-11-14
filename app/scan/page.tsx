@@ -6,7 +6,10 @@ import { ExposureBox } from "@/components/ExposureBox";
 import { FindingsByPillar } from "@/components/Findings";
 import { ScanForm } from "@/components/ScanForm";
 import { ScoreGauge } from "@/components/ScoreGauge";
-import { Timeline } from "@/components/Timeline";
+import { PhaseTimeline, Timeline } from "@/components/Timeline";
+import { ExecutiveSummary } from "@/components/report/ExecutiveSummary";
+import { PillarScores } from "@/components/report/PillarScores";
+import { PrintReportLink } from "@/components/report/PrintReportLink";
 import { JurisdictionBreakdown, VendorTable } from "@/components/Vendors";
 import { Disclaimer, SectionTitle, Stat } from "@/components/primitives";
 import { ReportActions } from "@/components/ReportActions";
@@ -16,6 +19,7 @@ import { runVerdictScan } from "@/lib/engine/orchestrate";
 import { ScanError } from "@/lib/engine/scan";
 import { isWorkerConfigured } from "@/lib/engine/worker-client";
 import { parseReadingLevel, readingLevel, type ReadingLevel } from "@/lib/report/levels";
+import { publicReportUrl } from "@/lib/report/links";
 import { createBaseline, encodeBaseline } from "@/lib/monitoring/baseline";
 import { RULEPACK, getRule } from "@/lib/rulepack";
 
@@ -95,6 +99,7 @@ async function ScanReport({ target, level }: { target: string; level: ReadingLev
     .filter((r): r is NonNullable<typeof r> => Boolean(r));
   const evaluatedCount = RULEPACK.total - result.notEvaluatedRuleIds.length;
   const spec = readingLevel(level);
+  const scannedAt = new Date(result.scannedAt);
 
   return (
     <>
@@ -107,13 +112,21 @@ async function ScanReport({ target, level }: { target: string; level: ReadingLev
               <h1 className="display mt-2 break-all text-3xl text-white sm:text-4xl">
                 {observation.hostname}
               </h1>
-              <p className="mt-2 font-mono text-[12px] text-white/70">
-                réf. {result.id} · référentiel {result.rulepackVersion} ·{" "}
-                {new Date(result.scannedAt).toLocaleString("fr-FR", {
-                  dateStyle: "long",
-                  timeStyle: "short",
-                })}{" "}
-                · {result.durationMs} ms · {observation.pagesAnalyzed} page(s)
+              {/* L'horodatage est une donnée de preuve : un rapport décrit un
+                  instant, pas un état permanent du site. */}
+              <p className="font-display mt-3 text-[15px] font-semibold text-white">
+                Analyse du{" "}
+                <time dateTime={result.scannedAt}>
+                  {scannedAt.toLocaleString("fr-FR", {
+                    dateStyle: "full",
+                    timeStyle: "short",
+                    timeZone: "Europe/Paris",
+                  })}
+                </time>
+              </p>
+              <p className="mt-1 font-mono text-[12px] text-white/70">
+                réf. {result.id} · référentiel {result.rulepackVersion} · {result.durationMs} ms ·{" "}
+                {observation.pagesAnalyzed} page(s)
               </p>
               {/* Le moteur qui a tourné détermine ce que le rapport a pu voir.
                   Il se lit dès l'en-tête, pas dans une note de bas de page. */}
@@ -155,7 +168,18 @@ async function ScanReport({ target, level }: { target: string; level: ReadingLev
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <ReadingLevelPicker target={target} current={level} />
           <PrintedLevelNotice current={level} />
-          <PrintReportButton />
+          <div className="flex flex-wrap items-center gap-2 print:hidden">
+            {/* Lien plein (pas de navigation client) : la page est rendue à
+                chaque requête (`force-dynamic`), un rechargement relance donc
+                réellement l'analyse, sans paramètre anti-cache. */}
+            <a
+              href={`/scan?url=${encodeURIComponent(target)}&vue=${level}`}
+              className="font-display btn-primary inline-flex min-h-10 items-center rounded-full bg-flame px-4 text-[13px] font-bold text-on-primary"
+            >
+              Relancer l&apos;analyse
+            </a>
+            <PrintReportButton />
+          </div>
         </div>
         <div className="mb-6">
           <ReportActions target={target} hostname={observation.hostname} />
@@ -206,6 +230,8 @@ async function ScanReport({ target, level }: { target: string; level: ReadingLev
           </div>
         ) : null}
 
+        <ExecutiveSummary result={result} />
+
         {/* ═══════════ SYNTHÈSE ═══════════ */}
         <section id="synthese" className="grid scroll-mt-28 gap-5 lg:grid-cols-[auto_1fr]">
           <div className="rise flex items-center justify-center rounded-xl bg-surface p-6 ring-1 ring-line shadow-md">
@@ -237,6 +263,8 @@ async function ScanReport({ target, level }: { target: string; level: ReadingLev
                 tone="warn"
               />
             </div>
+
+            <PillarScores findings={result.findings} />
 
             {result.cappedBy ? (
               <div className="overflow-hidden rounded-lg bg-surface ring-1 ring-line shadow-md">
@@ -279,6 +307,7 @@ async function ScanReport({ target, level }: { target: string; level: ReadingLev
                 : "Ce bloc ne s'interprète pas : il compte les services tiers que votre page appelle."
             }
           />
+          <PhaseTimeline observation={observation} />
           {spec.showRawEvidence ? (
             <Timeline observation={observation} />
           ) : (
@@ -303,7 +332,11 @@ async function ScanReport({ target, level }: { target: string; level: ReadingLev
             title={`${result.findings.length} écart${result.findings.length > 1 ? "s" : ""} relevé${result.findings.length > 1 ? "s" : ""}, en quatre piliers`}
             description="Chaque constat est factuel et porte sa référence normative. La qualification juridique d'une situation relève de la CNIL ou d'un juge, jamais d'un outil automatisé."
           />
-          <FindingsByPillar findings={result.findings} level={level} />
+          <FindingsByPillar
+            findings={result.findings}
+            level={level}
+            report={{ url: result.url, id: result.id, rulepackVersion: result.rulepackVersion }}
+          />
         </section>
 
         {/* ═══════════ DESTINATAIRES ═══════════ */}
@@ -431,6 +464,8 @@ async function ScanReport({ target, level }: { target: string; level: ReadingLev
         <section className="mt-5">
           <BaselineExport token={encodeBaseline(createBaseline(result))} />
         </section>
+
+        <PrintReportLink url={publicReportUrl(target, level)} />
 
         <section className="mt-10">
           <Disclaimer />

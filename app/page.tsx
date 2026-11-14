@@ -48,6 +48,17 @@ const STEPS = [
 ];
 
 const AVAILABLE_TOOLS = FREE_TOOLS.filter((t) => t.available);
+const FEATURED_SLUGS = [
+  "generateur-bandeau",
+  "comparer",
+  "auto-evaluation",
+  "generateur-confidentialite",
+  "en-tetes-securite",
+  "badge",
+];
+const FEATURED_TOOLS = FEATURED_SLUGS.map((slug) => AVAILABLE_TOOLS.find((t) => t.slug === slug)).filter(
+  (t): t is (typeof AVAILABLE_TOOLS)[number] => Boolean(t),
+);
 
 const BLIND_SPOTS = [
   {
@@ -282,7 +293,7 @@ export default function HomePage() {
             </p>
           </div>
           <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {AVAILABLE_TOOLS.map((tool, i) => (
+            {FEATURED_TOOLS.map((tool, i) => (
               <li key={tool.slug} className={i === 0 ? "sm:col-span-2 lg:col-span-1 lg:row-span-2" : ""}>
                 <Link
                   href={toolHref(tool)}
@@ -308,6 +319,14 @@ export default function HomePage() {
               </li>
             ))}
           </ul>
+          <div className="mt-10 text-center">
+            <Link
+              href="/outils"
+              className="font-display inline-flex min-h-11 items-center rounded-full border-2 border-flame px-6 text-sm font-bold text-flame transition-colors hover:bg-surface-high"
+            >
+              Voir les {AVAILABLE_TOOLS.length} outils gratuits
+            </Link>
+          </div>
         </div>
       </section>
 

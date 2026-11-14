@@ -7,6 +7,10 @@ import { getRule } from "@/lib/rulepack";
 import { ADEQUACY_LABELS, CATEGORY_LABELS } from "@/lib/trackers/db";
 import { GUIDES, cookiesOfGuide, getGuide } from "@/lib/seo/guides";
 import { lifetimeLabel } from "@/lib/seo/cookies";
+import { JsonLd } from "@/components/JsonLd";
+import { SeeAlso } from "@/components/SeeAlso";
+import { howToJsonLd } from "@/lib/seo/jsonld";
+import { relatedForGuide } from "@/lib/seo/related";
 
 export function generateStaticParams() {
   return GUIDES.map((g) => ({ slug: g.slug }));
@@ -42,6 +46,14 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
           { href: `/guides/${slug}`, label: guide.title },
         ]}
       />
+      <JsonLd
+        data={howToJsonLd({
+          name: guide.title,
+          description: guide.metaDescription,
+          path: `/guides/${guide.slug}`,
+          steps: guide.steps,
+        })}
+      />
 
       <header>
         <div className="flex flex-wrap items-center gap-2">
@@ -76,7 +88,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
         <h2 className="display text-xl text-ink-2">Comment corriger</h2>
         <ol className="mt-4 space-y-3">
           {guide.steps.map((s, i) => (
-            <li key={s} className="flex gap-4">
+            <li key={s} id={`etape-${i + 1}`} className="flex scroll-mt-24 gap-4">
               <span className="tech shrink-0 text-[10px] text-accent">
                 {String(i + 1).padStart(2, "0")}
               </span>
@@ -193,6 +205,14 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
           </ul>
         </section>
       ) : null}
+
+      <SeeAlso
+        links={relatedForGuide(guide, [
+          `/traceurs/${tracker.slug}`,
+          ...cookies.map((c) => `/cookies/${c.slug}`),
+          ...rules.map((r) => `/regles/${r.id.toLowerCase()}`),
+        ])}
+      />
 
       <section className="mt-10 rounded-xl bg-ink p-6">
         <h2 className="display text-xl text-white">

@@ -20,6 +20,7 @@ import {
   XLogo,
 } from "./icons";
 import { applyTheme, readTheme, type ThemeChoice } from "./theme";
+import { DisplayPrefs } from "./DisplayPrefs";
 
 /**
  * Pied de page commun aux services du groupe KAYZEN — même structure que
@@ -39,6 +40,8 @@ const COLUMNS: Record<string, FooterLink[]> = {
     { label: "Générateur de bandeau", href: "/outils/generateur-bandeau" },
     { label: "Auto-évaluation RGPD", href: "/auto-evaluation" },
     { label: "Décodeur TCF", href: "/outils/decodeur-tcf" },
+    { label: "Analyse en lot", href: "/analyse-en-lot" },
+    { label: "Mentions légales : générateur", href: "/outils/generateur-mentions-legales" },
     { label: "Badge Konsent", href: "/badge" },
     { label: "Tous les outils", href: "/outils" },
   ],
@@ -47,7 +50,11 @@ const COLUMNS: Record<string, FooterLink[]> = {
     { label: "Surveillance", href: "/surveillance" },
     { label: "Tarifs", href: "/tarifs" },
     { label: "Référentiel des règles", href: "/regles" },
+    { label: "Guides par secteur", href: "/secteurs" },
     { label: "Méthodologie", href: "/methodologie" },
+    { label: "À propos", href: "/a-propos" },
+    { label: "Presse", href: "/presse" },
+    { label: "Statut du service", href: "/statut" },
     { label: "Nous écrire", href: "/contact" },
   ],
   "Groupe KAYZEN": [
@@ -177,7 +184,7 @@ export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="mt-24 bg-navy-deep text-white/75">
+    <footer id="pied-de-page" tabIndex={-1} className="mt-24 bg-navy-deep text-white/75 outline-none">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid gap-10 py-14 lg:grid-cols-[1.2fr_2.8fr]">
           <div className="max-w-sm">
@@ -304,6 +311,16 @@ export function Footer() {
             <span className="sr-only">Revenir en haut de la page</span>
           </button>
         </div>
+
+        <section
+          aria-labelledby="pied-affichage"
+          className="flex flex-col gap-3 border-t border-white/10 py-5 sm:flex-row sm:items-center"
+        >
+          <h2 id="pied-affichage" className="font-display text-xs font-bold uppercase tracking-wider text-gold">
+            Affichage
+          </h2>
+          <DisplayPrefs />
+        </section>
 
         <p className="border-t border-white/10 py-5 text-[11px] leading-relaxed text-white/65">
           Les montants affichés sont des plafonds légaux théoriques, jamais une prévision de

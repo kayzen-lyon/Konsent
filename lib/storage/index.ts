@@ -95,6 +95,21 @@ export interface Storage {
   recordAlert(input: Omit<AlertRecord, "id" | "createdAt" | "sentAt">): Promise<void>;
   scheduleNext(id: string, nextRunAt: string): Promise<void>;
   purgeExpired(): Promise<number>;
+  /** Nombre d'alertes par domaine. Une liste vide ne renvoie rien. */
+  alertCounts(domainIds: readonly string[]): Promise<Readonly<Record<string, number>>>;
+  /**
+   * Tout ce que la surveillance détient pour un compte (art. 20 RGPD) :
+   * domaines, historique complet, alertes. Le jeton de vérification de
+   * propriété n'est pas exporté : c'est un secret de procédure, pas une
+   * donnée de la personne.
+   */
+  exportForAccount(accountId: string): Promise<MonitoringExport>;
+}
+
+export interface MonitoringExport {
+  domains: readonly Omit<MonitoredDomain, "verificationToken">[];
+  history: readonly ScanHistoryEntry[];
+  alerts: readonly AlertRecord[];
 }
 
 /** Renvoyé quand aucune base n'est configurée. */
@@ -205,6 +220,48 @@ class PostgresStorage implements Storage {
     const rows = await this.sql`select purge_expired_history() as removed`;
     return Number(rows[0]?.["removed"] ?? 0);
   }
+
+  async alertCounts(domainIds: readonly string[]): Promise<Readonly<Record<string, number>>> {
+    if (domainIds.length === 0) return {};
+    const rows = await this.sql`
+      select domain_id, count(*)::int as n from alerts
+      where domain_id = any(${[...domainIds]}::uuid[])
+      group by domain_id`;
+    return Object.fromEntries(rows.map((r) => [String(r["domain_id"]), Number(r["n"])]));
+  }
+
+  async exportForAccount(accountId: string): Promise<MonitoringExport> {
+    const [domains, history, alerts] = await Promise.all([
+      this.sql`select * from monitored_domains where account_id = ${accountId} order by hostname asc`,
+      this.sql`
+        select h.* from scan_history h join monitored_domains d on d.id = h.domain_id
+        where d.account_id = ${accountId} order by h.scanned_at asc`,
+      this.sql`
+        select a.* from alerts a join monitored_domains d on d.id = a.domain_id
+        where d.account_id = ${accountId} order by a.created_at asc`,
+    ]);
+    return {
+      domains: domains.map((row) => {
+        const { verificationToken: _omitted, ...rest } = toDomain(row);
+        return rest;
+      }),
+      history: history.map(toHistory),
+      alerts: alerts.map(toAlert),
+    };
+  }
+}
+
+function toAlert(row: Record<string, unknown>): AlertRecord {
+  return {
+    id: String(row["id"]),
+    domainId: String(row["domain_id"]),
+    kind: row["kind"] as AlertRecord["kind"],
+    regressionCount: Number(row["regression_count"]),
+    summary: String(row["summary"]),
+    changes: (row["changes"] as readonly Change[] | null) ?? [],
+    createdAt: iso(row["created_at"]),
+    sentAt: isoOrNull(row["sent_at"]),
+  };
 }
 
 function toDomain(row: Record<string, unknown>): MonitoredDomain {

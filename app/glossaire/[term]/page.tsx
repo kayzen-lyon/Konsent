@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { GLOSSARY, getTerm } from "@/lib/seo/glossary";
+import { SeeAlso } from "@/components/SeeAlso";
+import { relatedForTerm } from "@/lib/seo/related";
 
 export function generateStaticParams() {
   return GLOSSARY.map((t) => ({ term: t.slug }));
@@ -86,6 +88,13 @@ export default async function TermPage({ params }: { params: Promise<{ term: str
           </ul>
         </section>
       ) : null}
+
+      <SeeAlso
+        links={relatedForTerm(
+          entry,
+          related.map((r) => `/glossaire/${r.slug}`),
+        )}
+      />
 
       <section className="mt-10 rounded-xl bg-ink p-6">
         <h2 className="display text-xl text-white">Et concrètement, sur votre site ?</h2>

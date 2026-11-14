@@ -31,6 +31,9 @@ const SECTIONS: { title: string; links: [string, string][] }[] = [
       ["/outils/generateur-bandeau", "Générateur de bandeau cookies"],
       ["/auto-evaluation", "Auto-évaluation RGPD"],
       ["/badge", "Badge Konsent pour votre site"],
+      ["/analyse-en-lot", "Analyse en lot"],
+      ["/outils/generateur-mentions-legales", "Générateur de mentions légales"],
+      ["/outils/generateur-confidentialite", "Générateur de politique de confidentialité"],
       ["/recherche", "Recherche"],
       ["/outils/decodeur-tcf", "Décodeur de chaîne TCF"],
       ["/simulateur", "Simulateur d'exposition"],
@@ -41,6 +44,7 @@ const SECTIONS: { title: string; links: [string, string][] }[] = [
     title: "Comprendre",
     links: [
       ["/regles", "Référentiel des règles"],
+      ["/secteurs", "Guides par secteur"],
       ["/traceurs", "Base des traceurs"],
       ["/cookies", "Index des cookies"],
       ["/juridictions", "Juridictions couvertes"],
@@ -58,6 +62,9 @@ const SECTIONS: { title: string; links: [string, string][] }[] = [
       ["/connexion", "Connexion"],
       ["/espace", "Espace client"],
       ["/contact", "Nous écrire"],
+      ["/a-propos", "À propos"],
+      ["/presse", "Espace presse"],
+      ["/statut", "Statut du service"],
     ],
   },
   {

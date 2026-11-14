@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { Pill } from "@/components/primitives";
 import { ADEQUACY_LABELS, CATEGORY_LABELS, TRACKERS, getTrackerBySlug } from "@/lib/trackers/db";
+import { SeeAlso } from "@/components/SeeAlso";
+import { relatedForTracker } from "@/lib/seo/related";
 
 export function generateStaticParams() {
   return TRACKERS.map((t) => ({ slug: t.slug }));
@@ -149,6 +151,8 @@ export default async function TrackerPage({ params }: { params: Promise<{ slug: 
           </p>
         </section>
       ) : null}
+
+      <SeeAlso links={relatedForTracker(t)} />
 
       <footer className="mt-10 border-t border-line pt-5 text-xs text-muted">
         <p>Sources : {t.sources.join(" · ")}</p>

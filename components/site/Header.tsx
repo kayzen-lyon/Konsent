@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ContactCard } from "@/components/ContactCard";
 import { CommandPalette } from "./CommandPalette";
+import { ToolsMenu } from "./ToolsMenu";
 import { Logo } from "@/components/Logo";
 import { Close, Menu, Moon, Sun } from "./icons";
 import { applyTheme } from "./theme";
@@ -99,9 +100,22 @@ export function Header() {
             </span>
           </Link>
 
-          <nav className="hidden items-center gap-0.5 lg:flex" aria-label="Navigation principale">
+          <nav id="navigation" tabIndex={-1} className="hidden items-center gap-0.5 outline-none lg:flex" aria-label="Navigation principale">
             {NAV.map((item) => {
               const active = isActive(pathname, item.href);
+              if (item.href === "/outils") {
+                return (
+                  <ToolsMenu
+                    key={item.href}
+                    active={
+                      active ||
+                      ["/comparer", "/auto-evaluation", "/badge", "/simulateur", "/analyse-en-lot"].some(
+                        (p) => isActive(pathname, p),
+                      )
+                    }
+                  />
+                );
+              }
               return (
                 <Link
                   key={item.href}

@@ -8,6 +8,16 @@ export const metadata: Metadata = {
   title: "Veille réglementaire",
   description:
     "Ce qui est en vigueur, ce qui n'est qu'un projet, et ce que cela change pour chaque règle du référentiel. Sans confondre les deux.",
+  // Remplace l'objet `alternates` du gabarit : la canonique est donc redonnée.
+  alternates: {
+    canonical: "./",
+    types: {
+      "application/rss+xml": [{ url: "/veille/rss.xml", title: "Veille réglementaire Konsent (RSS)" }],
+      "application/feed+json": [
+        { url: "/veille/feed.json", title: "Veille réglementaire Konsent (JSON Feed)" },
+      ],
+    },
+  },
 };
 
 const STATUS_STYLES: Record<WatchStatus, string> = {
@@ -86,7 +96,7 @@ export default function RegWatchPage() {
 
               <div className="mt-6 space-y-4">
                 {group.entries.map((e) => (
-                  <article key={e.id} className="rounded-xl bg-surface p-6 ring-1 ring-line shadow-md">
+                  <article key={e.id} id={e.id} className="scroll-mt-28 rounded-xl bg-surface p-6 ring-1 ring-line shadow-md">
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-2">

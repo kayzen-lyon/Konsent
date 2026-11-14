@@ -4,6 +4,8 @@ import type { Metadata } from "next";
 import { SeverityBadge } from "@/components/primitives";
 import { FAMILY_LABELS, RULES, getRule } from "@/lib/rulepack";
 import { constatWording } from "@/lib/disclaimer";
+import { SeeAlso } from "@/components/SeeAlso";
+import { relatedForRule } from "@/lib/seo/related";
 
 export function generateStaticParams() {
   return RULES.map((r) => ({ id: r.id.toLowerCase() }));
@@ -122,6 +124,8 @@ export default async function RulePage({ params }: { params: Promise<{ id: strin
           </p>
         </section>
       ) : null}
+
+      <SeeAlso links={relatedForRule(rule)} />
 
       <footer className="mt-10 border-t border-line pt-5 text-sm text-muted">
         <p>

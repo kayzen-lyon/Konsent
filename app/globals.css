@@ -464,61 +464,61 @@ a.text-flame:not([class*="rounded"]) {
 }
 
 /* ═══════════════════════════ Thème sombre ════════════════════════════════
- * Palette dérivée de la fiche Kayzen (themes.dark). Les jetons sont
+ * Bleu nuit, dans la famille du marine Kayzen (#132944). Les jetons sont
  * redéfinis ; les composants n'ont rien à savoir du thème.
  *
  * Le terracotta reste #B7481F en FOND (blanc dessus : 5,3:1) ; en TEXTE sur
- * fond sombre il passe à #F08A5D (7,4:1 sur #130E0C), d'où la règle dédiée
+ * fond sombre il passe à #F08A5D (7,2:1 sur #0B1626), d'où la règle dédiée
  * à `.text-flame` plutôt qu'un simple changement de jeton. */
 .dark {
   color-scheme: dark;
-  --color-ink-2: #fcf8f6;
-  --color-ink-3: #fcf8f6;
+  --color-ink-2: #f3f6fb;
+  --color-ink-3: #f3f6fb;
   --color-secondary: #a9c2e6;
-  --color-secondary-bg: #1c2b40;
+  --color-secondary-bg: #16294a;
   --color-accent: #a9c2e6;
-  --color-flame-bg: #3a2018;
+  --color-flame-bg: #3b2420;
   --color-flame-deep: #ffd2c0;
 
   --color-crit: #f87171;
-  --color-crit-bg: #3b1515;
+  --color-crit-bg: #3a1823;
   --color-crit-text: #fca5a5;
   --color-warn: #facc15;
-  --color-warn-bg: #33290a;
+  --color-warn-bg: #2f2a14;
   --color-ok: #6ee7b7;
-  --color-ok-bg: #0f2e24;
+  --color-ok-bg: #0d2e2e;
 
-  --color-paper: #130e0c;
-  --color-surface: #211c1b;
-  --color-surface-dim: #1a1513;
-  --color-surface-low: #1a1513;
-  --color-surface-high: #2d2927;
-  --color-line: #393533;
-  --color-line-2: #6b6461;
-  --color-muted: #a39f9d;
+  --color-paper: #0b1626;
+  --color-surface: #12223a;
+  --color-surface-dim: #0f1d32;
+  --color-surface-low: #0f1d32;
+  --color-surface-high: #1b3050;
+  --color-line: #263b5c;
+  --color-line-2: #56709a;
+  --color-muted: #a8b6cb;
 
-  --color-slate-50: #1a1513;
-  --color-slate-100: #211c1b;
-  --color-slate-200: #393533;
-  --color-slate-300: #4a4542;
-  --color-slate-400: #8a8583;
-  --color-slate-500: #a39f9d;
-  --color-slate-600: #bcb7b4;
-  --color-slate-700: #d6d1ce;
+  --color-slate-50: #0f1d32;
+  --color-slate-100: #12223a;
+  --color-slate-200: #263b5c;
+  --color-slate-300: #34507a;
+  --color-slate-400: #8496b3;
+  --color-slate-500: #a8b6cb;
+  --color-slate-600: #c3cedd;
+  --color-slate-700: #dbe3ee;
 
   /* Teintes d'alerte codées en dur dans quelques encarts */
-  --color-amber-50: #33290a;
+  --color-amber-50: #2f2a14;
   --color-amber-200: #5c4a12;
   --color-amber-800: #fde68a;
   --color-amber-900: #fef3c7;
-  --color-red-50: #3b1515;
+  --color-red-50: #3a1823;
   --color-red-800: #fecaca;
-  --color-green-50: #0f2e24;
+  --color-green-50: #0d2e2e;
   --color-green-800: #a7f3d0;
 
-  --shadow-md: 0 0 0 1px #393533;
-  --shadow-lg: 0 24px 48px -16px rgb(0 0 0 / 0.6), 0 0 0 1px #393533;
-  --shadow-xl: 0 8px 20px -6px rgb(0 0 0 / 0.5), 0 0 0 1px #393533;
+  --shadow-md: 0 0 0 1px #263b5c;
+  --shadow-lg: 0 24px 48px -16px rgb(0 0 0 / 0.6), 0 0 0 1px #263b5c;
+  --shadow-xl: 0 8px 20px -6px rgb(0 0 0 / 0.5), 0 0 0 1px #263b5c;
 }
 .dark .text-flame {
   color: #f08a5d;
@@ -639,4 +639,43 @@ html {
   background:
     radial-gradient(60% 50% at 85% 20%, color-mix(in srgb, var(--color-flame) 10%, transparent), transparent 70%),
     radial-gradient(40% 40% at 10% 90%, color-mix(in srgb, var(--color-gold) 9%, transparent), transparent 70%);
+}
+
+/* ═══════════════════════ Préférences d'affichage ═════════════════════════
+ * Posées par le visiteur dans le pied de page (data-* sur <html>). */
+html[data-text="lg"] {
+  zoom: 1.125;
+}
+html[data-text="xl"] {
+  zoom: 1.25;
+}
+
+/* Contraste renforcé : texte secondaire et filets nettement plus marqués,
+ * liens toujours soulignés. */
+html[data-contrast="high"] {
+  --color-muted: #2f3a47;
+  --color-line: #7d8ca1;
+  --color-line-2: #3d4856;
+  --color-flame: #8f3613;
+}
+html[data-contrast="high"].dark {
+  --color-muted: #e3e9f2;
+  --color-line: #8496b3;
+  --color-line-2: #dbe3ee;
+}
+html[data-contrast="high"] a {
+  text-decoration-line: underline;
+  text-underline-offset: 2px;
+}
+html[data-contrast="high"] :focus-visible {
+  outline-width: 3px;
+}
+
+/* Animations coupées à la demande, indépendamment du réglage du système. */
+html[data-motion="reduce"] *,
+html[data-motion="reduce"] *::before,
+html[data-motion="reduce"] *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
 }

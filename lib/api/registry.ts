@@ -89,6 +89,11 @@ export const INTERNAL_ROUTES: readonly string[] = [
   // Recherche du site, utilisée par la palette Ctrl+K : contenu public,
   // aucune donnée d'audit, hors API documentée.
   "/api/recherche",
+  // Droits RGPD en libre-service (export, suppression, sessions) : session
+  // par cookie et contrôle d'origine, jamais de clé d'API.
+  "/api/compte/export",
+  "/api/compte/supprimer",
+  "/api/compte/sessions",
   "/api/auth/lien",
   "/api/auth/session",
   // Fiche de contact de l'éditeur. Ne sert aucune donnée d'audit et ne
@@ -133,6 +138,16 @@ export const API_ROUTES: readonly ApiRoute[] = [
         schema: { type: "string" },
       },
     ],
+  },
+  {
+    path: "/api/outils/en-tetes",
+    method: "GET",
+    summary: "En-têtes de sécurité d'une adresse",
+    description:
+      "Une requête GET (redirections suivies, adresses publiques uniquement), corps non lu. Note A–F par en-tête (HSTS, CSP, X-Content-Type-Options, frame-ancestors/X-Frame-Options, Referrer-Policy, Permissions-Policy, COOP, CORP, Set-Cookie) avec valeur recommandée. Noms et attributs des cookies seulement, jamais leurs valeurs. Rien n'est conservé.",
+    scope: "scan:read",
+    open: true,
+    params: [URL_PARAM],
   },
   {
     path: "/api/rulepack",

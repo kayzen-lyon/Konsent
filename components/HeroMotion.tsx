@@ -75,7 +75,9 @@ ${FINDINGS.map((_, i) => {
 
 .km-paused, .km-paused * { animation-play-state: paused !important; }
 
-@media (prefers-reduced-motion: reduce) {
+${["@media (prefers-reduced-motion: reduce) {", 'html[data-motion="reduce"] {']
+  .map(
+    (open) => `${open}
   .km-type, .km-caret, .km-bar, .km-run, .km-done, .km-row,
   .km-ring, .km-score, .km-float, .km-float-2, .km-flow, .km-scan { animation: none !important; }
   .km-type { width: 10.5ch; }
@@ -83,7 +85,9 @@ ${FINDINGS.map((_, i) => {
   .km-bar { transform: none; }
   .km-done, .km-row, .km-score { opacity: 1; transform: none; }
   .km-ring { stroke-dashoffset: ${FINAL_OFFSET}; }
-}
+}`,
+  )
+  .join("\n")}
 `;
 
 export function HeroMotion() {

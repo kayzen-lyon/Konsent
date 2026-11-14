@@ -1,6 +1,6 @@
 import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
 import type { PlanId } from "../billing/plans";
-import { dbConfigured, getSql, iso, type Sql } from "../db";
+import { dbConfigured, getSql, iso, isoOrNull, type Sql } from "../db";
 
 /**
  * Comptes et sessions.
@@ -91,7 +91,76 @@ export interface Accounts {
   acceptInvitation(childId: string, parentId: string): Promise<boolean>;
   declineInvitation(childId: string): Promise<void>;
   detachSubAccount(childId: string): Promise<void>;
+  /**
+   * Sessions du compte, actives ou expirées mais pas encore purgées.
+   * Ni IP ni agent utilisateur : la table n'en contient pas, et c'est voulu.
+   */
+  sessionsFor(accountId: string, currentSessionToken: string): Promise<readonly SessionRecord[]>;
+  /** Ferme toutes les sessions du compte sauf la session courante. Renvoie le nombre fermé. */
+  endOtherSessions(accountId: string, currentSessionToken: string): Promise<number>;
+  /**
+   * Données du compte détenues dans les tables de comptes (droit à la
+   * portabilité, art. 20 RGPD). Aucune empreinte : ni `token_hash`, ni
+   * empreinte de clé d'API — elles ne sont pas des données de la personne,
+   * et les exporter fabriquerait un second coffre à protéger.
+   */
+  exportAccountData(accountId: string): Promise<AccountDataExport | null>;
+  /**
+   * Effacement du compte (droit à l'effacement, art. 17 RGPD).
+   *
+   * Les sous-comptes d'une agence sont DÉTACHÉS d'abord, jamais supprimés :
+   * ce sont les comptes d'autres personnes. Le reste suit les cascades du
+   * schéma ; le journal `api_calls` est anonymisé par `on delete set null`.
+   */
+  deleteAccount(accountId: string): Promise<AccountDeletion>;
 }
+
+export interface SessionRecord {
+  id: string;
+  createdAt: string;
+  expiresAt: string;
+  /** Vrai pour la session qui fait la requête. */
+  current: boolean;
+  expired: boolean;
+}
+
+export interface AccountDataExport {
+  account: {
+    id: string;
+    email: string;
+    plan: PlanId;
+    createdAt: string;
+    updatedAt: string;
+    stripeCustomerId: string | null;
+    stripeSubscriptionId: string | null;
+    parentId: string | null;
+    invitedParentId: string | null;
+  };
+  sessions: readonly Omit<SessionRecord, "current">[];
+  apiKeys: readonly {
+    id: string;
+    label: string;
+    hint: string;
+    scopes: readonly string[];
+    monthlyQuota: number;
+    createdAt: string;
+    lastUsedAt: string | null;
+    revokedAt: string | null;
+  }[];
+  apiCalls: readonly {
+    path: string;
+    method: string;
+    status: number;
+    refusal: string | null;
+    at: string;
+  }[];
+  subAccounts: readonly { id: string; email: string; createdAt: string }[];
+  pendingInvitationsSent: readonly { id: string; email: string; createdAt: string }[];
+}
+
+export type AccountDeletion =
+  | { deleted: true; detachedSubAccounts: number }
+  | { deleted: false; reason: "not_found" | "active_subscription" };
 
 /**
  * Empreinte d'un jeton.
@@ -230,6 +299,139 @@ class PostgresAccounts implements Accounts {
   async detachSubAccount(childId: string): Promise<void> {
     await this.sql`
       update accounts set parent_id = null, updated_at = now() where id = ${childId}`;
+  }
+
+  async sessionsFor(accountId: string, currentSessionToken: string): Promise<readonly SessionRecord[]> {
+    const rows = await this.sql`
+      select id, created_at, expires_at,
+             token_hash = ${fingerprint(currentSessionToken)} as current,
+             expires_at <= now() as expired
+      from sessions where account_id = ${accountId}
+      order by created_at desc limit 50`;
+    return rows.map((r) => ({
+      id: String(r["id"]),
+      createdAt: iso(r["created_at"]),
+      expiresAt: iso(r["expires_at"]),
+      current: Boolean(r["current"]),
+      expired: Boolean(r["expired"]),
+    }));
+  }
+
+  async endOtherSessions(accountId: string, currentSessionToken: string): Promise<number> {
+    const rows = await this.sql`
+      delete from sessions
+      where account_id = ${accountId} and token_hash <> ${fingerprint(currentSessionToken)}
+      returning id`;
+    return rows.length;
+  }
+
+  async exportAccountData(accountId: string): Promise<AccountDataExport | null> {
+    // Colonnes nommées une à une : un `select *` exporterait demain une
+    // colonne ajoutée sans que personne ait décidé qu'elle devait sortir.
+    const accountRows = await this.sql`
+      select id, email, plan, created_at, updated_at, stripe_customer_id,
+             stripe_subscription_id, parent_id, invited_parent_id
+      from accounts where id = ${accountId} limit 1`;
+    const a = accountRows[0];
+    if (!a) return null;
+
+    const [sessions, keys, calls, children, invited] = await Promise.all([
+      this.sql`
+        select id, created_at, expires_at, expires_at <= now() as expired
+        from sessions where account_id = ${accountId} order by created_at desc`,
+      this.sql`
+        select id, label, hint, scopes, monthly_quota, created_at, last_used_at, revoked_at
+        from api_keys where org_id = ${accountId} order by created_at asc`,
+      this.sql`
+        select path, method, status, refusal, at
+        from api_calls where org_id = ${accountId} order by at desc limit 5000`,
+      this.sql`
+        select id, email, created_at from accounts
+        where parent_id = ${accountId} order by created_at asc`,
+      this.sql`
+        select id, email, created_at from accounts
+        where invited_parent_id = ${accountId} order by created_at asc`,
+    ]);
+
+    const brief = (r: Record<string, unknown>) => ({
+      id: String(r["id"]),
+      email: String(r["email"]),
+      createdAt: iso(r["created_at"]),
+    });
+
+    return {
+      account: {
+        id: String(a["id"]),
+        email: String(a["email"]),
+        plan: (a["plan"] as PlanId) ?? "libre",
+        createdAt: iso(a["created_at"]),
+        updatedAt: iso(a["updated_at"]),
+        stripeCustomerId: (a["stripe_customer_id"] as string | null) ?? null,
+        stripeSubscriptionId: (a["stripe_subscription_id"] as string | null) ?? null,
+        parentId: (a["parent_id"] as string | null) ?? null,
+        invitedParentId: (a["invited_parent_id"] as string | null) ?? null,
+      },
+      sessions: sessions.map((r) => ({
+        id: String(r["id"]),
+        createdAt: iso(r["created_at"]),
+        expiresAt: iso(r["expires_at"]),
+        expired: Boolean(r["expired"]),
+      })),
+      apiKeys: keys.map((r) => ({
+        id: String(r["id"]),
+        label: String(r["label"] ?? ""),
+        hint: String(r["hint"] ?? ""),
+        scopes: (r["scopes"] as string[] | null) ?? [],
+        monthlyQuota: Number(r["monthly_quota"] ?? 0),
+        createdAt: iso(r["created_at"]),
+        lastUsedAt: isoOrNull(r["last_used_at"]),
+        revokedAt: isoOrNull(r["revoked_at"]),
+      })),
+      apiCalls: calls.map((r) => ({
+        path: String(r["path"]),
+        method: String(r["method"]),
+        status: Number(r["status"]),
+        refusal: (r["refusal"] as string | null) ?? null,
+        at: iso(r["at"]),
+      })),
+      subAccounts: children.map(brief),
+      pendingInvitationsSent: invited.map(brief),
+    };
+  }
+
+  async deleteAccount(accountId: string): Promise<AccountDeletion> {
+    const rows = await this.sql`
+      select email, stripe_subscription_id from accounts where id = ${accountId} limit 1`;
+    const row = rows[0];
+    if (!row) return { deleted: false, reason: "not_found" };
+    // Un abonnement Stripe en cours continuerait d'être prélevé après
+    // l'effacement, sans plus aucun compte pour le résilier : refusé.
+    if (row["stripe_subscription_id"]) return { deleted: false, reason: "active_subscription" };
+    const email = String(row["email"]);
+
+    // Une seule transaction : un effacement à moitié fait laisserait des
+    // sous-comptes détachés d'un compte toujours présent, ou l'inverse.
+    const [detached] = await this.sql.transaction([
+      // 1. Les sous-comptes sont DÉTACHÉS, jamais supprimés : ce sont les
+      //    comptes d'autres personnes.
+      this.sql`
+        update accounts set parent_id = null, updated_at = now()
+        where parent_id = ${accountId} returning id`,
+      // 2. Les invitations envoyées sont retirées.
+      this.sql`
+        update accounts set invited_parent_id = null, updated_at = now()
+        where invited_parent_id = ${accountId}`,
+      // 3. Les jetons de connexion portent l'adresse, sans clé étrangère.
+      this.sql`delete from login_tokens where email = ${email}`,
+      // 4. Les inscriptions à la surveillance faites SANS session à cette
+      //    adresse : le titulaire a prouvé qu'elle est la sienne.
+      this.sql`
+        delete from monitored_domains where account_id is null and alert_email = ${email}`,
+      // 5. Le compte. Cascades : sessions, domaines, historique, alertes,
+      //    clés d'API ; `api_calls` : org_id / key_id mis à NULL.
+      this.sql`delete from accounts where id = ${accountId}`,
+    ]);
+    return { deleted: true, detachedSubAccounts: detached?.length ?? 0 };
   }
 }
 
