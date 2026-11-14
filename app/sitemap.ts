@@ -38,6 +38,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/contact",
     "/accessibilite",
     "/plan-du-site",
+    "/outils",
+    "/outils/decodeur-tcf",
+    "/outils/generateur-bandeau",
+    "/comparer",
+    "/auto-evaluation",
+    "/badge",
   ].map((path) => ({
     url: `${BASE}${path}`,
     lastModified: new Date(),

@@ -1,5 +1,5 @@
 import type { Severity } from "@/lib/rulepack/types";
-import { SEVERITY_LABELS } from "@/lib/rulepack";
+import { SEVERITY_LABELS } from "@/lib/rulepack/labels";
 import { DISCLAIMER_LONG, DISCLAIMER_SHORT } from "@/lib/disclaimer";
 
 export function SectionTitle({

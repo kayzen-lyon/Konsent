@@ -25,9 +25,55 @@ export interface FreeTool {
   /** Où le traitement a lieu. Affiché tel quel : c'est un argument. */
   processing: "navigateur" | "serveur";
   available: boolean;
+  /** Adresse de l'outil quand elle ne suit pas le motif /outils/<slug>. */
+  href?: string;
+}
+
+/** Adresse publique d'un outil. */
+export function toolHref(tool: FreeTool): string {
+  return tool.href ?? `/outils/${tool.slug}`;
 }
 
 export const FREE_TOOLS: readonly FreeTool[] = [
+  {
+    slug: "generateur-bandeau",
+    title: "Générateur de bandeau cookies",
+    question: "À quoi ressemble un bandeau qui respecte vraiment les règles de la CNIL ?",
+    description:
+      "Configurez votre bandeau, voyez-le en direct, copiez un code autonome : « Tout refuser » au même niveau qu'« Tout accepter », aucune case pré-cochée, scripts bloqués avant le choix.",
+    processing: "navigateur",
+    available: true,
+  },
+  {
+    slug: "comparer",
+    title: "Comparateur de deux sites",
+    question: "Mon site fait-il mieux ou moins bien que celui de mon concurrent ?",
+    description:
+      "Deux audits lancés en parallèle et présentés côte à côte : scores, écarts communs, écarts propres à chacun, destinataires hors UE.",
+    processing: "serveur",
+    available: true,
+    href: "/comparer",
+  },
+  {
+    slug: "auto-evaluation",
+    title: "Auto-évaluation RGPD",
+    question: "Et tout ce qu'un scanner ne peut pas voir ?",
+    description:
+      "Une trentaine de questions sur le registre, les contrats, les droits des personnes et la sécurité. Score par thème et plan d'action, sans que vos réponses quittent votre navigateur.",
+    processing: "navigateur",
+    available: true,
+    href: "/auto-evaluation",
+  },
+  {
+    slug: "badge",
+    title: "Badge Konsent pour votre site",
+    question: "Comment montrer à vos visiteurs que vous surveillez vos traceurs ?",
+    description:
+      "Un badge SVG à intégrer, recalculé chaque jour à partir d'une analyse automatisée — présenté comme tel, jamais comme une certification.",
+    processing: "serveur",
+    available: true,
+    href: "/badge",
+  },
   {
     slug: "decodeur-tcf",
     title: "Décodeur de chaîne de consentement TCF",
@@ -54,6 +100,7 @@ export const FREE_TOOLS: readonly FreeTool[] = [
       "Calcule le plafond théorique et, surtout, la fourchette réellement observée en procédure simplifiée. Les deux sont affichés ensemble, jamais l'un sans l'autre.",
     processing: "navigateur",
     available: true,
+    href: "/simulateur",
   },
 ];
 

@@ -4,6 +4,7 @@ import { DISCLAIMER_SHORT } from "@/lib/disclaimer";
 import { runVerdictScan } from "@/lib/engine/orchestrate";
 import { ScanError } from "@/lib/engine/scan";
 import { RULEPACK } from "@/lib/rulepack";
+import { RATE_RULES, limitAnonymousByIp } from "@/lib/security/rate-limit";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -24,6 +25,9 @@ export const maxDuration = 60;
  * l'avertissement en même temps que le constat.
  */
 async function handleGET(request: Request) {
+  const limited = await limitAnonymousByIp(request, RATE_RULES.scan);
+  if (limited) return limited;
+
   const target = new URL(request.url).searchParams.get("url");
 
   if (!target) {

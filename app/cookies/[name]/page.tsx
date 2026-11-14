@@ -1,3 +1,4 @@
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -43,11 +44,12 @@ export default async function CookiePage({ params }: { params: Promise<{ name: s
 
   return (
     <div className="mx-auto max-w-3xl px-5 py-12 sm:py-16">
-      <nav className="mb-6 text-sm">
-        <Link href="/cookies" className="text-flame hover:underline">
-          ← Index des cookies
-        </Link>
-      </nav>
+      <Breadcrumbs
+        items={[
+          { href: "/cookies", label: "Cookies" },
+          { href: `/cookies/${name}`, label: cookie.name },
+        ]}
+      />
 
       <header>
         <div className="flex flex-wrap items-center gap-2">

@@ -53,6 +53,11 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  // RFC 9116 : security.txt est attendu sous /.well-known/, dossier que
+  // l'App Router ne sert pas. La route vit en /securite.txt.
+  async rewrites() {
+    return [{ source: "/.well-known/security.txt", destination: "/securite.txt" }];
+  },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },

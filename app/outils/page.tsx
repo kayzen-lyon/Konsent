@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { Disclaimer, SectionTitle } from "@/components/primitives";
-import { FREE_TOOLS } from "@/lib/tools/catalog";
+import { FREE_TOOLS, toolHref } from "@/lib/tools/catalog";
 
 export const metadata: Metadata = {
   title: "Outils libres",
@@ -35,7 +35,7 @@ export default function ToolsPage() {
           {available.map((tool) => (
             <li key={tool.slug}>
               <Link
-                href={tool.slug === "simulateur" ? "/simulateur" : `/outils/${tool.slug}`}
+                href={toolHref(tool)}
                 className="block rounded-lg border border-slate-200 p-6 transition hover:border-flame"
               >
                 <p className="text-sm text-accent">{tool.question}</p>

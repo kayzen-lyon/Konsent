@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { MAGIC_LINK_TTL_MINUTES, getAccounts, normalizeEmail } from "@/lib/accounts";
 import { isPlausibleAddress, magicLinkEmail, sendEmail } from "@/lib/email";
 import { LOGIN_BINDING_COOKIE, bindingFor } from "@/lib/security/login-binding";
+import { RATE_RULES, hit, limitByIp } from "@/lib/security/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -27,6 +28,10 @@ const GENERIC = {
 };
 
 export async function POST(request: Request) {
+  // Limite par IP : un 429 ici ne dit rien de l'adresse demandée.
+  const limited = await limitByIp(request, RATE_RULES.loginIp);
+  if (limited) return limited;
+
   const accounts = getAccounts();
   if (!accounts.available) {
     return NextResponse.json({ error: accounts.reason }, { status: 503 });
@@ -47,8 +52,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Cette adresse ne semble pas valide." }, { status: 400 });
   }
 
+  // Limite par adresse : au-delà, plus aucun envoi, mais la réponse reste la
+  // réponse générique — un 429 ici révélerait qu'on a déjà écrit à l'adresse.
+  const perAddress = await hit(RATE_RULES.loginEmail, email);
+
   let binding: string | null = null;
-  try {
+  if (perAddress.allowed) try {
     const { token } = await accounts.requestMagicLink(email);
     binding = bindingFor(token);
     const origin = siteOrigin();

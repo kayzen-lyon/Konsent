@@ -35,9 +35,11 @@ type FooterLink = { label: string; href: string; external?: boolean };
 const COLUMNS: Record<string, FooterLink[]> = {
   Outils: [
     { label: "Audit RGPD gratuit", href: "/#scan" },
+    { label: "Comparer deux sites", href: "/comparer" },
+    { label: "Générateur de bandeau", href: "/outils/generateur-bandeau" },
+    { label: "Auto-évaluation RGPD", href: "/auto-evaluation" },
     { label: "Décodeur TCF", href: "/outils/decodeur-tcf" },
-    { label: "Simulateur d'exposition", href: "/simulateur" },
-    { label: "Base des traceurs", href: "/traceurs" },
+    { label: "Badge Konsent", href: "/badge" },
     { label: "Tous les outils", href: "/outils" },
   ],
   Konsent: [

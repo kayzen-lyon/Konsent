@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { Pill } from "@/components/primitives";
@@ -29,11 +29,12 @@ export default async function TrackerPage({ params }: { params: Promise<{ slug: 
 
   return (
     <div className="mx-auto max-w-3xl px-5 py-12 sm:py-16">
-      <nav className="mb-6 text-sm">
-        <Link href="/traceurs" className="text-flame hover:underline">
-          ← Base des traceurs
-        </Link>
-      </nav>
+      <Breadcrumbs
+        items={[
+          { href: "/traceurs", label: "Traceurs" },
+          { href: `/traceurs/${slug}`, label: t.name },
+        ]}
+      />
 
       <header>
         <div className="flex flex-wrap items-center gap-2">

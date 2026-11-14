@@ -242,3 +242,50 @@ $$;
 revoke all on function purge_expired_history() from public;
 revoke all on function konsent_api_calls_immutable() from public;
 revoke all on function konsent_no_nested_subaccounts() from public;
+
+-- ═══════════════════════════════════════════ limitation de débit ═══════════
+-- Fenêtre fixe par (seau, début de fenêtre). Le seau est « règle:empreinte »,
+-- l'empreinte étant un HMAC journalier de l'IP ou de l'adresse : aucune donnée
+-- en clair. Lignes purgées après deux jours (voir purge_expired_history).
+create table if not exists rate_limits (
+  bucket       text not null,
+  window_start timestamptz not null,
+  count        integer not null default 1,
+  primary key (bucket, window_start)
+);
+create index if not exists rate_limits_window_idx on rate_limits (window_start);
+
+-- Redéfinie ici pour y ajouter la purge des compteurs de débit.
+create or replace function purge_expired_history()
+returns integer
+language plpgsql
+as $$
+declare
+  removed integer := 0;
+  n integer;
+begin
+  delete from scan_history h
+    using monitored_domains d
+    where h.domain_id = d.id
+      and h.scanned_at < now() - make_interval(days => d.retention_days);
+  get diagnostics n = row_count;
+  removed := removed + n;
+
+  delete from alerts a
+    using monitored_domains d
+    where a.domain_id = d.id
+      and a.created_at < now() - make_interval(days => d.retention_days);
+  get diagnostics n = row_count;
+  removed := removed + n;
+
+  delete from api_calls where at < now() - interval '400 days';
+  get diagnostics n = row_count;
+  removed := removed + n;
+
+  delete from rate_limits where window_start < now() - interval '2 days';
+  get diagnostics n = row_count;
+  return removed + n;
+end;
+$$;
+
+revoke all on function purge_expired_history() from public;

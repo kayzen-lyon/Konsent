@@ -1,3 +1,4 @@
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -32,11 +33,12 @@ export default async function TermPage({ params }: { params: Promise<{ term: str
 
   return (
     <div className="mx-auto max-w-3xl px-5 py-12 sm:py-16">
-      <nav className="mb-6 text-sm">
-        <Link href="/glossaire" className="text-flame hover:underline">
-          ← Glossaire
-        </Link>
-      </nav>
+      <Breadcrumbs
+        items={[
+          { href: "/glossaire", label: "Glossaire" },
+          { href: `/glossaire/${term}`, label: entry.term },
+        ]}
+      />
 
       <header>
         <h1 className="display text-3xl text-ink-2 sm:text-4xl">{entry.term}</h1>

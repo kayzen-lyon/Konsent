@@ -9,6 +9,7 @@ import { ScoreGauge } from "@/components/ScoreGauge";
 import { Timeline } from "@/components/Timeline";
 import { JurisdictionBreakdown, VendorTable } from "@/components/Vendors";
 import { Disclaimer, SectionTitle, Stat } from "@/components/primitives";
+import { ReportActions } from "@/components/ReportActions";
 import { PrintReportButton } from "@/components/PrintReportButton";
 import { PrintedLevelNotice, ReadingLevelPicker } from "@/components/ReadingLevelPicker";
 import { runVerdictScan } from "@/lib/engine/orchestrate";
@@ -156,6 +157,35 @@ async function ScanReport({ target, level }: { target: string; level: ReadingLev
           <PrintedLevelNotice current={level} />
           <PrintReportButton />
         </div>
+        <div className="mb-6">
+          <ReportActions target={target} hostname={observation.hostname} />
+        </div>
+
+        {/* Sommaire du rapport : ancres vers chaque partie. */}
+        <nav
+          aria-label="Sommaire du rapport"
+          className="sticky top-16 z-30 -mx-5 mb-8 overflow-x-auto border-y border-line bg-paper/90 px-5 py-2 backdrop-blur-sm lg:top-20 print:hidden"
+        >
+          <ul className="flex gap-1 whitespace-nowrap">
+            {[
+              ["#synthese", "Synthèse"],
+              ["#preuve", "Preuve"],
+              ["#constats", `Constats (${result.findings.length})`],
+              ["#destinataires", "Destinataires"],
+              ["#perspective", "Exposition"],
+              ["#limites", "Limites"],
+            ].map(([href, label]) => (
+              <li key={href}>
+                <a
+                  href={href}
+                  className="font-display inline-flex min-h-10 items-center rounded-full px-3 text-[13px] font-semibold text-muted transition-colors hover:bg-surface-high hover:text-ink-2"
+                >
+                  {label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
 
         {/* ═══════════ DÉGRADATION ═══════════
             Le protocole complet était attendu et n'a pas pu s'exécuter. Le
@@ -177,7 +207,7 @@ async function ScanReport({ target, level }: { target: string; level: ReadingLev
         ) : null}
 
         {/* ═══════════ SYNTHÈSE ═══════════ */}
-        <section className="grid gap-5 lg:grid-cols-[auto_1fr]">
+        <section id="synthese" className="grid scroll-mt-28 gap-5 lg:grid-cols-[auto_1fr]">
           <div className="rise flex items-center justify-center rounded-xl bg-surface p-6 ring-1 ring-line shadow-md">
             <ScoreGauge
               score={result.score}
@@ -239,7 +269,7 @@ async function ScanReport({ target, level }: { target: string; level: ReadingLev
             La chronologie brute est de l'appareillage : elle sert à vérifier,
             pas à décider. La vue dirigeant en garde le FAIT — combien de
             services, combien hors EEE — et laisse le détail aux deux autres. */}
-        <section className="mt-14">
+        <section id="preuve" className="mt-14 scroll-mt-28">
           <SectionTitle
             eyebrow="La preuve"
             title="Ce que votre page appelle"
@@ -267,7 +297,7 @@ async function ScanReport({ target, level }: { target: string; level: ReadingLev
         </section>
 
         {/* ═══════════ PILIERS ═══════════ */}
-        <section className="mt-14">
+        <section id="constats" className="mt-14 scroll-mt-28">
           <SectionTitle
             eyebrow="Les constats"
             title={`${result.findings.length} écart${result.findings.length > 1 ? "s" : ""} relevé${result.findings.length > 1 ? "s" : ""}, en quatre piliers`}
@@ -277,7 +307,7 @@ async function ScanReport({ target, level }: { target: string; level: ReadingLev
         </section>
 
         {/* ═══════════ DESTINATAIRES ═══════════ */}
-        <section className="mt-14">
+        <section id="destinataires" className="mt-14 scroll-mt-28">
           <SectionTitle
             eyebrow="Souveraineté"
             title="Qui reçoit les données de vos visiteurs"
@@ -290,13 +320,13 @@ async function ScanReport({ target, level }: { target: string; level: ReadingLev
         </section>
 
         {/* ═══════════ EXPOSITION ═══════════ */}
-        <section className="mt-14">
+        <section id="perspective" className="mt-14 scroll-mt-28">
           <SectionTitle eyebrow="Mise en perspective" title="Ce que cela représente" />
           <ExposureBox findings={result.findings} />
         </section>
 
         {/* ═══════════ LIMITES ═══════════ */}
-        <section className="mt-14">
+        <section id="limites" className="mt-14 scroll-mt-28">
           <SectionTitle
             eyebrow="Limites de cette analyse"
             title={`${notEvaluated.length} règles n'ont pas pu être évaluées`}

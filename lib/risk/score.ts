@@ -90,19 +90,4 @@ export function computeScore(findings: readonly Finding[]): ScoreResult {
   };
 }
 
-export function gradeColor(grade: string): string {
-  switch (grade) {
-    case "A":
-      return "#15803d";
-    case "B":
-      return "#4d7c0f";
-    case "C":
-      return "#b45309";
-    case "D":
-      return "#c2410c";
-    case "E":
-      return "#ba1a1a";
-    default:
-      return "#7f1d1d";
-  }
-}
+export { gradeColor } from "./grade";

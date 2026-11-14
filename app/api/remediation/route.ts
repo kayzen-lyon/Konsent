@@ -5,6 +5,7 @@ import { ScanError } from "@/lib/engine/scan";
 import { STACKS, type Stack, buildQuote, detectStack } from "@/lib/remediation/quote";
 import { computeExposure } from "@/lib/risk/exposure";
 import { getRule } from "@/lib/rulepack";
+import { RATE_RULES, limitAnonymousByIp } from "@/lib/security/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -19,6 +20,9 @@ export const dynamic = "force-dynamic";
  * le premier chiffre agir seul — ce que le garde-fou n°2 interdit.
  */
 async function handleGET(request: Request) {
+  const limited = await limitAnonymousByIp(request, RATE_RULES.remediation);
+  if (limited) return limited;
+
   const params = new URL(request.url).searchParams;
   const url = params.get("url");
   if (!url) {

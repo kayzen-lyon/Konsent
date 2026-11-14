@@ -9,6 +9,7 @@ import { ScanForm } from "@/components/ScanForm";
 import { HeroMotion } from "@/components/HeroMotion";
 import { Heart, Scale, ShieldCheck, Zap } from "@/components/site/icons";
 import { RULEPACK } from "@/lib/rulepack";
+import { FREE_TOOLS, toolHref } from "@/lib/tools/catalog";
 import { COOKIES } from "@/lib/seo/cookies";
 import {
   faqPageJsonLd,
@@ -17,6 +18,36 @@ import {
   webSiteJsonLd,
 } from "@/lib/seo/jsonld";
 import { TRACKERS } from "@/lib/trackers/db";
+
+const CMPS = [
+  "Axeptio",
+  "Didomi",
+  "OneTrust",
+  "Cookiebot",
+  "tarteaucitron",
+  "Sirdata",
+  "CookieYes",
+  "Usercentrics",
+  "iubenda",
+  "Complianz",
+];
+
+const STEPS = [
+  {
+    title: "Vous saisissez l'adresse",
+    body: "Aucun compte, aucune adresse e-mail, aucune carte. Juste le nom de domaine à analyser.",
+  },
+  {
+    title: "Nous observons comme un contrôleur",
+    body: "Avant tout choix, après un refus, après une acceptation : ce qui se dépose, ce qui part, et vers qui.",
+  },
+  {
+    title: "Vous recevez un plan d'action",
+    body: "Chaque écart avec sa référence, sa gravité, sa correction et son coût estimé. Imprimable, partageable, comparable.",
+  },
+];
+
+const AVAILABLE_TOOLS = FREE_TOOLS.filter((t) => t.available);
 
 const BLIND_SPOTS = [
   {
@@ -85,6 +116,14 @@ const FAQ_ITEMS = [
     a: "Chaque règle susceptible de produire un faux positif porte une note explicite décrivant sa limite, publiée sur sa fiche. Quand une page n'est pas exploitable — cas fréquent des sites rendus côté client — le moteur s'abstient de conclure plutôt que d'inventer un constat. Vous pouvez contester tout résultat.",
   },
   {
+    q: "Puis-je comparer mon site à celui d'un concurrent ?",
+    a: "Oui. Le comparateur lance les deux analyses en parallèle et les présente côte à côte : score, écarts communs, écarts propres à chacun et destinataires situés hors de l'Union européenne. Comme pour l'audit simple, rien n'est conservé.",
+  },
+  {
+    q: "Et ce qu'un scanner ne peut pas voir — registre, contrats, droits des personnes ?",
+    a: "Une analyse technique ne voit que ce que le site expose. Pour le reste, l'auto-évaluation propose une trentaine de questions avec leurs références légales et un plan d'action priorisé. Vos réponses ne quittent pas votre navigateur.",
+  },
+  {
     q: "Konsent dépose-t-il des traceurs ?",
     a: "Aucun. Ce site ne dépose pas un seul cookie, ne charge aucune ressource externe — ni police, ni script, ni image — et n'utilise aucun outil de mesure tiers. C'est pourquoi vous n'y voyez pas de bandeau. Un outil qui reproche le chargement de Google Fonts ne peut pas en charger.",
   },
@@ -106,7 +145,7 @@ export default function HomePage() {
           Gabarit Nexus : surtitres en pilule, promesse avec une phrase en
           terracotta, formulaire dans le héros, réassurances, signature, et
           à droite la démonstration animée d'un audit. */}
-      <section className="border-b border-line bg-paper px-4 pb-12 pt-10 sm:px-6 md:pb-16 md:pt-16 lg:px-8">
+      <section className="hero-glow border-b border-line bg-paper px-4 pb-12 pt-10 sm:px-6 md:pb-16 md:pt-16 lg:px-8">
         <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-16">
           <div className="rise">
             <ul className="mb-6 flex flex-wrap gap-2.5">
@@ -184,6 +223,91 @@ export default function HomePage() {
           <div className="rise order-last" style={{ animationDelay: "120ms" }}>
             <HeroMotion />
           </div>
+        </div>
+      </section>
+
+      {/* ═══════════════ COMPATIBLE AVEC TOUTES LES CMP ═══════════════ */}
+      <section aria-labelledby="cmp-titre" className="border-b border-line bg-surface-low">
+        <div className="mx-auto max-w-7xl px-5 py-8">
+          <h2 id="cmp-titre" className="tech text-center text-[11px] text-muted">
+            Audite les sites équipés de toutes les plateformes de consentement
+          </h2>
+          <ul className="mt-5 flex flex-wrap justify-center gap-x-8 gap-y-3">
+            {CMPS.map((name) => (
+              <li key={name} className="font-display text-base font-bold tracking-tight text-ink-2/70">
+                {name}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* ═══════════════════ COMMENT ÇA MARCHE ═══════════════════ */}
+      <section aria-labelledby="etapes-titre" className="mx-auto max-w-7xl px-5 py-20">
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="tech text-[10px] text-accent">Comment ça marche</p>
+          <h2 id="etapes-titre" className="display mt-3 text-3xl text-ink-2 sm:text-4xl">
+            Trois étapes, moins d&apos;une minute
+          </h2>
+        </div>
+        <ol className="mt-12 grid gap-5 md:grid-cols-3">
+          {STEPS.map((step, i) => (
+            <li
+              key={step.title}
+              className="reveal card-lift relative rounded-3xl border border-line bg-surface p-7 shadow-md"
+            >
+              <span
+                aria-hidden="true"
+                className="font-display flex h-11 w-11 items-center justify-center rounded-full bg-flame text-lg font-extrabold text-on-primary"
+              >
+                {i + 1}
+              </span>
+              <h3 className="mt-5 text-lg font-bold text-ink-2">{step.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted">{step.body}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      {/* ═══════════════════ OUTILS GRATUITS ═══════════════════ */}
+      <section aria-labelledby="outils-titre" className="border-y border-line bg-surface-low">
+        <div className="mx-auto max-w-7xl px-5 py-20">
+          <div className="mx-auto max-w-2xl text-center">
+            <p className="tech text-[10px] text-accent">Gratuits, sans inscription</p>
+            <h2 id="outils-titre" className="display mt-3 text-3xl text-ink-2 sm:text-4xl">
+              {AVAILABLE_TOOLS.length} outils pour aller plus loin
+            </h2>
+            <p className="mt-4 text-[15px] leading-relaxed text-muted">
+              Chacun rend son verdict immédiatement et ne conserve rien de ce que vous lui confiez.
+            </p>
+          </div>
+          <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {AVAILABLE_TOOLS.map((tool, i) => (
+              <li key={tool.slug} className={i === 0 ? "sm:col-span-2 lg:col-span-1 lg:row-span-2" : ""}>
+                <Link
+                  href={toolHref(tool)}
+                  className="reveal card-lift group flex h-full flex-col rounded-3xl border border-line bg-surface p-7 shadow-md"
+                >
+                  <span className="tech text-[10px] text-muted">
+                    {tool.processing === "navigateur" ? "Dans votre navigateur" : "Sur nos serveurs, à Paris"}
+                  </span>
+                  <span className="mt-3 text-lg font-bold leading-snug text-ink-2 group-hover:text-flame">
+                    {tool.title}
+                  </span>
+                  <span className="mt-2 text-sm italic leading-relaxed text-ink-2/80">
+                    « {tool.question} »
+                  </span>
+                  <span className="mt-3 flex-1 text-sm leading-relaxed text-muted">{tool.description}</span>
+                  <span className="font-display mt-5 inline-flex items-center gap-1.5 text-sm font-bold text-flame">
+                    Ouvrir l&apos;outil
+                    <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">
+                      →
+                    </span>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 

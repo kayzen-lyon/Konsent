@@ -3,6 +3,7 @@ import { withApiAuth } from "@/lib/api/auth";
 import { runVerdictScan } from "@/lib/engine/orchestrate";
 import { ScanError } from "@/lib/engine/scan";
 import { buildEvidenceBundle } from "@/lib/evidence/bundle";
+import { RATE_RULES, limitAnonymousByIp } from "@/lib/security/rate-limit";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -16,6 +17,9 @@ export const maxDuration = 60;
  * conformément à ce qu'annonce la politique de confidentialité.
  */
 async function handleGET(request: Request) {
+  const limited = await limitAnonymousByIp(request, RATE_RULES.evidence);
+  if (limited) return limited;
+
   const target = new URL(request.url).searchParams.get("url");
 
   if (!target) {
