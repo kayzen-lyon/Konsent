@@ -52,7 +52,14 @@ const QUICK_ACTIONS: readonly Omit<Option, "id" | "group">[] = [
 ];
 
 const DEBOUNCE_MS = 150;
+const PREFETCH_DELAY_MS = 120;
 const MAX_QUERY = 100;
+
+/** Chemin interne préchargeable (sans ancre), ou `null` pour toute autre adresse. */
+function internalPath(url: string): string | null {
+  if (!url.startsWith("/") || url.startsWith("//")) return null;
+  return url.split("#")[0] || "/";
+}
 
 function isEditable(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false;
@@ -177,6 +184,20 @@ export function CommandPalette() {
     const el = active >= 0 ? document.getElementById(options[active]?.id ?? "") : null;
     el?.scrollIntoView({ block: "nearest" });
   }, [active]);
+
+  // Précharge la page de l'option active (survol ou flèches) après un court
+  // délai : parcourir la liste ne déclenche pas une rafale de requêtes.
+  const prefetched = useRef(new Set<string>());
+  const activeUrl = open && active >= 0 ? options[active]?.url : undefined;
+  useEffect(() => {
+    const path = activeUrl ? internalPath(activeUrl) : null;
+    if (!path || prefetched.current.has(path)) return;
+    const timer = window.setTimeout(() => {
+      prefetched.current.add(path);
+      router.prefetch(path);
+    }, PREFETCH_DELAY_MS);
+    return () => window.clearTimeout(timer);
+  }, [activeUrl, router]);
 
   function go(url: string) {
     setOpen(false);

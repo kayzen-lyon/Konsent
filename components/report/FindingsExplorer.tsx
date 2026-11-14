@@ -46,6 +46,20 @@ const FilterContext = createContext<FilterState>({
  */
 const HIDDEN = "hidden print:block";
 
+/**
+ * Mode compact : chaque constat tient sur une ligne (titre, gravité, durée).
+ * Limité à `@media screen` — le papier reçoit toujours la vue détaillée, pour
+ * la même raison que les filtres. Une feuille locale plutôt qu'une classe
+ * utilitaire : le basculement porte sur des dizaines d'éléments marqués
+ * `.finding-detail` par le rendu serveur.
+ */
+const COMPACT_CSS = `@media screen {
+[data-compact="true"] .finding-detail { display: none !important; }
+[data-compact="true"] .finding { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem; padding-top: 0.625rem; padding-bottom: 0.625rem; }
+[data-compact="true"] .finding-main { flex: 1 1 16rem; }
+[data-compact="true"] .finding-title { margin-top: 0; }
+}`;
+
 export function FindingGate({ ruleId, children }: { ruleId: string; children: React.ReactNode }) {
   const { active, visible } = useContext(FilterContext);
   return <div className={active && !visible.has(ruleId) ? HIDDEN : undefined}>{children}</div>;
@@ -101,6 +115,7 @@ export function FindingsExplorer({
   const [severities, setSeverities] = useState<ReadonlySet<Severity>>(new Set());
   const [pillarSel, setPillarSel] = useState<ReadonlySet<string>>(new Set());
   const [query, setQuery] = useState("");
+  const [compact, setCompact] = useState(false);
   const searchId = useId();
   useEffect(() => setReady(true), []);
 
@@ -162,6 +177,18 @@ export function FindingsExplorer({
             </fieldset>
           </div>
 
+          <fieldset className="mt-4">
+            <legend className="tech text-[10px] text-muted">Affichage des constats</legend>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <Toggle pressed={!compact} onClick={() => setCompact(false)}>
+                Détaillé
+              </Toggle>
+              <Toggle pressed={compact} onClick={() => setCompact(true)}>
+                Compact
+              </Toggle>
+            </div>
+          </fieldset>
+
           <div className="mt-4 flex flex-wrap items-end gap-4">
             <div className="min-w-0 flex-1">
               <label htmlFor={searchId} className="tech text-[10px] text-muted">
@@ -198,10 +225,14 @@ export function FindingsExplorer({
             {state.active ? (
               <span className="text-muted"> L&apos;impression restitue toujours l&apos;ensemble des constats.</span>
             ) : null}
+            {compact ? (
+              <span className="text-muted"> Vue compacte : une ligne par constat ; l&apos;impression reste détaillée.</span>
+            ) : null}
           </p>
         </div>
       ) : null}
-      {children}
+      <style>{COMPACT_CSS}</style>
+      <div data-compact={compact ? "true" : undefined}>{children}</div>
     </FilterContext.Provider>
   );
 }

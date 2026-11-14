@@ -298,3 +298,55 @@ revoke all on function purge_expired_history() from public;
 create index if not exists login_tokens_email_idx on login_tokens (email);
 create index if not exists monitored_domains_orphan_email_idx
   on monitored_domains (alert_email) where account_id is null;
+
+-- ═══════════════════════════════ surveillance : confirmation d'adresse ══════
+-- Double opt-in de l'adresse d'alerte. Tant que `alert_email_confirmed_at`
+-- est nul, le cron n'envoie AUCUN courriel à cette adresse : sans cela,
+-- quiconque pourrait inscrire l'adresse d'un tiers et lui faire recevoir des
+-- alertes qu'il n'a jamais demandées. Le jeton n'est stocké que sous forme
+-- d'empreinte SHA-256 et expire au bout de 48 h.
+alter table monitored_domains add column if not exists alert_email_confirmed_at timestamptz;
+alter table monitored_domains add column if not exists alert_confirm_hash text;
+alter table monitored_domains add column if not exists alert_confirm_expires_at timestamptz;
+create unique index if not exists monitored_domains_alert_confirm_idx
+  on monitored_domains (alert_confirm_hash) where alert_confirm_hash is not null;
+
+-- Reprise de l'existant : une adresse d'alerte identique à celle du compte
+-- propriétaire a déjà été prouvée par le lien de connexion. Les autres
+-- devront être confirmées. Idempotent.
+update monitored_domains d
+  set alert_email_confirmed_at = now()
+  from accounts a
+  where d.account_id = a.id
+    and d.alert_email_confirmed_at is null
+    and lower(d.alert_email) = lower(a.email);
+
+-- ═══════════════════════════════════════ surveillance : webhooks ═══════════
+-- Un webhook d'alerte au plus par domaine. Le secret de signature est stocké
+-- tel quel : il sert à SIGNER (HMAC), on ne peut donc pas n'en garder qu'une
+-- empreinte. Il n'est montré qu'une fois, à la création, et n'est jamais
+-- exporté. Il disparaît avec le domaine (cascade).
+create table if not exists alert_webhooks (
+  domain_id        uuid primary key references monitored_domains (id) on delete cascade,
+  url              text not null check (url like 'https://%' and length(url) <= 2048),
+  kind             text not null check (kind in ('slack', 'teams', 'generic')),
+  secret           text not null,
+  created_at       timestamptz not null default now(),
+  updated_at       timestamptz not null default now(),
+  last_attempt_at  timestamptz,
+  last_status      text
+);
+
+-- ═══════════════════════════════════════ surveillance : plan d'action ══════
+-- Suivi, constat par constat, de la correction déclarée par le client.
+-- « Corrigé » est une DÉCLARATION : la prochaine analyse la confronte à ce
+-- qu'elle observe, et l'espace signale « toujours observé » le cas échéant.
+create table if not exists action_items (
+  domain_id   uuid not null references monitored_domains (id) on delete cascade,
+  rule_id     text not null check (length(rule_id) between 1 and 120),
+  status      text not null default 'open' check (status in ('open', 'fixed')),
+  note        text not null default '' check (char_length(note) <= 500),
+  fixed_at    timestamptz,
+  updated_at  timestamptz not null default now(),
+  primary key (domain_id, rule_id)
+);

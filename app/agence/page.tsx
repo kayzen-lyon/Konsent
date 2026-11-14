@@ -258,6 +258,21 @@ async function AgencyPanel() {
         quota={DOMAIN_QUOTA[account.plan]}
         emptyHint="Aucun domaine rattaché. Un domaine devient vôtre lorsqu'il est inscrit à la surveillance depuis une session connectée ; ceux de vos clients apparaissent ici avec leur nom."
       />
+      {domains.length > 0 ? (
+        <div className="flex flex-wrap items-center gap-3">
+          <a
+            href="/api/agence/export"
+            download
+            className="font-display btn-primary inline-flex min-h-11 items-center rounded-full bg-flame px-5 text-sm font-bold text-white"
+          >
+            Exporter le portefeuille (CSV)
+          </a>
+          <p className="text-[13px] text-muted">
+            Client, domaine, dernier score, note, date, écarts critiques et alertes — séparateur
+            « ; », lisible directement dans Excel.
+          </p>
+        </div>
+      ) : null}
     </section>
   );
 }

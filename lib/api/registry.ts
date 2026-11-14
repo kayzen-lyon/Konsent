@@ -94,6 +94,12 @@ export const INTERNAL_ROUTES: readonly string[] = [
   "/api/compte/export",
   "/api/compte/supprimer",
   "/api/compte/sessions",
+  // Surveillance : export du portefeuille, webhooks, plan d'action (session
+  // + origine) et lien de confirmation de l'adresse d'alerte (reçu par e-mail).
+  "/api/agence/export",
+  "/api/surveillance/webhook",
+  "/api/surveillance/plan",
+  "/api/surveillance/confirmer",
   "/api/auth/lien",
   "/api/auth/session",
   // Fiche de contact de l'éditeur. Ne sert aucune donnée d'audit et ne

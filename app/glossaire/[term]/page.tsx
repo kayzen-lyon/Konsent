@@ -5,10 +5,13 @@ import type { Metadata } from "next";
 import { GLOSSARY, getTerm } from "@/lib/seo/glossary";
 import { SeeAlso } from "@/components/SeeAlso";
 import { relatedForTerm } from "@/lib/seo/related";
+import { TermDiagram } from "./diagrams";
 
 export function generateStaticParams() {
   return GLOSSARY.map((t) => ({ term: t.slug }));
 }
+
+export const dynamicParams = false;
 
 export async function generateMetadata({
   params,
@@ -59,6 +62,18 @@ export default async function TermPage({ params }: { params: Promise<{ term: str
           </p>
         ))}
       </div>
+
+      <section
+        aria-labelledby="exemple-titre"
+        className="mt-8 rounded-lg border-l-2 border-flame bg-surface p-5 ring-1 ring-line shadow-md"
+      >
+        <h2 id="exemple-titre" className="tech text-[10px] text-flame">
+          Exemple concret
+        </h2>
+        <p className="mt-2 text-[15px] leading-relaxed text-ink-2">{entry.example}</p>
+      </section>
+
+      <TermDiagram slug={entry.slug} />
 
       {entry.reference ? (
         <p className="mt-8 border-l-2 border-secondary pl-4 text-[13.5px] leading-relaxed text-muted">

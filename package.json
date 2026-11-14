@@ -7,7 +7,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "check:rulepack": "node scripts/check-rulepack.mjs",
     "check:csp": "node scripts/check-csp.mjs",
@@ -21,7 +21,7 @@
     "test:mcp": "tsx scripts/test-mcp.mjs",
     "test:worker": "tsx scripts/test-worker.mjs",
     "test:report": "tsx scripts/test-report.mjs",
-    "check": "npm run check:rulepack && npm run check:csp && npm run check:sovereignty && npm run typecheck && npm run test:html && npm run test:fixtures && npm run test:tcf && npm run test:jurisdictions && npm run test:billing && npm run test:accounts && npm run test:mcp && npm run test:worker && npm run test:report && npm run test:api && npm run test:tenancy && npm run test:docs && npm run test:contact && npm run test:legal && npm run test:rate-limit && npm run test:account-rights",
+    "check": "npm run check:rulepack && npm run check:csp && npm run check:sovereignty && npm run typecheck && npm run test:html && npm run test:fixtures && npm run test:tcf && npm run test:jurisdictions && npm run test:billing && npm run test:accounts && npm run test:mcp && npm run test:worker && npm run test:report && npm run test:api && npm run test:tenancy && npm run test:docs && npm run test:contact && npm run test:legal && npm run test:rate-limit && npm run test:account-rights && npm run test:monitoring-plus && npm run lint && npm run check:contrast",
     "test:api": "tsx scripts/test-api.mjs",
     "test:tenancy": "tsx scripts/test-tenancy.mjs",
     "test:docs": "tsx scripts/test-docs.mjs",
@@ -30,7 +30,10 @@
     "test:legal": "tsx scripts/test-legal.mjs",
     "test:rate-limit": "tsx scripts/test-rate-limit.mjs",
     "db:schema": "node scripts/db-schema.mjs",
-    "test:account-rights": "tsx scripts/test-account-rights.mjs"
+    "test:account-rights": "tsx scripts/test-account-rights.mjs",
+    "check:contrast": "node scripts/check-contrast.mjs",
+    "test:e2e": "playwright test",
+    "test:monitoring-plus": "tsx scripts/test-monitoring-plus.mjs"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.2.1",
@@ -41,10 +44,15 @@
     "undici": "^7.30.2"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
+    "@eslint/eslintrc": "3.3.7",
+    "@playwright/test": "1.65.1",
     "@tailwindcss/postcss": "4.3.3",
     "@types/node": "22.10.5",
     "@types/react": "19.0.7",
     "@types/react-dom": "19.0.3",
+    "eslint": "9.39.5",
+    "eslint-config-next": "15.5.29",
     "jsqr": "^1.4.0",
     "qrcode": "^1.5.4",
     "tailwindcss": "4.3.3",

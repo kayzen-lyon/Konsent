@@ -30,7 +30,7 @@ inputs:
   api-url:
     description: "Instance Konsent à interroger."
     required: false
-    default: "https://konsent-zeta.vercel.app"
+    default: "https://konsent.kayzen-lyon.com"
 
 outputs:
   score:

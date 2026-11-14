@@ -1,0 +1,155 @@
+import { ImageResponse } from "next/og";
+import { getTool } from "@/lib/tools/catalog";
+
+/**
+ * Images de partage des outils gratuits (Open Graph, Twitter).
+ *
+ * Une seule mise en page, déclinée par outil : le titre et la question à
+ * laquelle il répond. Charte Kayzen (marine, terracotta) et police par
+ * défaut du moteur, comme l'image racine : rien n'est téléchargé au rendu.
+ */
+export const OG_SIZE = { width: 1200, height: 630 };
+export const OG_CONTENT_TYPE = "image/png";
+
+const NAVY = "#132944";
+const TERRACOTTA = "#B7481F";
+const SOFT = "#ffb399";
+
+export interface OgTool {
+  title: string;
+  question: string;
+}
+
+/**
+ * L'analyse en lot n'est pas au catalogue des outils libres (elle relance
+ * des audits serveur) mais reste gratuite et sans inscription : sa fiche
+ * de partage et ses données structurées partent de ces textes.
+ */
+export const BULK_SCAN_TOOL = {
+  slug: "analyse-en-lot",
+  title: "Analyse en lot",
+  question: "Comment auditer plusieurs sites d'un coup ?",
+  description:
+    "Analysez jusqu'à 20 sites d'un coup : note, score, écarts critiques, destinataires hors EEE, dans un tableau triable exportable en CSV ou JSON. Rien n'est conservé côté serveur.",
+  href: "/analyse-en-lot",
+  processing: "serveur",
+} as const;
+
+function resolve(tool: string | OgTool): OgTool {
+  if (typeof tool !== "string") return tool;
+  const found = getTool(tool);
+  if (!found) throw new Error(`Outil inconnu pour l'image de partage : ${tool}`);
+  return found;
+}
+
+/** Texte alternatif de l'image d'un outil. */
+export function toolOgAlt(tool: string | OgTool): string {
+  const t = resolve(tool);
+  return `${t.title} — outil gratuit Konsent. ${t.question}`;
+}
+
+/** Image de partage d'un outil, par son identifiant du catalogue ou ses textes. */
+export function toolOgImage(tool: string | OgTool): ImageResponse {
+  const t = resolve(tool);
+  const titleSize = t.title.length > 42 ? 58 : 68;
+
+  return new ImageResponse(
+    (
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          padding: 72,
+          background: NAVY,
+          color: "#ffffff",
+          fontFamily: "sans-serif",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
+          <svg width="52" height="52" viewBox="0 0 32 32" fill="none">
+            <path
+              d="M16 3.2 27 7.6v8.2c0 6.4-4.3 11.6-11 14.2-6.7-2.6-11-7.8-11-14.2V7.6L16 3.2Z"
+              fill={TERRACOTTA}
+              opacity="0.35"
+            />
+            <path
+              d="M16 3.2 27 7.6v8.2c0 6.4-4.3 11.6-11 14.2-6.7-2.6-11-7.8-11-14.2V7.6L16 3.2Z"
+              stroke={SOFT}
+              strokeWidth="2"
+              strokeLinejoin="round"
+            />
+            <path
+              d="m11.4 16.2 3.2 3.3 6-6.4"
+              stroke={SOFT}
+              strokeWidth="2.4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          <div style={{ fontSize: 30, fontWeight: 800, letterSpacing: -1 }}>KONSENT</div>
+          <div
+            style={{
+              display: "flex",
+              marginLeft: 12,
+              padding: "8px 18px",
+              borderRadius: 9999,
+              border: `2px solid ${SOFT}`,
+              color: SOFT,
+              fontSize: 20,
+              fontWeight: 700,
+            }}
+          >
+            Outil gratuit
+          </div>
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 26 }}>
+          <div
+            style={{
+              display: "flex",
+              fontSize: titleSize,
+              fontWeight: 800,
+              lineHeight: 1.06,
+              letterSpacing: -2.5,
+            }}
+          >
+            {t.title}
+          </div>
+          <div
+            style={{
+              display: "flex",
+              fontSize: 36,
+              lineHeight: 1.25,
+              color: SOFT,
+              maxWidth: 1000,
+            }}
+          >
+            {t.question}
+          </div>
+        </div>
+
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div style={{ display: "flex", fontSize: 26, color: "rgba(255,255,255,0.72)" }}>
+            Konsent · outil gratuit, sans inscription
+          </div>
+          <div
+            style={{
+              display: "flex",
+              padding: "14px 30px",
+              borderRadius: 9999,
+              background: TERRACOTTA,
+              fontSize: 24,
+              fontWeight: 700,
+            }}
+          >
+            konsent.kayzen-lyon.com
+          </div>
+        </div>
+      </div>
+    ),
+    { ...OG_SIZE },
+  );
+}

@@ -45,6 +45,21 @@ export function ReportActions({ target, hostname }: { target: string; hostname: 
         </svg>
         Données JSON
       </a>
+      {/* Liens pleins, sans préchargement : chaque vue relance une analyse. */}
+      <a href={`/scan/presentation?url=${enc}`} className={pill}>
+        <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <rect x="3" y="4" width="18" height="12" rx="2" />
+          <path d="M12 16v4M8 20h8" />
+        </svg>
+        Présenter
+      </a>
+      <a href={`/scan/synthese?url=${enc}`} className={pill}>
+        <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z" />
+          <path d="M14 3v5h5M9 13h6M9 17h4" />
+        </svg>
+        Synthèse 1 page
+      </a>
       <Link href={`/comparer?a=${enc}`} className={pill}>
         Comparer à un autre site
       </Link>

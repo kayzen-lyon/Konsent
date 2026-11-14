@@ -21,11 +21,34 @@ import { writeFileSync } from "node:fs";
 import QRCode from "qrcode";
 
 const EDITOR = {
+  tradeName: "KAYZEN",
+  director: "Tarek BELHADJ",
   street: "6 rue Pierre Termier",
   postalCode: "69009",
   city: "Lyon",
+  phoneE164: "+33487776861",
+  email: "contact@kayzen-lyon.fr",
   productSite: "https://konsent.kayzen-lyon.com",
 };
+
+/**
+ * Carte de visite encodée DANS le QR code (vCard 3.0) : l'appareil photo du
+ * téléphone propose « Ajouter le contact » sans rien télécharger ni ouvrir
+ * de page. Version volontairement courte : un QR plus dense se lit mal à
+ * l'écran. Doit rester cohérente avec lib/contact/vcard.ts.
+ */
+const vcardText = [
+  "BEGIN:VCARD",
+  "VERSION:3.0",
+  `N:BELHADJ;Tarek;;;`,
+  `FN:${EDITOR.director}`,
+  `ORG:${EDITOR.tradeName}`,
+  `TEL;TYPE=WORK,VOICE:${EDITOR.phoneE164}`,
+  `EMAIL;TYPE=WORK:${EDITOR.email}`,
+  `ADR;TYPE=WORK:;;${EDITOR.street};${EDITOR.city};;${EDITOR.postalCode};France`,
+  `URL:${EDITOR.productSite}`,
+  "END:VCARD",
+].join(String.fromCharCode(13, 10));
 
 /**
  * Adresse Maps construite depuis l'adresse postale, par l'API d'URL
@@ -53,6 +76,7 @@ const TARGETS = [
   { key: "site", label: "Site Konsent", url: EDITOR.productSite },
   { key: "maps", label: "Nous situer", url: mapsUrl },
   { key: "reviews", label: "Avis Google", url: reviewsUrl },
+  { key: "vcard", label: "Carte de visite", url: vcardText },
 ];
 
 /** Fusionne les modules noirs contigus d'une ligne en segments horizontaux. */

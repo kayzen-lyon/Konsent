@@ -15,7 +15,8 @@ export function GET() {
     `Expires: ${expires}`,
     "Preferred-Languages: fr, en",
     `Canonical: ${EDITOR.productSite}/.well-known/security.txt`,
-    `Policy: ${EDITOR.productSite}/mentions-legales#signalement`,
+    `Policy: ${EDITOR.productSite}/securite`,
+    `Acknowledgments: ${EDITOR.productSite}/securite#remerciements`,
     "",
   ].join("\n");
   return new Response(body, {

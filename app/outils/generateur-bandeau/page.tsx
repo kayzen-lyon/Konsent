@@ -2,6 +2,9 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { Disclaimer, SectionTitle } from "@/components/primitives";
 import BannerGenerator from "@/components/tools/BannerGenerator";
+import { JsonLd } from "@/components/JsonLd";
+import { toolJsonLd } from "@/lib/seo/jsonld";
+import { getTool } from "@/lib/tools/catalog";
 
 export const metadata: Metadata = {
   title: "Générateur de bandeau cookies conforme CNIL",
@@ -47,6 +50,7 @@ const RULES: { title: string; body: string }[] = [
 export default function BannerGeneratorPage() {
   return (
     <div className="mx-auto max-w-6xl px-6 py-16">
+      <JsonLd data={toolJsonLd(getTool("generateur-bandeau")!)} />
       <p className="tech text-[10px] text-accent">Outil libre</p>
       <h1 className="display mt-2 text-4xl text-ink-2">
         Générateur de bandeau cookies conforme CNIL

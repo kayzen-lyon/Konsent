@@ -214,7 +214,6 @@ const stripComments = (src) => src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s
 
 /** Pages portant plusieurs <h1> dans des branches MUTUELLEMENT EXCLUSIVES. */
 const H1_EXEMPTIONS = {
-  "app/scan/page.tsx": "panneau d'erreur ou rapport — jamais les deux à la fois",
   "app/devis/page.tsx": "panneau d'erreur ou devis — jamais les deux à la fois",
   "app/documents/[slug]/page.tsx": "panneau d'erreur ou document — jamais les deux à la fois",
 };

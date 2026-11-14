@@ -2,6 +2,9 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { Disclaimer, SectionTitle } from "@/components/primitives";
 import SecurityHeadersChecker from "@/components/tools/SecurityHeadersChecker";
+import { JsonLd } from "@/components/JsonLd";
+import { toolJsonLd } from "@/lib/seo/jsonld";
+import { getTool } from "@/lib/tools/catalog";
 
 export const metadata: Metadata = {
   title: "Vérificateur d'en-têtes de sécurité HTTP",
@@ -12,6 +15,7 @@ export const metadata: Metadata = {
 export default function SecurityHeadersPage() {
   return (
     <div className="mx-auto max-w-5xl px-6 py-16">
+      <JsonLd data={toolJsonLd(getTool("en-tetes-securite")!)} />
       <p className="tech text-[10px] text-accent">Outil libre</p>
       <h1 className="display mt-2 text-4xl text-ink-2">Vérificateur d&apos;en-têtes de sécurité</h1>
       <p className="mt-5 max-w-3xl text-lg leading-relaxed text-muted">

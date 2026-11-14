@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Disclaimer, SectionTitle } from "@/components/primitives";
 import RightsResponseGenerator from "@/components/tools/RightsResponseGenerator";
+import { JsonLd } from "@/components/JsonLd";
+import { toolJsonLd } from "@/lib/seo/jsonld";
+import { getTool } from "@/lib/tools/catalog";
 
 export const metadata: Metadata = {
   title: "Modèles de réponse aux demandes de droits RGPD",
@@ -11,6 +14,7 @@ export const metadata: Metadata = {
 export default function RightsResponsePage() {
   return (
     <div className="mx-auto max-w-6xl px-6 py-16">
+      <JsonLd data={toolJsonLd(getTool("reponse-droits")!)} />
       <p className="tech text-[10px] text-accent">Outil libre</p>
       <h1 className="display mt-2 text-4xl text-ink-2">Répondre à une demande d&apos;exercice de droits</h1>
       <p className="mt-5 max-w-3xl text-lg leading-relaxed text-muted">

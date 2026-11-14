@@ -14,7 +14,8 @@ import { Logo } from "@/components/Logo";
  * Purement illustratif : l'ensemble est masqué aux technologies
  * d'assistance, le texte du héros portant déjà le propos. Un bouton permet
  * de mettre la boucle en pause (RGAA 13.8 : un mouvement de plus de 5 s doit
- * pouvoir être arrêté, `prefers-reduced-motion` ne suffit pas).
+ * pouvoir être arrêté, `prefers-reduced-motion` ne suffit pas). Une
+ * transcription dépliable, sous l'animation, en décrit chaque étape en texte.
  */
 
 type Level = "crit" | "warn" | "ok";
@@ -33,7 +34,7 @@ const DOT: Record<Level, string> = {
   ok: "bg-ok",
 };
 const TAG: Record<Level, string> = {
-  crit: "bg-crit-bg text-crit",
+  crit: "bg-crit-bg text-crit-text",
   warn: "bg-warn-bg text-warn",
   ok: "bg-ok-bg text-ok",
 };
@@ -93,7 +94,8 @@ ${["@media (prefers-reduced-motion: reduce) {", 'html[data-motion="reduce"] {']
 export function HeroMotion() {
   const [paused, setPaused] = useState(false);
   return (
-    <div className="relative mx-auto w-full max-w-[540px] py-6">
+    <div className="mx-auto w-full max-w-[540px]">
+    <div className="relative py-6">
       <style>{CSS}</style>
       <div aria-hidden="true" className={paused ? "km-paused" : undefined}>
 
@@ -208,6 +210,58 @@ export function HeroMotion() {
         </svg>
         {paused ? "Reprendre l'animation" : "Mettre l'animation en pause"}
       </button>
+    </div>
+
+      {/* Transcription : équivalent textuel de l'animation (RGAA 4.1 / 13.8),
+          accessible à tous, y compris quand l'animation est masquée aux
+          technologies d'assistance. */}
+      <details className="group mt-6 rounded-2xl border border-line bg-surface text-sm text-ink-2">
+        <summary className="font-display flex list-none [&::-webkit-details-marker]:hidden min-h-11 cursor-pointer items-center gap-2 rounded-2xl px-4 text-xs font-semibold text-muted transition-colors hover:text-ink-2">
+          <svg
+            viewBox="0 0 24 24"
+            className="h-3.5 w-3.5 shrink-0 transition-transform group-open:rotate-90"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path d="M9 6l6 6-6 6z" />
+          </svg>
+          Lire la description de l&apos;animation
+        </summary>
+        <div className="border-t border-line px-4 pb-4 pt-3 leading-relaxed">
+          <p>
+            L&apos;animation montre, en boucle de 11 secondes, un audit Konsent dans une fenêtre
+            de navigateur ouverte sur konsent.kayzen-lyon.com/scan. Les données sont fictives.
+          </p>
+          <ol className="mt-2 list-decimal space-y-1 pl-5">
+            <li>L&apos;adresse « https://monsite.fr » est saisie lettre par lettre.</li>
+            <li>
+              Le site est relié à Konsent par une ligne pointillée ; une barre de progression
+              avance avec le message « Observation avant consentement… ».
+            </li>
+            <li>
+              L&apos;analyse se termine : « Analyse terminée, 2 critiques, 1 écart ». Un anneau se
+              remplit et affiche le score de {SCORE} sur 100.
+            </li>
+            <li>
+              Cinq constats apparaissent un à un :
+              <ul className="mt-1 list-disc space-y-0.5 pl-5">
+                {FINDINGS.map((f) => (
+                  <li key={f.label}>
+                    {f.label} — {f.tag.toLowerCase()}.
+                  </li>
+                ))}
+              </ul>
+            </li>
+            <li>
+              Deux pastilles rappellent que Konsent est indépendant de toute plateforme de
+              gestion du consentement et donne un résultat immédiat, sans inscription.
+            </li>
+          </ol>
+          <p className="mt-2 text-muted">
+            Si les animations sont réduites, seul l&apos;état final est affiché.
+          </p>
+        </div>
+      </details>
     </div>
   );
 }

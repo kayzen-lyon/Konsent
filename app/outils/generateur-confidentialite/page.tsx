@@ -2,6 +2,9 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { Disclaimer, SectionTitle } from "@/components/primitives";
 import PrivacyPolicyGenerator from "@/components/tools/PrivacyPolicyGenerator";
+import { JsonLd } from "@/components/JsonLd";
+import { toolJsonLd } from "@/lib/seo/jsonld";
+import { getTool } from "@/lib/tools/catalog";
 
 export const metadata: Metadata = {
   title: "Générateur de politique de confidentialité RGPD",
@@ -31,6 +34,7 @@ const POINTS: { title: string; body: string }[] = [
 export default function PrivacyPolicyGeneratorPage() {
   return (
     <div className="mx-auto max-w-7xl px-6 py-16">
+      <JsonLd data={toolJsonLd(getTool("generateur-confidentialite")!)} />
       <p className="tech text-[10px] text-accent">Outil libre</p>
       <h1 className="display mt-2 text-4xl text-ink-2">
         Générateur de politique de confidentialité RGPD

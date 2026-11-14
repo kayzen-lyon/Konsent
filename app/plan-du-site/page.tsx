@@ -15,6 +15,7 @@ const SECTIONS: { title: string; links: [string, string][] }[] = [
     title: "Analyser",
     links: [
       ["/", "Accueil et audit gratuit"],
+      ["/facile-a-lire", "Version facile à lire"],
       ["/fonctionnalites", "Fonctionnalités"],
       ["/surveillance", "Surveillance continue"],
       ["/agence", "Vue portefeuille pour les agences"],
@@ -32,6 +33,9 @@ const SECTIONS: { title: string; links: [string, string][] }[] = [
       ["/auto-evaluation", "Auto-évaluation RGPD"],
       ["/badge", "Badge Konsent pour votre site"],
       ["/analyse-en-lot", "Analyse en lot"],
+      ["/outils/registre-traitements", "Générateur de registre des traitements"],
+      ["/outils/procedure-cnil", "Simulateur de procédure CNIL"],
+      ["/integrations", "Intégrations : API, MCP, GitHub"],
       ["/outils/generateur-mentions-legales", "Générateur de mentions légales"],
       ["/outils/generateur-confidentialite", "Générateur de politique de confidentialité"],
       ["/recherche", "Recherche"],
@@ -76,6 +80,7 @@ const SECTIONS: { title: string; links: [string, string][] }[] = [
       ["/confidentialite", "Politique de confidentialité"],
       ["/confidentialite#cookies", "Cookies et stockage local"],
       ["/accessibilite", "Déclaration d'accessibilité"],
+      ["/securite", "Signaler une vulnérabilité"],
     ],
   },
 ];

@@ -2,6 +2,9 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { Disclaimer, SectionTitle } from "@/components/primitives";
 import TcfDecoderForm from "@/components/TcfDecoderForm";
+import { JsonLd } from "@/components/JsonLd";
+import { toolJsonLd } from "@/lib/seo/jsonld";
+import { getTool } from "@/lib/tools/catalog";
 
 export const metadata: Metadata = {
   title: "Décodeur de chaîne de consentement TCF",
@@ -12,6 +15,7 @@ export const metadata: Metadata = {
 export default function TcfDecoderPage() {
   return (
     <div className="mx-auto max-w-4xl px-6 py-16">
+      <JsonLd data={toolJsonLd(getTool("decodeur-tcf")!)} />
       <p className="text-sm font-medium uppercase tracking-wide text-accent">Outil libre</p>
       <h1 className="mt-2 text-4xl font-semibold tracking-tight text-ink">
         Décodeur de chaîne de consentement TCF
@@ -19,13 +23,13 @@ export default function TcfDecoderPage() {
       <p className="mt-5 text-lg leading-relaxed text-slate-600">
         Quand un visiteur clique sur votre bandeau, son choix est encodé dans une chaîne de
         caractères transmise à des centaines de régies publicitaires. Cette chaîne est lisible.
-        Collez-la ci-dessous pour voir ce qu'elle dit vraiment.
+        Collez-la ci-dessous pour voir ce qu&apos;elle dit vraiment.
       </p>
 
       <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 px-5 py-4 text-sm leading-relaxed text-slate-600">
         Le décodage se fait <strong className="text-ink">dans votre navigateur</strong>. La chaîne
-        n'est envoyée nulle part, n'est pas enregistrée, et ne nous parvient jamais. Aucun e-mail
-        n'est demandé.
+        n&apos;est envoyée nulle part, n&apos;est pas enregistrée, et ne nous parvient jamais. Aucun e-mail
+        n&apos;est demandé.
       </div>
 
       <TcfDecoderForm />

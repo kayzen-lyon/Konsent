@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { SelfAssessment } from "@/components/SelfAssessment";
 import { Disclaimer } from "@/components/primitives";
 import { QUESTIONS, THEMES } from "@/lib/self-assessment/questions";
+import { JsonLd } from "@/components/JsonLd";
+import { toolJsonLd } from "@/lib/seo/jsonld";
+import { getTool } from "@/lib/tools/catalog";
 
 export const metadata: Metadata = {
   title: "Auto-évaluation RGPD gratuite",
@@ -13,6 +16,7 @@ export const metadata: Metadata = {
 export default function SelfAssessmentPage() {
   return (
     <>
+      <JsonLd data={toolJsonLd(getTool("auto-evaluation")!)} />
       <section className="grid-bg-dark bg-ink">
         <div className="mx-auto max-w-7xl px-5 py-14">
           <p className="tech text-[10px] text-flame-soft">Outil gratuit</p>

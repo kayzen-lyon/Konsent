@@ -7,10 +7,14 @@ import { InvitationPrompt } from "@/components/InvitationPrompt";
 import { DeleteAccount } from "@/components/account/DeleteAccount";
 import { ScoreHistory } from "@/components/account/ScoreHistory";
 import { SessionLog } from "@/components/account/SessionLog";
+import { ActionPlan } from "@/components/monitoring/ActionPlan";
+import { WebhookSettings } from "@/components/monitoring/WebhookSettings";
 import { Disclaimer, SectionTitle } from "@/components/primitives";
 import { SESSION_COOKIE, getAccounts } from "@/lib/accounts";
 import { domainQuotaFor } from "@/lib/agency/tenancy";
-import { getStorage } from "@/lib/storage";
+import { buildActionPlan } from "@/lib/monitoring/action-plan";
+import { SEVERITY_LABELS } from "@/lib/rulepack";
+import { getStorage, type ActionItem, type AlertWebhookView } from "@/lib/storage";
 import { PLANS, getPlan } from "@/lib/billing/plans";
 import { misconfigured, readiness } from "@/lib/billing/readiness";
 
@@ -77,7 +81,8 @@ export default async function AccountPage({
 
   // Historique : une requête par domaine, bornée — le quota de domaines
   // d'un compte reste petit.
-  const [histories, alertCounts, sessions, children] = await Promise.all([
+  const domainIds = domains.map((d) => d.id);
+  const [histories, alertCounts, sessions, children, webhooks, actionItems] = await Promise.all([
     storage.available
       ? Promise.all(
           domains.map((d) =>
@@ -93,7 +98,33 @@ export default async function AccountPage({
       : Promise.resolve({} as Record<string, number>),
     accounts.sessionsFor(account.id, token).catch(() => []),
     accounts.subAccounts(account.id).catch(() => []),
+    storage.available
+      ? storage.webhooksFor(domainIds).catch(() => [] as readonly AlertWebhookView[])
+      : Promise.resolve([] as readonly AlertWebhookView[]),
+    storage.available
+      ? storage.actionItems(domainIds).catch(() => [] as readonly ActionItem[])
+      : Promise.resolve([] as readonly ActionItem[]),
   ]);
+
+  // La dernière analyse est le dernier point de l'historique, déjà chargé.
+  const plans = domains.map((d, i) => {
+    const latest = (histories[i] ?? []).at(-1) ?? null;
+    return {
+      domain: d,
+      scannedAt: latest?.scannedAt ?? null,
+      rows: buildActionPlan(
+        latest,
+        actionItems.filter((item) => item.domainId === d.id),
+      ).map((entry) => ({
+        ruleId: entry.ruleId,
+        title: entry.title,
+        severityLabel: entry.severity ? SEVERITY_LABELS[entry.severity] : null,
+        occurrences: entry.occurrences,
+        state: entry.state,
+        note: entry.note,
+      })),
+    };
+  });
 
   const deletionError = DELETION_ERRORS[param("suppression") ?? ""] ?? null;
 
@@ -160,9 +191,70 @@ export default async function AccountPage({
         )}
       </section>
 
-      <section className="mt-12">
+      <section className="mt-12" id="plan-action">
         <SectionTitle
           eyebrow="02"
+          title="Plan d'action"
+          description="Les constats de la dernière analyse de chaque domaine. Cochez ceux que vous avez corrigés et notez ce qui a été fait : la prochaine analyse confrontera votre déclaration à ce qu'elle observe."
+        />
+        {domains.length === 0 ? (
+          <p className="text-[15px] text-muted">
+            Aucun domaine surveillé : le plan d&apos;action apparaîtra ici après la première analyse.
+          </p>
+        ) : (
+          <div className="grid gap-4">
+            {plans.map((p) => (
+              <ActionPlan
+                key={p.domain.id}
+                domainId={p.domain.id}
+                hostname={p.domain.hostname}
+                scannedAt={p.scannedAt}
+                rows={p.rows}
+              />
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section className="mt-12" id="webhooks">
+        <SectionTitle
+          eyebrow="03"
+          title="Alertes par webhook"
+          description="En plus du courriel, chaque alerte de régression peut être envoyée à un canal Slack, Microsoft Teams, ou à votre propre service (JSON signé). Un échec d'envoi est noté ici et n'empêche jamais le courriel de partir."
+        />
+        {domains.length === 0 ? (
+          <p className="text-[15px] text-muted">
+            Aucun domaine surveillé : inscrivez-en un pour y rattacher un webhook.
+          </p>
+        ) : (
+          <div className="grid gap-4">
+            {domains.map((d) => {
+              const hook = webhooks.find((w) => w.domainId === d.id);
+              return (
+                <WebhookSettings
+                  key={d.id}
+                  domainId={d.id}
+                  hostname={d.hostname}
+                  initial={
+                    hook
+                      ? {
+                          url: hook.url,
+                          kind: hook.kind,
+                          lastAttemptAt: hook.lastAttemptAt,
+                          lastStatus: hook.lastStatus,
+                        }
+                      : null
+                  }
+                />
+              );
+            })}
+          </div>
+        )}
+      </section>
+
+      <section className="mt-12">
+        <SectionTitle
+          eyebrow="04"
           title="Ce que votre offre couvre aujourd'hui"
           description="Distinguer ce qui fonctionne de ce qui est annoncé n'a d'intérêt que si c'est écrit ici aussi, pas seulement sur la page tarifs."
         />
@@ -203,7 +295,7 @@ export default async function AccountPage({
 
       <section className="mt-14" id="journal">
         <SectionTitle
-          eyebrow="03"
+          eyebrow="05"
           title="Journal d'accès"
           description="Les sessions ouvertes sur ce compte. Nous n'enregistrons ni adresse IP ni navigateur : seulement la date d'ouverture et d'expiration de chaque session."
         />
@@ -212,14 +304,15 @@ export default async function AccountPage({
 
       <section className="mt-14">
         <SectionTitle
-          eyebrow="04"
+          eyebrow="06"
           title="Vos données"
           description="Ce que nous détenons, et comment le reprendre."
         />
         <div className="mt-6 space-y-3 text-[15px] leading-relaxed text-muted">
           <p>
             Nous conservons votre adresse e-mail, l&apos;historique des analyses des domaines que
-            vous avez explicitement inscrits à la surveillance, et rien d&apos;autre. Les analyses
+            vous avez explicitement inscrits à la surveillance, ce que vous y avez saisi vous-même
+            (plan d&apos;action, notes, adresses de webhook), et rien d&apos;autre. Les analyses
             à la demande ne laissent aucune trace.
           </p>
           <p>
@@ -238,8 +331,8 @@ export default async function AccountPage({
           <h3 className="font-display text-lg font-bold text-ink-2">Télécharger mes données</h3>
           <p className="mt-2 text-[15px] leading-relaxed text-muted">
             Droit à la portabilité (article 20 du RGPD) : un fichier JSON lisible par une machine,
-            produit immédiatement, avec votre compte, vos domaines surveillés, leur historique et
-            leurs alertes, vos clés d&apos;API (sans leur empreinte), vos sessions et vos
+            produit immédiatement, avec votre compte, vos domaines surveillés, leur historique,
+            leurs alertes, leur plan d&apos;action et leurs webhooks (sans le secret de signature), vos clés d&apos;API (sans leur empreinte), vos sessions et vos
             sous-comptes ou invitations.
           </p>
           <a
@@ -262,7 +355,7 @@ export default async function AccountPage({
             <p>
               <strong className="text-ink-2">Supprimé :</strong> le compte et son adresse, toutes
               les sessions et liens de connexion, les domaines surveillés avec leur historique
-              d&apos;analyses et leurs alertes (y compris ceux inscrits sans session à cette adresse),
+              d&apos;analyses, leurs alertes, leur plan d&apos;action et leurs webhooks (y compris ceux inscrits sans session à cette adresse),
               les clés d&apos;API et les invitations envoyées.
               {children.length > 0
                 ? " Vos sous-comptes ne sont pas supprimés : ils sont détachés et redeviennent des comptes indépendants."

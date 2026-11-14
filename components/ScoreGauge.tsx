@@ -1,18 +1,60 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { gradeColor } from "@/lib/risk/grade";
 
-/** Jauge de score, en SVG pur — aucune bibliothèque, aucune ressource externe. */
+const DURATION_MS = 900;
+
+/** Mouvement réduit : réglage du système OU réglage du site (`data-motion`). */
+function motionReduced(): boolean {
+  return (
+    document.documentElement.dataset.motion === "reduce" ||
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
+}
+
+/**
+ * Jauge de score, en SVG pur — aucune bibliothèque, aucune ressource externe.
+ *
+ * Avec `animate`, le chiffre et l'arc comptent de 0 au score en ~900 ms.
+ * Le rendu serveur porte toujours la valeur finale : sans JavaScript, pour
+ * un robot ou à l'impression, on lit le vrai score. L'animation ne démarre
+ * qu'après hydratation et ne démarre pas du tout si le mouvement est réduit.
+ * L'étiquette accessible, elle, donne toujours la valeur finale.
+ */
 export function ScoreGauge({
   score,
   grade,
   gradeLabel,
+  animate = false,
 }: {
   score: number;
   grade: string;
   gradeLabel: string;
+  animate?: boolean;
 }) {
+  const [shown, setShown] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!animate || motionReduced()) return;
+    let frame = 0;
+    const start = performance.now();
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / DURATION_MS);
+      // Décélération (ease-out cubique) : le chiffre ralentit en approchant.
+      const eased = 1 - Math.pow(1 - t, 3);
+      setShown(t >= 1 ? null : Math.round(eased * score));
+      if (t < 1) frame = requestAnimationFrame(tick);
+    };
+    setShown(0);
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [animate, score]);
+
+  const value = shown ?? score;
   const radius = 76;
   const circumference = 2 * Math.PI * radius;
-  const dash = (score / 100) * circumference;
+  const dash = (value / 100) * circumference;
   const color = gradeColor(grade);
 
   return (
@@ -39,7 +81,7 @@ export function ScoreGauge({
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center" aria-hidden="true">
           <span className="tabular display text-[3.2rem] leading-none" style={{ color }}>
-            {score}
+            {value}
           </span>
           <span className="tech mt-1 text-[9px] text-muted">sur 100</span>
         </div>

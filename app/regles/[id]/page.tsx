@@ -6,10 +6,14 @@ import { FAMILY_LABELS, RULES, getRule } from "@/lib/rulepack";
 import { constatWording } from "@/lib/disclaimer";
 import { SeeAlso } from "@/components/SeeAlso";
 import { relatedForRule } from "@/lib/seo/related";
+import { createAutolinker } from "@/lib/seo/autolink";
 
 export function generateStaticParams() {
   return RULES.map((r) => ({ id: r.id.toLowerCase() }));
 }
+
+/* Toutes les fiches sont connues au build : une adresse hors référentiel
+ * répond 404 sans rendu à la demande. */
 
 export async function generateMetadata({
   params,
@@ -30,6 +34,7 @@ export default async function RulePage({ params }: { params: Promise<{ id: strin
   const rule = getRule(id.toUpperCase());
   if (!rule) notFound();
 
+  const autolink = createAutolinker();
   const effortLabel = { LOW: "faible", MEDIUM: "moyen", HIGH: "élevé" }[rule.remediation.effort];
 
   return (
@@ -37,7 +42,7 @@ export default async function RulePage({ params }: { params: Promise<{ id: strin
       <Breadcrumbs
         items={[
           { href: "/regles", label: "Référentiel" },
-          { href: `/regles/${rule.id}`, label: rule.id },
+          { href: `/regles/${rule.id.toLowerCase()}`, label: rule.id },
         ]}
       />
 
@@ -58,7 +63,7 @@ export default async function RulePage({ params }: { params: Promise<{ id: strin
         <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
           Ce que cela signifie
         </h2>
-        <p className="mt-2 text-[17px] leading-relaxed text-ink-2">{rule.messageExec}</p>
+        <p className="mt-2 text-[17px] leading-relaxed text-ink-2">{autolink(rule.messageExec)}</p>
       </section>
 
       <section className="mt-8">
@@ -110,7 +115,7 @@ export default async function RulePage({ params }: { params: Promise<{ id: strin
               <span className="tabular shrink-0 font-mono text-sm text-accent">
                 {String(i + 1).padStart(2, "0")}
               </span>
-              <span>{s}</span>
+              <span>{autolink(s)}</span>
             </li>
           ))}
         </ol>
@@ -120,7 +125,7 @@ export default async function RulePage({ params }: { params: Promise<{ id: strin
         <section className="mt-8 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3">
           <h2 className="text-sm font-semibold text-amber-900">Limite de la détection</h2>
           <p className="mt-1.5 text-[14px] leading-relaxed text-amber-900">
-            {rule.falsePositiveNotes}
+            {autolink(rule.falsePositiveNotes)}
           </p>
         </section>
       ) : null}

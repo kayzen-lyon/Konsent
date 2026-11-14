@@ -94,7 +94,7 @@ export function ContactCard() {
           // sans écouter le document entier.
           if (e.target === dialogRef.current) setOpen(false);
         }}
-        className="w-[min(92vw,30rem)] rounded-3xl border border-line bg-surface p-0 text-ink-2 shadow-lg backdrop:bg-ink/60 backdrop:backdrop-blur-sm"
+        className="m-auto max-h-[92vh] w-[min(92vw,30rem)] overflow-y-auto rounded-3xl border border-line bg-surface p-0 text-ink-2 shadow-lg backdrop:bg-ink/60 backdrop:backdrop-blur-sm"
       >
         <div className="flex items-start justify-between gap-4 border-b border-line px-6 py-4">
           <div className="min-w-0">
@@ -146,20 +146,7 @@ export function ContactCard() {
             </p>
           </address>
 
-          <div className="grid grid-cols-3 gap-3">
-            {[
-              { code: "site", legende: "Le site" },
-              { code: "maps", legende: "Nous situer" },
-              { code: "reviews", legende: "Avis Google" },
-            ].map((item) => (
-              <figure key={item.code} className="space-y-1.5">
-                <QrCode code={item.code} size={112} className="w-full rounded-lg ring-1 ring-line" />
-                <figcaption className="tech text-center text-[9px] text-muted">
-                  {item.legende}
-                </figcaption>
-              </figure>
-            ))}
-          </div>
+          <QrTabs />
 
           {/* Dire pourquoi un emplacement est vide vaut mieux que de le
               laisser vide : c'est la même règle que pour les documents
@@ -176,13 +163,6 @@ export function ContactCard() {
 
           <div className="flex flex-wrap gap-2">
             <a
-              href="/api/vcard"
-              download
-              className="tech rounded-full bg-flame shadow-md px-4 py-2.5 text-[11px] text-white transition hover:bg-flame-dark"
-            >
-              Ajouter aux contacts
-            </a>
-            <a
               href="/mentions-legales"
               className="tech rounded-full border-2 border-flame px-4 py-2.5 text-[11px] text-flame transition hover:bg-surface-high"
             >
@@ -196,5 +176,111 @@ export function ContactCard() {
         </div>
       </dialog>
     </>
+  );
+}
+
+/**
+ * Un onglet par QR code, comme sur la carte de contact de Nexus : chaque
+ * code s'affiche en grand, avec son lien en clair (accessible sans
+ * appareil photo). Motif d'onglets ARIA : flèches gauche / droite,
+ * Début / Fin, activation automatique.
+ */
+const QR_TABS = [
+  {
+    code: "site",
+    label: "Site",
+    caption: "Ouvrir Konsent",
+    href: EDITOR.productSite,
+    action: "Ouvrir le site",
+  },
+  {
+    code: "maps",
+    label: "Itinéraire",
+    caption: "Itinéraire vers nos bureaux, à Lyon",
+    href: getQr("maps")?.url ?? "",
+    action: "Ouvrir dans Maps",
+  },
+  {
+    code: "reviews",
+    label: "Avis",
+    caption: "Consulter ou laisser un avis Google",
+    href: getQr("reviews")?.url ?? "",
+    action: "Voir les avis",
+  },
+  {
+    code: "vcard",
+    label: "Carte de visite",
+    caption: "Scannez : votre téléphone propose « Ajouter le contact »",
+    href: "/api/vcard",
+    action: "Télécharger la carte (.vcf)",
+  },
+] as const;
+
+function QrTabs() {
+  const [active, setActive] = useState(0);
+  const tabsRef = useRef<(HTMLButtonElement | null)[]>([]);
+  const tab = QR_TABS[active]!;
+  const external = tab.href.startsWith("http");
+
+  function onKeyDown(e: React.KeyboardEvent) {
+    const last = QR_TABS.length - 1;
+    const next =
+      e.key === "ArrowRight" ? (active === last ? 0 : active + 1)
+      : e.key === "ArrowLeft" ? (active === 0 ? last : active - 1)
+      : e.key === "Home" ? 0
+      : e.key === "End" ? last
+      : null;
+    if (next === null) return;
+    e.preventDefault();
+    setActive(next);
+    tabsRef.current[next]?.focus();
+  }
+
+  return (
+    <div>
+      <div role="tablist" aria-label="QR codes" className="grid grid-cols-4 gap-1 rounded-full bg-surface-low p-1">
+        {QR_TABS.map((t, i) => (
+          <button
+            key={t.code}
+            ref={(el) => {
+              tabsRef.current[i] = el;
+            }}
+            type="button"
+            role="tab"
+            id={`qr-onglet-${t.code}`}
+            aria-selected={i === active}
+            aria-controls={`qr-panneau-${t.code}`}
+            tabIndex={i === active ? 0 : -1}
+            onClick={() => setActive(i)}
+            onKeyDown={onKeyDown}
+            className={`font-display min-h-10 rounded-full px-2 text-[12px] font-bold transition-colors ${
+              i === active ? "bg-surface text-flame shadow-md" : "text-muted hover:text-ink-2"
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      <div
+        role="tabpanel"
+        id={`qr-panneau-${tab.code}`}
+        aria-labelledby={`qr-onglet-${tab.code}`}
+        className="mt-4 flex flex-col items-center gap-3 text-center"
+      >
+        <QrCode code={tab.code} size={220} className="rounded-2xl ring-1 ring-line" />
+        <p className="text-[13px] font-semibold text-ink-2">{tab.caption}</p>
+        {tab.href ? (
+          <a
+            href={tab.href}
+            {...(external ? { target: "_blank", rel: "noopener noreferrer" } : { download: "kayzen-lyon.vcf" })}
+            className="font-display inline-flex min-h-10 items-center rounded-full border border-line px-4 text-[13px] font-semibold text-ink-2 transition-colors hover:border-flame hover:text-flame"
+          >
+            {tab.action}
+            {external ? <span className="sr-only"> (nouvel onglet)</span> : null}
+          </a>
+        ) : null}
+      </div>
+    </div>
   );
 }

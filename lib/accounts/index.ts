@@ -427,8 +427,11 @@ class PostgresAccounts implements Accounts {
       //    adresse : le titulaire a prouvé qu'elle est la sienne.
       this.sql`
         delete from monitored_domains where account_id is null and alert_email = ${email}`,
-      // 5. Le compte. Cascades : sessions, domaines, historique, alertes,
-      //    clés d'API ; `api_calls` : org_id / key_id mis à NULL.
+      // 5. Le compte. Cascades : sessions, domaines, et par les domaines
+      //    historique, alertes, webhooks (`alert_webhooks`) et plan d'action
+      //    (`action_items`) — le jeton de confirmation d'adresse est une
+      //    colonne du domaine ; clés d'API ; `api_calls` : org_id / key_id
+      //    mis à NULL.
       this.sql`delete from accounts where id = ${accountId}`,
     ]);
     return { deleted: true, detachedSubAccounts: detached?.length ?? 0 };

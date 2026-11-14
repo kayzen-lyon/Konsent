@@ -87,17 +87,17 @@ export function Header() {
           <Link
             href="/"
             className="flex shrink-0 items-center gap-2.5 rounded-lg"
-            aria-label="Konsent by KAYZEN — accueil"
           >
             <Logo className="h-8 w-8 text-flame" />
             <span className="flex flex-col leading-none">
               <span className="font-display text-lg font-extrabold tracking-tight text-ink-2">
                 Konsent
-              </span>
+              </span>{" "}
               <span className="font-display text-[10px] font-semibold uppercase tracking-[0.14em] text-muted">
                 by KAYZEN
               </span>
             </span>
+            <span className="sr-only"> — accueil</span>
           </Link>
 
           <nav id="navigation" tabIndex={-1} className="hidden items-center gap-0.5 outline-none lg:flex" aria-label="Navigation principale">

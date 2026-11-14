@@ -1,11 +1,18 @@
-import { sameOrigin } from "@/lib/security/origin";
+import { sameOrigin, siteOrigin } from "@/lib/security/origin";
 import { cookies } from "next/headers";
+import { emailConfigured, sendEmail } from "@/lib/email";
+import { alertConfirmationEmail, confirmationUrl } from "@/lib/monitoring/confirmation";
 import { DISCLAIMER_SHORT } from "@/lib/disclaimer";
 import { SESSION_COOKIE, getAccounts } from "@/lib/accounts";
 import { canAddDomain, domainQuotaFor } from "@/lib/agency/tenancy";
 import { withApiAuth } from "@/lib/api/auth";
 import { normalizeTarget, ScanError } from "@/lib/engine/scan";
-import { getStorage } from "@/lib/storage";
+import {
+  ALERT_CONFIRM_TTL_HOURS,
+  getStorage,
+  type MonitoredDomain,
+  type Storage,
+} from "@/lib/storage";
 import { dnsInstructions, fileInstructions, verifyOwnership } from "@/lib/storage/verification";
 
 export const dynamic = "force-dynamic";
@@ -33,6 +40,60 @@ async function sessionOwner() {
   return {
     actor: { id: account.id, plan: account.plan, parentId: account.parentId },
     email: account.email,
+  };
+}
+
+/**
+ * Double opt-in de l'adresse d'alerte.
+ *
+ * Un lien n'est (r)envoyé que s'il n'en existe pas déjà un valable : sans
+ * cette borne, rejouer l'inscription ferait de la route un moyen d'inonder
+ * la boîte d'un tiers. Si l'envoi de courriels n'est pas configuré sur cette
+ * instance, la réponse le DIT : une confirmation promise mais jamais partie
+ * laisserait attendre un message qui n'arrivera pas.
+ */
+async function requestAlertConfirmation(
+  storage: Storage,
+  domain: MonitoredDomain,
+): Promise<{ confirmed: boolean; emailSent: boolean; message: string }> {
+  if (domain.alertEmailConfirmedAt) {
+    return {
+      confirmed: true,
+      emailSent: false,
+      message: "L'adresse d'alerte est confirmée.",
+    };
+  }
+  if (!emailConfigured()) {
+    return {
+      confirmed: false,
+      emailSent: false,
+      message:
+        "L'adresse d'alerte doit être confirmée avant tout envoi, mais l'envoi de courriels n'est pas configuré sur cette instance : aucun lien de confirmation n'a pu partir, et aucune alerte ne sera envoyée par courriel. Inscrivez le domaine depuis une session connectée avec cette même adresse pour qu'elle soit confirmée d'office.",
+    };
+  }
+  if (await storage.hasPendingConfirmation(domain.id)) {
+    return {
+      confirmed: false,
+      emailSent: false,
+      message: `Un lien de confirmation a déjà été envoyé à cette adresse et reste valable ${ALERT_CONFIRM_TTL_HOURS} h. Aucune alerte n'y sera envoyée avant sa confirmation.`,
+    };
+  }
+
+  const { token } = await storage.startAlertConfirmation(domain.id);
+  const message = alertConfirmationEmail({
+    hostname: domain.hostname,
+    url: confirmationUrl(siteOrigin(), token),
+  });
+  const delivery = await sendEmail({ ...message, to: domain.alertEmail });
+  if (!delivery.sent) {
+    console.error(`[monitors] confirmation non délivrée : ${delivery.reason ?? "motif inconnu"}`);
+  }
+  return {
+    confirmed: false,
+    emailSent: delivery.sent,
+    message: delivery.sent
+      ? `Un lien de confirmation vient d'être envoyé à l'adresse d'alerte (valable ${ALERT_CONFIRM_TTL_HOURS} h). Aucune alerte n'y sera envoyée avant sa confirmation.`
+      : "Le lien de confirmation de l'adresse d'alerte n'a pas pu être envoyé. Aucune alerte n'y sera envoyée avant sa confirmation ; réessayez plus tard.",
   };
 }
 
@@ -137,6 +198,12 @@ async function handlePOST(request: Request) {
     }
 
     // ── Étape 1 : inscription ──
+    const owner = await sessionOwner();
+    // L'adresse du compte connecté a déjà été prouvée par le lien de
+    // connexion : elle est réputée confirmée. Toute autre adresse doit l'être
+    // par un lien avant de recevoir quoi que ce soit.
+    const emailIsOwners = Boolean(owner && owner.email.trim().toLowerCase() === email);
+
     if (!domain) {
       // Une session, si elle existe, fait du domaine une propriété. Sans
       // session, l'inscription reste servie par courriel exactement comme
@@ -144,7 +211,6 @@ async function handlePOST(request: Request) {
       // aucun portefeuille. C'est volontaire : rattacher un domaine à un
       // compte deviné à partir de l'adresse d'alerte donnerait à quiconque
       // connaît un courriel le moyen de peupler le portefeuille d'autrui.
-      const owner = await sessionOwner();
       if (owner) {
         const mine = await storage.domainsForAccounts([owner.actor.id]);
         if (!canAddDomain(owner.actor, mine)) {
@@ -163,8 +229,14 @@ async function handlePOST(request: Request) {
         alertEmail: email,
         frequency,
         accountId: owner?.actor.id ?? null,
+        alertEmailConfirmed: emailIsOwners,
       });
+    } else if (emailIsOwners && !domain.alertEmailConfirmedAt) {
+      await storage.markAlertEmailConfirmed(domain.id);
+      domain = { ...domain, alertEmailConfirmedAt: new Date().toISOString() };
     }
+
+    const alertConfirmation = await requestAlertConfirmation(storage, domain);
 
     return Response.json(
       {
@@ -178,7 +250,11 @@ async function handlePOST(request: Request) {
           dns: dnsInstructions(domain.hostname, domain.verificationToken),
           file: fileInstructions(domain.hostname, domain.verificationToken),
         },
-        note: "Aucune analyse n'est planifiée et aucun historique n'est conservé tant que la propriété du domaine n'a pas été vérifiée.",
+        alertConfirmation,
+        note: [
+          "Aucune analyse n'est planifiée et aucun historique n'est conservé tant que la propriété du domaine n'a pas été vérifiée.",
+          alertConfirmation.message,
+        ].join(" "),
       },
       { status: 201, headers: { "Cache-Control": "no-store" } },
     );

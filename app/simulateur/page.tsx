@@ -3,6 +3,9 @@ import Link from "next/link";
 import { FineSimulator } from "@/components/FineSimulator";
 import { Disclaimer } from "@/components/primitives";
 import { PUBLIC_FACTS } from "@/lib/facts";
+import { JsonLd } from "@/components/JsonLd";
+import { toolJsonLd } from "@/lib/seo/jsonld";
+import { getTool } from "@/lib/tools/catalog";
 
 export const metadata: Metadata = {
   title: "Simulateur d'exposition",
@@ -17,6 +20,7 @@ export default function SimulatorPage() {
 
   return (
     <>
+      <JsonLd data={toolJsonLd(getTool("simulateur")!)} />
       <section className="grid-bg-dark bg-ink">
         <div className="mx-auto max-w-7xl px-5 py-14">
           <p className="tech text-[10px] text-flame-soft">Mise en perspective</p>
