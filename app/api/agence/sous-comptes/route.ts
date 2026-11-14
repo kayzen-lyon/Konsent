@@ -3,7 +3,6 @@ import { SESSION_COOKIE, getAccounts, normalizeEmail, type Account } from "@/lib
 import {
   CREATION_MESSAGES,
   SUB_ACCOUNT_QUOTA,
-  canAttach,
   canCreateSubAccount,
   canDetach,
   isAgency,
@@ -11,6 +10,7 @@ import {
 } from "@/lib/agency/tenancy";
 import { DISCLAIMER_SHORT } from "@/lib/disclaimer";
 import { isPlausibleAddress } from "@/lib/email";
+import { sameOrigin } from "@/lib/security/origin";
 
 export const dynamic = "force-dynamic";
 
@@ -18,7 +18,7 @@ export const dynamic = "force-dynamic";
  * Sous-comptes clients d'une agence.
  *
  *   GET    /api/agence/sous-comptes   → la liste
- *   POST   /api/agence/sous-comptes   → ouvrir ou rattacher, corps { email }
+ *   POST   /api/agence/sous-comptes   → inviter un client, corps { email }
  *   DELETE /api/agence/sous-comptes   → détacher, corps { id }
  *
  * Route INTERNE : elle exige une session, pas une clé d'API. Elle n'est donc
@@ -92,6 +92,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  if (!sameOrigin(request)) return refuse("Origine refusée.", 403);
   const ctx = await currentAgency();
   if (!ctx.ok) return ctx.response;
 
@@ -116,32 +117,28 @@ export async function POST(request: Request) {
   const accounts = getAccounts();
   if (!accounts.available) return refuse(accounts.reason, 503);
 
+  // Une INVITATION, jamais un rattachement : le titulaire du compte doit
+  // l'accepter depuis son espace. La réponse est identique que l'adresse
+  // soit inconnue, déjà cliente ou refusée — la distinguer renseignerait
+  // sur la clientèle des autres agences.
   try {
-    const child = await accounts.attachSubAccount(ctx.account.id, email);
-    const attachable = canAttach(
-      asActor(ctx.account),
-      { ...asActor(child), parentId: null },
-      ctx.children.map(asActor),
-    );
-    if (!attachable.allowed) {
-      // Situation de course : le quota a pu se remplir entre le contrôle et
-      // l'écriture. On défait plutôt que de dépasser silencieusement.
-      await accounts.detachSubAccount(child.id);
-      return refuse(attachable.message ?? "Création refusée.", 409);
-    }
-    return Response.json(
-      { disclaimer: DISCLAIMER_SHORT, subAccount: publicView(child) },
-      { status: 201, headers: { "Cache-Control": "no-store" } },
-    );
+    await accounts.inviteSubAccount(ctx.account.id, email);
   } catch (error) {
-    return refuse(
-      error instanceof Error ? error.message : "Le rattachement n'a pas abouti.",
-      409,
-    );
+    console.error("[sous-comptes] invitation", error);
   }
+  return Response.json(
+    {
+      disclaimer: DISCLAIMER_SHORT,
+      invited: true,
+      message:
+        "Invitation enregistrée. Le rattachement prendra effet lorsque le titulaire de cette adresse l'aura acceptée depuis son espace Konsent.",
+    },
+    { status: 202, headers: { "Cache-Control": "no-store" } },
+  );
 }
 
 export async function DELETE(request: Request) {
+  if (!sameOrigin(request)) return refuse("Origine refusée.", 403);
   const ctx = await currentAgency();
   if (!ctx.ok) return ctx.response;
 

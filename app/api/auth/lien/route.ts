@@ -1,6 +1,8 @@
+import { siteOrigin } from "@/lib/security/origin";
 import { NextResponse } from "next/server";
 import { MAGIC_LINK_TTL_MINUTES, getAccounts, normalizeEmail } from "@/lib/accounts";
 import { isPlausibleAddress, magicLinkEmail, sendEmail } from "@/lib/email";
+import { LOGIN_BINDING_COOKIE, bindingFor } from "@/lib/security/login-binding";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -45,9 +47,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Cette adresse ne semble pas valide." }, { status: 400 });
   }
 
+  let binding: string | null = null;
   try {
     const { token } = await accounts.requestMagicLink(email);
-    const origin = new URL(request.url).origin;
+    binding = bindingFor(token);
+    const origin = siteOrigin();
     const url = `${origin}/api/auth/session?jeton=${encodeURIComponent(token)}`;
 
     const delivery = await sendEmail({
@@ -64,5 +68,15 @@ export async function POST(request: Request) {
     console.error("Demande de lien de connexion en échec :", error);
   }
 
-  return NextResponse.json(GENERIC);
+  const response = NextResponse.json(GENERIC);
+  // Posé dans tous les cas (valeur factice en cas d'échec) pour que la
+  // réponse reste indiscernable.
+  response.cookies.set(LOGIN_BINDING_COOKIE, binding ?? "x", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "lax",
+    path: "/api/auth",
+    maxAge: MAGIC_LINK_TTL_MINUTES * 60,
+  });
+  return response;
 }

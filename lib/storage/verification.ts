@@ -1,3 +1,4 @@
+import { safeFetch } from "../security/network";
 import { promises as dns } from "node:dns";
 
 /**
@@ -48,11 +49,9 @@ async function checkFile(hostname: string, token: string): Promise<boolean> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
   try {
-    const res = await fetch(`https://${hostname}${WELL_KNOWN_PATH}`, {
+    const { response: res } = await safeFetch(`https://${hostname}${WELL_KNOWN_PATH}`, {
       signal: controller.signal,
-      redirect: "follow",
       headers: { "User-Agent": "KonsentBot/1.0 (+https://konsent.kayzen-lyon.com/bot)" },
-      cache: "no-store",
     });
     if (!res.ok) return false;
     // Un fichier de vérification tient en une ligne : au-delà, on refuse

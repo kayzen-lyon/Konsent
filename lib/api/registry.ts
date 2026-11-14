@@ -84,6 +84,8 @@ export const INTERNAL_ROUTES: readonly string[] = [
   // La décrire publiquement reviendrait à dessiner la surface d'attaque du
   // portefeuille de nos clients.
   "/api/agence/sous-comptes",
+  // Réponse du titulaire à une invitation d'agence : session uniquement.
+  "/api/agence/invitation",
   "/api/auth/lien",
   "/api/auth/session",
   // Fiche de contact de l'éditeur. Ne sert aucune donnée d'audit et ne

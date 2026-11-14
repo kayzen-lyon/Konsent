@@ -1,3 +1,4 @@
+import { sameOrigin } from "@/lib/security/origin";
 import { cookies } from "next/headers";
 import { DISCLAIMER_SHORT } from "@/lib/disclaimer";
 import { SESSION_COOKIE, getAccounts } from "@/lib/accounts";
@@ -46,6 +47,9 @@ async function sessionOwner() {
  * été prouvée.
  */
 async function handlePOST(request: Request) {
+  if (!sameOrigin(request)) {
+    return Response.json({ error: "Origine refusée.", disclaimer: DISCLAIMER_SHORT }, { status: 403 });
+  }
   const storage = getStorage();
   if (!storage.available) {
     return Response.json(
@@ -179,9 +183,10 @@ async function handlePOST(request: Request) {
       { status: 201, headers: { "Cache-Control": "no-store" } },
     );
   } catch (error) {
+    console.error("[monitors] inscription", error);
     return Response.json(
       {
-        error: error instanceof Error ? error.message : "Inscription impossible.",
+        error: "Inscription impossible pour le moment.",
         disclaimer: DISCLAIMER_SHORT,
       },
       { status: 500 },

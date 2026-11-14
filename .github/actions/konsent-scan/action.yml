@@ -62,16 +62,26 @@ runs:
     - name: Observer le site en trois phases
       shell: bash
       working-directory: ${{ github.action_path }}/../../../worker
+      # Entrées passées par l'environnement, jamais interpolées dans le script.
+      env:
+        KONSENT_URL: ${{ inputs.url }}
+        KONSENT_API_URL: ${{ inputs.api-url }}
+        KONSENT_FAIL_ON: ${{ inputs.fail-on }}
       run: |
         # --silent : sans lui, le bandeau de npm part sur la sortie standard et
         # rend le JSON de l observation inanalysable. Trouve a l usage.
-        npm run --silent scan -- "${{ inputs.url }}" > "$RUNNER_TEMP/observation.json"
+        npm run --silent scan -- "$KONSENT_URL" > "$RUNNER_TEMP/observation.json"
 
     - name: Évaluer contre le référentiel
       id: evaluate
       shell: bash
+      # Entrées passées par l'environnement, jamais interpolées dans le script.
+      env:
+        KONSENT_URL: ${{ inputs.url }}
+        KONSENT_API_URL: ${{ inputs.api-url }}
+        KONSENT_FAIL_ON: ${{ inputs.fail-on }}
       run: |
-        report=$(curl -sS -X POST "${{ inputs.api-url }}/api/ingest" \
+        report=$(curl -sS -X POST "$KONSENT_API_URL/api/ingest" \
           -H "Content-Type: application/json" \
           --data-binary "@$RUNNER_TEMP/observation.json")
 
@@ -92,7 +102,7 @@ runs:
         } >> "$GITHUB_OUTPUT"
 
         {
-          echo "## Audit Konsent — ${{ inputs.url }}"
+          echo "## Audit Konsent — $KONSENT_URL"
           echo
           echo "Score **$score/100** (note $grade) · $critical écart(s) critique(s) · $major majeur(s)"
           echo
@@ -111,9 +121,14 @@ runs:
 
     - name: Verdict
       shell: bash
+      # Entrées passées par l'environnement, jamais interpolées dans le script.
+      env:
+        KONSENT_URL: ${{ inputs.url }}
+        KONSENT_API_URL: ${{ inputs.api-url }}
+        KONSENT_FAIL_ON: ${{ inputs.fail-on }}
       run: |
         critical="${{ steps.evaluate.outputs.critical }}"
-        case "${{ inputs.fail-on }}" in
+        case "$KONSENT_FAIL_ON" in
           never)
             echo "Seuil « never » : aucun blocage." ;;
           major)

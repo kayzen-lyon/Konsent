@@ -13,6 +13,8 @@ const ERRORS: Record<string, string> = {
   "lien-invalide":
     "Ce lien n'est plus valable : il a expiré, ou il a déjà servi. Demandez-en un nouveau.",
   "jeton-absent": "Ce lien est incomplet. Demandez-en un nouveau.",
+  "autre-navigateur":
+    "Pour votre sécurité, ce lien ne fonctionne que dans le navigateur où vous l'avez demandé. Ouvrez-le depuis ce navigateur, ou demandez-en un nouveau ici.",
   technique: "Une erreur technique est survenue. Réessayez dans un instant.",
   indisponible:
     "Les comptes ne sont pas activés sur cette instance. L'analyse à la demande reste disponible, sans inscription.",
@@ -28,7 +30,7 @@ export default async function LoginPage({
   const error = erreur ? ERRORS[erreur] : undefined;
 
   return (
-    <main className="mx-auto max-w-md px-6 py-20">
+    <div className="mx-auto max-w-md px-6 py-20">
       <p className="tech text-[10px] text-accent">Espace client</p>
       <h1 className="display mt-2 text-3xl text-ink-2">Connexion</h1>
       <p className="mt-4 text-[15px] leading-relaxed text-muted">
@@ -58,6 +60,6 @@ export default async function LoginPage({
       <div className="mt-12">
         <Disclaimer variant="short" />
       </div>
-    </main>
+    </div>
   );
 }

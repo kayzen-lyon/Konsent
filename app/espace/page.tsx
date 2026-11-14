@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { OwnedDomains } from "@/components/OwnedDomains";
+import { InvitationPrompt } from "@/components/InvitationPrompt";
 import { Disclaimer, SectionTitle } from "@/components/primitives";
 import { SESSION_COOKIE, getAccounts } from "@/lib/accounts";
 import { domainQuotaFor } from "@/lib/agency/tenancy";
@@ -40,14 +41,23 @@ export default async function AccountPage() {
     ? await storage.domainsForAccounts([account.id]).catch(() => [])
     : [];
 
+  // Invitation en attente : l'adresse de l'agence est montrée pour que le
+  // titulaire sache à qui il ouvre ses résultats.
+  const inviter =
+    account.invitedParentId && !account.parentId
+      ? await accounts.accountById(account.invitedParentId).catch(() => null)
+      : null;
+
   return (
-    <main className="mx-auto max-w-4xl px-6 py-16">
+    <div className="mx-auto max-w-4xl px-6 py-16">
       <p className="tech text-[10px] text-accent">Espace client</p>
       <h1 className="display mt-2 text-3xl text-ink-2">{account.email}</h1>
       <p className="mt-3 text-[15px] text-muted">
         Offre en cours : <strong className="text-ink-2">{plan.name}</strong> · compte ouvert le{" "}
         {new Date(account.createdAt).toLocaleDateString("fr-FR")}
       </p>
+
+      {inviter ? <InvitationPrompt agencyEmail={inviter.email} /> : null}
 
       {account.parentId ? (
         <p className="mt-4 rounded-lg border-l-2 border-line bg-surface px-4 py-3 text-[13px] leading-relaxed text-muted">
@@ -148,6 +158,6 @@ export default async function AccountPage() {
       <div className="mt-14">
         <Disclaimer variant="short" />
       </div>
-    </main>
+    </div>
   );
 }

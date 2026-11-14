@@ -1,3 +1,4 @@
+import { siteOrigin } from "@/lib/security/origin";
 import { buildOpenApiDocument } from "@/lib/api/openapi";
 
 export const dynamic = "force-dynamic";
@@ -16,7 +17,7 @@ export const dynamic = "force-dynamic";
  * aussi bien en local qu'en production ou en marque blanche.
  */
 export async function GET(request: Request) {
-  const origin = new URL(request.url).origin;
+  const origin = siteOrigin();
 
   return Response.json(buildOpenApiDocument(origin), {
     status: 200,

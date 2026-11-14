@@ -1,3 +1,5 @@
+import { isIP } from "node:net";
+import { isBlockedAddress, isBlockedHostname } from "../security/network";
 import { RULEPACK_VERSION } from "../rulepack/types";
 import { computeScore } from "../risk/score";
 import type { TrackerEntity } from "../trackers/types";
@@ -19,21 +21,13 @@ export class ScanError extends Error {
 
 /** Hôtes non routables ou réservés : refusés pour éviter tout usage du scanner comme relais. */
 function assertPublicTarget(url: URL): void {
-  const host = url.hostname.toLowerCase();
-  const isLocal =
-    host === "localhost" ||
-    host === "0.0.0.0" ||
-    host.endsWith(".local") ||
-    host.endsWith(".internal") ||
-    host.endsWith(".localhost") ||
-    /^127\./.test(host) ||
-    /^10\./.test(host) ||
-    /^192\.168\./.test(host) ||
-    /^172\.(1[6-9]|2\d|3[01])\./.test(host) ||
-    /^169\.254\./.test(host) ||
-    host === "[::1]" ||
-    host.startsWith("[fc") ||
-    host.startsWith("[fd");
+  const host = url.hostname.toLowerCase().replace(/\.+$/, "");
+  // Premier filtre, syntaxique. La résolution DNS et les redirections sont
+  // contrôlées au moment de la connexion par `safeFetch`.
+  const bare = host.replace(/^\[|\]$/g, "");
+  const isLocal = isIP(bare)
+    ? isBlockedAddress(bare)
+    : host === "localhost" || (isBlockedHostname(host) && host.includes("."));
 
   if (isLocal) {
     throw new ScanError(

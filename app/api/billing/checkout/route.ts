@@ -1,3 +1,4 @@
+import { sameOrigin, siteOrigin } from "@/lib/security/origin";
 import { NextResponse } from "next/server";
 import { getPlan } from "@/lib/billing/plans";
 import { readiness } from "@/lib/billing/readiness";
@@ -19,6 +20,9 @@ export const runtime = "nodejs";
  * ne livre pas.
  */
 export async function POST(request: Request) {
+  if (!sameOrigin(request)) {
+    return NextResponse.json({ error: "Origine refusée.", disclaimer: DISCLAIMER_SHORT }, { status: 403 });
+  }
   if (!stripeConfigured()) {
     return NextResponse.json(
       {
@@ -63,7 +67,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const origin = new URL(request.url).origin;
+  const origin = siteOrigin();
 
   try {
     const session = await createCheckoutSession({

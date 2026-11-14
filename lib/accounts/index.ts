@@ -45,6 +45,12 @@ export interface Account {
    * quoi, et refuse d'accorder les droits d'agence à un compte qui en a un.
    */
   parentId: string | null;
+  /**
+   * Agence qui a INVITÉ ce compte à se rattacher, en attente de sa réponse.
+   * Seul le titulaire du compte peut transformer l'invitation en
+   * rattachement (migration 0005).
+   */
+  invitedParentId: string | null;
 }
 
 export interface AccountsUnavailable {
@@ -62,7 +68,12 @@ export interface Accounts {
   /** Sous-comptes DIRECTS d'une agence. Jamais transitif : le cloisonnement tient sur un niveau. */
   subAccounts(parentId: string): Promise<readonly Account[]>;
   /**
-   * Ouvre un sous-compte, ou rattache un compte existant.
+   * Invite un compte (créé s'il n'existe pas) à se rattacher à une agence.
+   *
+   * N'écrit JAMAIS `parent_id` : seule une invitation est posée, que le
+   * titulaire doit accepter depuis son espace. Renvoie `false` sans dire
+   * pourquoi si le compte est déjà rattaché — le motif renseignerait sur la
+   * clientèle d'autrui.
    *
    * L'autorisation ne se décide PAS ici : elle relève de
    * `lib/agency/tenancy.ts`, seul endroit éprouvé pour cela. Cette méthode
@@ -70,7 +81,16 @@ export interface Accounts {
    * (pas d'imbrication, pas d'auto-parentage) au cas où un appelant futur
    * l'oublierait.
    */
-  attachSubAccount(parentId: string, email: string): Promise<Account>;
+  inviteSubAccount(parentId: string, email: string): Promise<boolean>;
+  /** Compte par identifiant, ou `null`. */
+  accountById(id: string): Promise<Account | null>;
+  /**
+   * Réponse du TITULAIRE à une invitation. N'aboutit que si l'invitation
+   * porte toujours sur `parentId` — une invitation remplacée entre-temps ne
+   * peut pas être acceptée par erreur.
+   */
+  acceptInvitation(childId: string, parentId: string): Promise<boolean>;
+  declineInvitation(childId: string): Promise<void>;
   detachSubAccount(childId: string): Promise<void>;
 }
 
@@ -230,30 +250,47 @@ class SupabaseAccounts implements Accounts {
     return rows.map(toAccount);
   }
 
-  async attachSubAccount(parentId: string, email: string): Promise<Account> {
+  async inviteSubAccount(parentId: string, email: string): Promise<boolean> {
     const normalized = normalizeEmail(email);
 
-    // Le compte est créé s'il n'existe pas, puis rattaché. Deux temps plutôt
-    // qu'un `upsert` portant `parent_id` : un compte existant qui appartient
-    // déjà à une autre agence doit être refusé par le filtre ci-dessous, pas
-    // capté silencieusement.
     await this.request("rpc/konsent_upsert_account", {
       method: "POST",
       body: JSON.stringify({ p_email: normalized }),
     });
 
+    // Un compte de premier niveau SANS sous-comptes peut seul être invité ;
+    // la base refusera de toute façon l'imbrication au moment de l'accepter.
     const rows = await this.request<Record<string, unknown>[]>(
       `accounts?email=eq.${encodeURIComponent(normalized)}&parent_id=is.null`,
-      { method: "PATCH", body: JSON.stringify({ parent_id: parentId }) },
+      { method: "PATCH", body: JSON.stringify({ invited_parent_id: parentId }) },
     );
+    return rows.length > 0;
+  }
 
-    const row = rows[0];
-    if (!row) {
-      throw new Error(
-        "Ce compte existe déjà et appartient à une autre agence. Un client ne peut être rattaché qu'à une seule.",
-      );
-    }
-    return toAccount(row);
+  async accountById(id: string): Promise<Account | null> {
+    const rows = await this.request<Record<string, unknown>[]>(
+      `accounts?id=eq.${encodeURIComponent(id)}&select=*`,
+    );
+    return rows[0] ? toAccount(rows[0]) : null;
+  }
+
+  async acceptInvitation(childId: string, parentId: string): Promise<boolean> {
+    const rows = await this.request<Record<string, unknown>[]>(
+      `accounts?id=eq.${encodeURIComponent(childId)}&parent_id=is.null&invited_parent_id=eq.${encodeURIComponent(parentId)}`,
+      {
+        method: "PATCH",
+        body: JSON.stringify({ parent_id: parentId, invited_parent_id: null }),
+      },
+    );
+    return rows.length > 0;
+  }
+
+  async declineInvitation(childId: string): Promise<void> {
+    await this.request(`accounts?id=eq.${encodeURIComponent(childId)}`, {
+      method: "PATCH",
+      headers: { Prefer: "return=minimal" },
+      body: JSON.stringify({ invited_parent_id: null }),
+    });
   }
 
   async detachSubAccount(childId: string): Promise<void> {
@@ -274,6 +311,7 @@ function toAccount(row: Record<string, unknown>): Account {
     // Absent des lignes antérieures à la migration 0004 : lu comme « aucun
     // parent », ce qui est exact — les sous-comptes n'existaient pas.
     parentId: (row["parent_id"] as string | null) ?? null,
+    invitedParentId: (row["invited_parent_id"] as string | null) ?? null,
   };
 }
 

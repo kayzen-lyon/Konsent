@@ -1,4 +1,5 @@
 import { chromium, type Browser, type BrowserContext } from "playwright";
+import { isReachablePublicHost } from "./network.ts";
 import { ACCEPT_WORDS, REJECT_WORDS, clickByLexicon, resolveBanner, type BannerInfo } from "./banner.ts";
 
 /**
@@ -91,6 +92,26 @@ async function newContext(browser: Browser): Promise<BrowserContext> {
     viewport: { width: 1440, height: 900 },
   });
   await context.addInitScript(INSTRUMENTATION);
+  // Toute requête du navigateur (redirections et sous-ressources comprises)
+  // vers une adresse non publique est annulée. Une résolution DNS reste
+  // possible entre ce contrôle et la connexion de Chromium : la sortie
+  // réseau du worker doit en plus interdire les plages privées et l'adresse
+  // des métadonnées de l'hébergeur (voir worker/README.md).
+  await context.route("**/*", async (route) => {
+    let allowed = false;
+    try {
+      const url = new URL(route.request().url());
+      allowed =
+        url.protocol === "data:" ||
+        url.protocol === "blob:" ||
+        ((url.protocol === "http:" || url.protocol === "https:") &&
+          (await isReachablePublicHost(url.hostname)));
+    } catch {
+      allowed = false;
+    }
+    if (allowed) await route.continue();
+    else await route.abort("blockedbyclient");
+  });
   return context;
 }
 
