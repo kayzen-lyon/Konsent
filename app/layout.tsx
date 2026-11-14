@@ -72,12 +72,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="min-h-screen">
         <div className="scroll-progress" aria-hidden="true" />
-        <a
-          href="#contenu"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-flame focus:px-5 focus:py-2.5 focus:font-semibold focus:text-white"
-        >
-          Aller au contenu principal
-        </a>
+        <nav aria-label="Liens d'évitement">
+          {[
+            ["#contenu", "Aller au contenu principal"],
+            ["#navigation", "Aller à la navigation"],
+            ["#pied-de-page", "Aller au pied de page"],
+          ].map(([href, label]) => (
+            <a
+              key={href}
+              href={href}
+              className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-flame focus:px-5 focus:py-2.5 focus:font-semibold focus:text-white"
+            >
+              {label}
+            </a>
+          ))}
+        </nav>
         <MotionProvider>
           <Header />
           <main id="contenu" tabIndex={-1} className="outline-none">

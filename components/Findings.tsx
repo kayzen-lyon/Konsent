@@ -12,7 +12,10 @@ import {
   readingLevel,
   type ReadingLevel,
 } from "@/lib/report/levels";
+import { falsePositiveMailto, remediationText, type ReportContext } from "@/lib/report/links";
 import { RiskMeter, SeverityBadge } from "./primitives";
+import { CopyFixButton } from "./report/CopyFixButton";
+import { FindingGate, FindingsExplorer, PillarGate } from "./report/FindingsExplorer";
 
 /** Intensité du pilier : 5 segments, pilotés par la gravité cumulée. */
 function pillarIntensity(findings: readonly Finding[]): number {
@@ -23,14 +26,34 @@ function pillarIntensity(findings: readonly Finding[]): number {
   return Math.max(0, Math.min(5, Math.round(weight)));
 }
 
+/** Les fragments entre accents graves des correctifs sont du code : on les rend comme tel. */
+function InlineCode({ text }: { text: string }) {
+  const parts = text.split(/`([^`]+)`/);
+  return (
+    <>
+      {parts.map((part, i) =>
+        i % 2 === 1 ? (
+          <code key={i} className="rounded bg-surface-high px-1 font-mono text-[11px] text-ink-2">
+            {part}
+          </code>
+        ) : (
+          part
+        ),
+      )}
+    </>
+  );
+}
+
 function FindingRow({
   finding,
   rule,
   level,
+  report,
 }: {
   finding: Finding;
   rule: Rule;
   level: ReadingLevel;
+  report?: ReportContext;
 }) {
   const priceHint = rule.remediation.priceHintEur;
   const spec = readingLevel(level);
@@ -146,12 +169,14 @@ function FindingRow({
             {rule.remediation.steps.map((step, i) => (
               <li key={i} className="text-[12px] leading-snug text-ink-2">
                 <span className="tech mr-1 text-[9px] text-muted">{i + 1}.</span>
-                {step}
+                <InlineCode text={step} />
               </li>
             ))}
           </ol>
         ) : (
-          <p className="mt-1 text-[12px] leading-snug text-ink-2">{rule.remediation.steps[0]}</p>
+          <p className="mt-1 text-[12px] leading-snug text-ink-2">
+            <InlineCode text={rule.remediation.steps[0] ?? ""} />
+          </p>
         )}
         {priceHint ? (
           <p className="tech mt-1.5 text-[9px] text-accent">
@@ -160,6 +185,18 @@ function FindingRow({
         ) : (
           <p className="tech mt-1.5 text-[9px] text-ok">Correction autonome</p>
         )}
+        {rule.remediation.steps.length > 0 ? (
+          <CopyFixButton text={remediationText(rule.id, rule.title, rule.remediation.steps)} />
+        ) : null}
+        {report ? (
+          <a
+            href={falsePositiveMailto(rule.id, report)}
+            className="mt-2 inline-block text-[11px] text-flame underline underline-offset-2 print:hidden"
+          >
+            Signaler un faux positif
+            <span className="sr-only"> sur le constat {rule.id} (ouvre votre messagerie)</span>
+          </a>
+        ) : null}
       </div>
     </div>
   );
@@ -169,9 +206,12 @@ function FindingRow({
 export function FindingsByPillar({
   findings,
   level = DEFAULT_READING_LEVEL,
+  report,
 }: {
   findings: readonly Finding[];
   level?: ReadingLevel;
+  /** Contexte du rapport : active le lien « Signaler un faux positif ». */
+  report?: ReportContext;
 }) {
   if (findings.length === 0) {
     return (
@@ -185,61 +225,93 @@ export function FindingsByPillar({
     );
   }
 
+  // Index de recherche de l'explorateur : sérialisable, sans le référentiel.
+  const explorerFindings = findings.flatMap((f) => {
+    const rule = getRule(f.ruleId);
+    if (!rule) return [];
+    return [
+      {
+        ruleId: f.ruleId,
+        severity: f.severity,
+        pillar: pillarOfFamily(f.family),
+        text: [
+          rule.id,
+          rule.title,
+          rule.messageExec,
+          rule.messageTech,
+          FAMILY_LABELS[rule.family],
+          ...rule.remediation.steps,
+        ].join(" "),
+      },
+    ];
+  });
+
   return (
-    <div className="space-y-6">
-      {PILLARS.map((pillar) => {
-        const list = findings
-          .filter((f) => pillarOfFamily(f.family) === pillar.id)
-          .sort((a, b) => SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity]);
+    <FindingsExplorer
+      findings={explorerFindings}
+      pillars={PILLARS.map((p) => ({ id: p.id, label: p.title }))}
+    >
+      <div className="space-y-6">
+        {PILLARS.map((pillar) => {
+          const list = findings
+            .filter((f) => pillarOfFamily(f.family) === pillar.id)
+            .sort((a, b) => SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity]);
 
-        return (
-          <section key={pillar.id} className="overflow-hidden rounded-xl bg-surface ring-1 ring-line shadow-md">
-            <header className="flex flex-wrap items-center justify-between gap-3 bg-ink px-5 py-4">
-              <div className="min-w-0">
-                <h3 className="display text-lg text-white">
-                  <span className="text-flame-soft">Pilier {pillar.index}</span> · {pillar.title}
-                </h3>
-                <p className="mt-1 max-w-2xl text-[13px] leading-snug text-white/60">
-                  {pillar.description}
-                </p>
-              </div>
-              <RiskMeter level={pillarIntensity(list)} />
-            </header>
+          return (
+            <PillarGate key={pillar.id} pillar={pillar.id}>
+              <section className="overflow-hidden rounded-xl bg-surface ring-1 ring-line shadow-md">
+                <header className="flex flex-wrap items-center justify-between gap-3 bg-ink px-5 py-4">
+                  <div className="min-w-0">
+                    <h3 className="display text-lg text-white">
+                      <span className="text-flame-soft">Pilier {pillar.index}</span> · {pillar.title}
+                    </h3>
+                    <p className="mt-1 max-w-2xl text-[13px] leading-snug text-white/60">
+                      {pillar.description}
+                    </p>
+                  </div>
+                  <RiskMeter level={pillarIntensity(list)} />
+                </header>
 
-            {list.length === 0 ? (
-              <p className="px-5 py-6 text-sm text-muted">
-                Aucun écart relevé sur ce pilier par ce mode d&apos;analyse.
-              </p>
-            ) : (
-              <>
-                <div
-                  className={`hidden gap-6 bg-paper px-5 py-2.5 lg:grid ${
-                    readingLevel(level).showNormative
-                      ? "grid-cols-[1.6fr_auto_1fr_1.3fr]"
-                      : "grid-cols-[2fr_auto_1.3fr]"
-                  }`}
-                >
-                  {(readingLevel(level).showNormative
-                    ? ["Critère d'audit", "Statut", "Fondement", "Solution préconisée"]
-                    : ["Critère d'audit", "Statut", "Solution préconisée"]
-                  ).map((h) => (
-                    <span key={h} className="tech text-[9px] text-muted">
-                      {h}
-                    </span>
-                  ))}
-                </div>
-                <div>
-                  {list.map((f) => {
-                    const rule = getRule(f.ruleId);
-                    if (!rule) return null;
-                    return <FindingRow key={f.ruleId} finding={f} rule={rule} level={level} />;
-                  })}
-                </div>
-              </>
-            )}
-          </section>
-        );
-      })}
-    </div>
+                {list.length === 0 ? (
+                  <p className="px-5 py-6 text-sm text-muted">
+                    Aucun écart relevé sur ce pilier par ce mode d&apos;analyse.
+                  </p>
+                ) : (
+                  <>
+                    <div
+                      className={`hidden gap-6 bg-paper px-5 py-2.5 lg:grid ${
+                        readingLevel(level).showNormative
+                          ? "grid-cols-[1.6fr_auto_1fr_1.3fr]"
+                          : "grid-cols-[2fr_auto_1.3fr]"
+                      }`}
+                    >
+                      {(readingLevel(level).showNormative
+                        ? ["Critère d'audit", "Statut", "Fondement", "Solution préconisée"]
+                        : ["Critère d'audit", "Statut", "Solution préconisée"]
+                      ).map((h) => (
+                        <span key={h} className="tech text-[9px] text-muted">
+                          {h}
+                        </span>
+                      ))}
+                    </div>
+                    <div>
+                      {list.map((f) => {
+                        const rule = getRule(f.ruleId);
+                        if (!rule) return null;
+                        return (
+                          <FindingGate key={f.ruleId} ruleId={f.ruleId}>
+                            <FindingRow finding={f} rule={rule} level={level} report={report} />
+                          </FindingGate>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
+              </section>
+            </PillarGate>
+          );
+        })}
+      </div>
+    </FindingsExplorer>
   );
 }

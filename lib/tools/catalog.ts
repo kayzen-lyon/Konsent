@@ -45,6 +45,60 @@ export const FREE_TOOLS: readonly FreeTool[] = [
     available: true,
   },
   {
+    slug: "generateur-mentions-legales",
+    title: "Générateur de mentions légales",
+    question: "Quelles mentions légales mon site doit-il afficher, selon mon statut ?",
+    description:
+      "Un formulaire guidé selon votre statut (EI, société, association, profession réglementée) : éditeur, directeur de la publication, hébergeur, médiateur de la consommation. Aperçu en direct, export HTML et Markdown.",
+    processing: "navigateur",
+    available: true,
+  },
+  {
+    slug: "generateur-confidentialite",
+    title: "Générateur de politique de confidentialité",
+    question: "Que doit dire ma politique de confidentialité pour respecter le RGPD ?",
+    description:
+      "Cochez vos traitements : finalité, base légale et durée de conservation sont préremplies et modifiables. Destinataires, transferts hors UE, droits et réclamation CNIL. Export HTML et Markdown.",
+    processing: "navigateur",
+    available: true,
+  },
+  {
+    slug: "en-tetes-securite",
+    title: "Vérificateur d'en-têtes de sécurité",
+    question: "Mon serveur envoie-t-il les bons en-têtes de sécurité ?",
+    description:
+      "HSTS, CSP, frame-ancestors, Referrer-Policy, Permissions-Policy, COOP/CORP et attributs des cookies : une note de A à F et la valeur corrigée pour chacun.",
+    processing: "serveur",
+    available: true,
+  },
+  {
+    slug: "testeur-cookie",
+    title: "Testeur de cookie",
+    question: "À quoi sert ce cookie, et faut-il un consentement ?",
+    description:
+      "Collez un nom de cookie ou votre document.cookie : finalité, éditeur, durée de vie et consentement requis pour chacun.",
+    processing: "navigateur",
+    available: true,
+  },
+  {
+    slug: "duree-conservation",
+    title: "Calculateur de durée de conservation",
+    question: "Combien de temps puis-je garder cette donnée ?",
+    description:
+      "Traceurs, choix de consentement, prospects, clients, candidats, vidéosurveillance, journaux : durée de référence, source CNIL ou légale et date d'échéance calculée.",
+    processing: "navigateur",
+    available: true,
+  },
+  {
+    slug: "reponse-droits",
+    title: "Réponse aux demandes de droits",
+    question: "Comment répondre à une demande d'accès, d'effacement ou d'opposition ?",
+    description:
+      "Courrier de réponse pour les articles 15 à 21 du RGPD : acceptation, refus motivé ou demande de précision, délais rappelés et voies de recours.",
+    processing: "navigateur",
+    available: true,
+  },
+  {
     slug: "comparer",
     title: "Comparateur de deux sites",
     question: "Mon site fait-il mieux ou moins bien que celui de mon concurrent ?",
@@ -88,9 +142,9 @@ export const FREE_TOOLS: readonly FreeTool[] = [
     title: "Vérificateur d'archive de preuve",
     question: "Cette archive d'audit est-elle authentique et non modifiée ?",
     description:
-      "Contrôle les empreintes SHA-256 et la signature Ed25519 d'une archive Konsent, sans rien téléverser.",
+      "Recalcule les empreintes SHA-256 de chaque fichier et vérifie la signature Ed25519 d'une archive Konsent, sans rien téléverser.",
     processing: "navigateur",
-    available: false,
+    available: true,
   },
   {
     slug: "simulateur",

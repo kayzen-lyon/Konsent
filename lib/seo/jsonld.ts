@@ -109,3 +109,74 @@ export function breadcrumbJsonLd(items: readonly { name: string; path: string }[
     })),
   };
 }
+
+/**
+ * Guide de correction en HowTo : les étapes balisées sont exactement celles
+ * affichées dans la page, dans le même ordre, avec une ancre vers chacune.
+ * Aucune durée ni aucun coût : le guide n'en annonce pas, le balisage non plus.
+ */
+export function howToJsonLd(input: {
+  name: string;
+  description: string;
+  /** Chemin de la page, ex. `/guides/bloquer-hotjar`. */
+  path: string;
+  steps: readonly string[];
+}) {
+  const url = `${BASE}${input.path}`;
+  return {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: input.name,
+    description: input.description,
+    url,
+    inLanguage: "fr-FR",
+    publisher: { "@id": ORG_ID },
+    step: input.steps.map((text, i) => ({
+      "@type": "HowToStep",
+      position: i + 1,
+      name: stepName(text),
+      text,
+      url: `${url}#etape-${i + 1}`,
+    })),
+  };
+}
+
+/** Intitulé court d'une étape : sa première proposition, sans le point final. */
+function stepName(text: string): string {
+  const first = text.split(/[.:;]\s/)[0]?.replace(/[.:;]$/, "") ?? text;
+  return first.length <= 110 ? first : `${first.slice(0, 107).trimEnd()}…`;
+}
+
+/**
+ * Outil gratuit en SoftwareApplication. Le type est structurel pour rester
+ * découplé du catalogue : tout outil exposant ces champs convient.
+ */
+export function toolJsonLd(tool: {
+  slug: string;
+  title: string;
+  description: string;
+  href?: string;
+  processing?: "navigateur" | "serveur";
+}) {
+  const path = tool.href ?? `/outils/${tool.slug}`;
+  return {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "@id": `${BASE}${path}#outil`,
+    name: tool.title,
+    url: `${BASE}${path}`,
+    description: tool.description,
+    applicationCategory: "BusinessApplication",
+    applicationSubCategory: "Outil RGPD et cookies",
+    operatingSystem: "Web",
+    inLanguage: "fr-FR",
+    isAccessibleForFree: true,
+    ...(tool.processing === "navigateur"
+      ? { featureList: ["Traitement local, dans le navigateur", "Sans inscription"] }
+      : { featureList: ["Sans inscription"] }),
+    offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" },
+    isPartOf: { "@id": SITE_ID },
+    author: { "@id": ORG_ID },
+    publisher: { "@id": ORG_ID },
+  };
+}

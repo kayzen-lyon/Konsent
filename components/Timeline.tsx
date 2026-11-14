@@ -1,5 +1,6 @@
 import type { Observation } from "@/lib/engine/types";
 import { CONSENT_REQUIRED_CATEGORIES } from "@/lib/trackers/db";
+import { phaseSummaries } from "@/lib/report/phases";
 
 /**
  * La preuve brute — le bloc qui ne s'interprète pas.
@@ -91,5 +92,78 @@ export function Timeline({ observation }: { observation: Observation }) {
         </p>
       </div>
     </div>
+  );
+}
+
+/**
+ * Frise des trois phases du protocole : avant tout choix, après refus, après
+ * acceptation. En mode statique, les phases B et C sont dites « non
+ * observées » : afficher zéro y vaudrait une affirmation que rien ne fonde.
+ */
+export function PhaseTimeline({ observation }: { observation: Observation }) {
+  const phases = phaseSummaries(observation);
+  const staticMode = observation.mode === "static";
+
+  return (
+    <ol className="mb-6 grid gap-3 md:grid-cols-3" aria-label="Observations par phase du protocole">
+      {phases.map((p, i) => {
+        const alert = p.observed && (p.phase === "C" ? false : p.consentServices + p.consentCookies > 0);
+        return (
+          <li
+            key={p.phase}
+            className={`relative rounded-3xl bg-surface p-5 ring-1 ring-line shadow-md ${
+              alert ? "border-l-2 border-crit" : p.observed ? "border-l-2 border-ok" : ""
+            }`}
+          >
+            <p className="tech text-[10px] text-muted">
+              Phase {i + 1} sur 3 · {p.phase}
+            </p>
+            <h3 className="font-display mt-1 text-[15px] font-bold text-ink-2">{p.label}</h3>
+            {p.observed ? (
+              <>
+                <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2 text-[12px]">
+                  <div>
+                    <dt className="text-muted">Services tiers</dt>
+                    <dd className="tabular font-bold text-ink-2">{p.services}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-muted">dont soumis à consentement</dt>
+                    <dd className={`tabular font-bold ${alert && p.consentServices > 0 ? "text-crit" : "text-ink-2"}`}>
+                      {p.consentServices}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-muted">Cookies</dt>
+                    <dd className="tabular font-bold text-ink-2">{p.cookies}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-muted">dont soumis à consentement</dt>
+                    <dd className={`tabular font-bold ${alert && p.consentCookies > 0 ? "text-crit" : "text-ink-2"}`}>
+                      {p.consentCookies}
+                    </dd>
+                  </div>
+                </dl>
+                {staticMode ? (
+                  <p className="mt-3 text-[11px] leading-snug text-muted">
+                    Analyse statique : services référencés dans le document servi, cookies posés
+                    par en-tête HTTP. Aucun JavaScript exécuté.
+                  </p>
+                ) : p.phase === "C" ? (
+                  <p className="mt-3 text-[11px] leading-snug text-muted">
+                    Après acceptation, ces dépôts sont attendus : la phase sert de point de
+                    comparaison.
+                  </p>
+                ) : null}
+              </>
+            ) : (
+              <p className="mt-3 text-[13px] leading-snug text-muted">
+                <span className="font-semibold text-ink-2">Non observé</span> : analyse statique.
+                Cette phase suppose un navigateur réel qui clique sur le bandeau.
+              </p>
+            )}
+          </li>
+        );
+      })}
+    </ol>
   );
 }

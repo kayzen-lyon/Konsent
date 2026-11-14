@@ -1,0 +1,80 @@
+import type { Metadata } from "next";
+import { EDITOR } from "@/lib/disclaimer";
+import { RULEPACK } from "@/lib/rulepack";
+import { TRACKERS } from "@/lib/trackers/db";
+import { COOKIES } from "@/lib/seo/cookies";
+import { FREE_TOOLS } from "@/lib/tools/catalog";
+
+export const metadata: Metadata = {
+  title: "Espace presse",
+  description:
+    "Kit média de Konsent : présentation, chiffres clés vérifiables, logo et contact presse.",
+};
+
+export default function PressPage() {
+  const tools = FREE_TOOLS.filter((t) => t.available).length;
+  const boilerplate = `Konsent est un service d'audit automatisé RGPD, cookies et traceurs, indépendant de toute plateforme de consentement. Il observe un site comme le ferait un contrôleur — avant le choix du visiteur, après un refus, après une acceptation — et rattache chaque écart à son référentiel public de ${RULEPACK.total} règles. Konsent est édité par ${EDITOR.tradeName}, agence web et IA à Lyon.`;
+
+  return (
+    <div className="mx-auto max-w-4xl px-5 py-12 sm:py-16">
+      <p className="tech text-[11px] text-flame">Presse</p>
+      <h1 className="display mt-3 text-3xl text-ink-2 sm:text-4xl">Espace presse</h1>
+      <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-muted">
+        Tout ce qu&apos;il faut pour parler de Konsent. Les chiffres ci-dessous sont calculés à partir
+        du référentiel en ligne : ils sont vérifiables, et à jour à chaque publication.
+      </p>
+
+      <h2 className="display mt-12 text-2xl text-ink-2">En une phrase</h2>
+      <blockquote className="mt-4 rounded-3xl border-l-4 border-flame bg-surface p-6 text-[15px] leading-relaxed text-ink-2 shadow-md">
+        {boilerplate}
+      </blockquote>
+
+      <h2 className="display mt-12 text-2xl text-ink-2">Chiffres clés</h2>
+      <dl className="mt-4 grid gap-px overflow-hidden rounded-3xl bg-line ring-1 ring-line sm:grid-cols-2 lg:grid-cols-4">
+        {[
+          [String(RULEPACK.total), "règles publiques", `Référentiel ${RULEPACK.version}`],
+          [String(TRACKERS.length), "destinataires décrits", "Entreprises qui reçoivent les données"],
+          [String(COOKIES.length), "cookies documentés", "Finalité, éditeur, durée"],
+          [String(tools), "outils gratuits", "Sans inscription"],
+        ].map(([value, label, hint]) => (
+          <div key={label} className="bg-surface px-5 py-5">
+            <dt className="tech text-[10px] text-muted">{label}</dt>
+            <dd className="display mt-1 text-3xl text-ink-2">{value}</dd>
+            <dd className="mt-1 text-[12px] text-muted">{hint}</dd>
+          </div>
+        ))}
+      </dl>
+
+      <h2 className="display mt-12 text-2xl text-ink-2">Logo</h2>
+      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+        <figure className="flex flex-col items-center gap-3 rounded-3xl border border-line bg-white p-8">
+          <img src="/icon.svg" alt="Logo Konsent sur fond clair" width={96} height={96} />
+          <figcaption className="text-[13px] text-[#586474]">Sur fond clair</figcaption>
+        </figure>
+        <figure className="flex flex-col items-center gap-3 rounded-3xl border border-line bg-navy-deep p-8">
+          <img src="/icon.svg" alt="Logo Konsent sur fond sombre" width={96} height={96} />
+          <figcaption className="text-[13px] text-white/75">Sur fond sombre</figcaption>
+        </figure>
+      </div>
+      <p className="mt-4 text-sm text-muted">
+        <a href="/icon.svg" download="konsent-logo.svg" className="text-flame">
+          Télécharger le logo (SVG vectoriel)
+        </a>{" "}
+        · Couleur principale : terracotta <code className="font-mono">#B7481F</code> · Typographies :
+        Outfit et Plus Jakarta Sans.
+      </p>
+
+      <h2 className="display mt-12 text-2xl text-ink-2">Contact presse</h2>
+      <p className="mt-4 text-[15px] leading-relaxed text-ink-2">
+        {EDITOR.director}, {EDITOR.tradeName} —{" "}
+        <a href={`mailto:${EDITOR.email}?subject=${encodeURIComponent("Presse — Konsent")}`} className="text-flame">
+          {EDITOR.email}
+        </a>{" "}
+        —{" "}
+        <a href={`tel:${EDITOR.phoneE164}`} className="text-flame">
+          {EDITOR.phone}
+        </a>
+      </p>
+    </div>
+  );
+}

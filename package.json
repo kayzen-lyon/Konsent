@@ -21,7 +21,7 @@
     "test:mcp": "tsx scripts/test-mcp.mjs",
     "test:worker": "tsx scripts/test-worker.mjs",
     "test:report": "tsx scripts/test-report.mjs",
-    "check": "npm run check:rulepack && npm run check:csp && npm run check:sovereignty && npm run typecheck && npm run test:html && npm run test:fixtures && npm run test:tcf && npm run test:jurisdictions && npm run test:billing && npm run test:accounts && npm run test:mcp && npm run test:worker && npm run test:report && npm run test:api && npm run test:tenancy && npm run test:docs && npm run test:contact && npm run test:legal && npm run test:rate-limit",
+    "check": "npm run check:rulepack && npm run check:csp && npm run check:sovereignty && npm run typecheck && npm run test:html && npm run test:fixtures && npm run test:tcf && npm run test:jurisdictions && npm run test:billing && npm run test:accounts && npm run test:mcp && npm run test:worker && npm run test:report && npm run test:api && npm run test:tenancy && npm run test:docs && npm run test:contact && npm run test:legal && npm run test:rate-limit && npm run test:account-rights",
     "test:api": "tsx scripts/test-api.mjs",
     "test:tenancy": "tsx scripts/test-tenancy.mjs",
     "test:docs": "tsx scripts/test-docs.mjs",
@@ -29,7 +29,8 @@
     "test:contact": "tsx scripts/test-contact.mjs",
     "test:legal": "tsx scripts/test-legal.mjs",
     "test:rate-limit": "tsx scripts/test-rate-limit.mjs",
-    "db:schema": "node scripts/db-schema.mjs"
+    "db:schema": "node scripts/db-schema.mjs",
+    "test:account-rights": "tsx scripts/test-account-rights.mjs"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.2.1",

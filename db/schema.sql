@@ -289,3 +289,12 @@ end;
 $$;
 
 revoke all on function purge_expired_history() from public;
+
+-- ═══════════════════════════════════════ droits des personnes (RGPD) ═══════
+-- Effacement du compte (art. 17) : `login_tokens` porte l'adresse sans clé
+-- étrangère, et les inscriptions faites sans session ne sont rattachées que
+-- par `alert_email`. Ces deux index servent la suppression ciblée de
+-- lib/accounts (deleteAccount) ; tout le reste suit les cascades ci-dessus.
+create index if not exists login_tokens_email_idx on login_tokens (email);
+create index if not exists monitored_domains_orphan_email_idx
+  on monitored_domains (alert_email) where account_id is null;

@@ -11,6 +11,8 @@ import {
   lifetimeLabel,
   vendorOf,
 } from "@/lib/seo/cookies";
+import { SeeAlso } from "@/components/SeeAlso";
+import { relatedForCookie } from "@/lib/seo/related";
 
 export function generateStaticParams() {
   return COOKIES.map((c) => ({ name: c.slug }));
@@ -184,6 +186,13 @@ export default async function CookiePage({ params }: { params: Promise<{ name: s
           </ul>
         </section>
       ) : null}
+
+      <SeeAlso
+        links={relatedForCookie(cookie, [
+          ...(vendor ? [`/traceurs/${vendor.slug}`, `/guides/bloquer-${vendor.slug}`] : []),
+          ...siblings.map((s) => `/cookies/${s.slug}`),
+        ])}
+      />
 
       <section className="mt-10 rounded-xl bg-ink p-6">
         <h2 className="display text-xl text-white">
