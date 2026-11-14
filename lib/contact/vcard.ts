@@ -96,7 +96,7 @@ export function buildVCard(): string {
     // non à `Date.now()` : une fiche dont l'horodatage change à chaque
     // téléchargement empêche tout carnet d'adresses de détecter qu'elle n'a
     // pas bougé, et provoque un doublon à chaque import.
-    "REV:20260809T000000Z",
+    "REV:20261114T000000Z",
     "END:VCARD",
   ];
 
