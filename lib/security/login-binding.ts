@@ -14,7 +14,7 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 export const LOGIN_BINDING_COOKIE = "konsent_login_lie";
 
 function secret(): string {
-  const value = process.env.KONSENT_AUTH_SECRET ?? process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const value = process.env.KONSENT_AUTH_SECRET ?? process.env.DATABASE_URL;
   if (!value) throw new Error("Aucun secret d'authentification configuré.");
   return value;
 }

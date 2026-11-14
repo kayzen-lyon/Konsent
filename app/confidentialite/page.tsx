@@ -114,8 +114,10 @@ export default function PrivacyPage() {
           des alertes. Vous pouvez résilier à tout moment ; l&apos;historique est alors supprimé.
         </p>
         <p className="mt-3 text-[15px] leading-relaxed text-ink-2">
-          <strong>Hébergement des données :</strong> Supabase, région Paris (eu-west-3), au sein
-          de l&apos;Union européenne.
+          <strong>Hébergement des données :</strong> base Postgres opérée par Neon (Neon Inc.,
+          société de droit américain), région Francfort (AWS eu-central-1), au sein de
+          l&apos;Union européenne. Les données restent stockées dans l&apos;UE ; l&apos;accès
+          éventuel du prestataire est encadré par ses clauses contractuelles types.
         </p>
       </section>
 

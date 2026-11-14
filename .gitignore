@@ -16,3 +16,4 @@ worker/dist/
 .vercel
 mcp/node_modules/
 mcp/dist/
+.env*

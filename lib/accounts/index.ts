@@ -1,5 +1,6 @@
 import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
 import type { PlanId } from "../billing/plans";
+import { dbConfigured, getSql, iso, type Sql } from "../db";
 
 /**
  * Comptes et sessions.
@@ -16,13 +17,11 @@ import type { PlanId } from "../billing/plans";
  * un jeton en clair. Une fuite de la base ne permet donc de se connecter à
  * aucun compte.
  *
- * Dégradation gracieuse : sans Supabase configuré, tout renvoie « indisponible »
+ * Dégradation gracieuse : sans base configurée (DATABASE_URL), tout renvoie « indisponible »
  * et l'application fonctionne exactement comme avant — l'audit à la demande
  * reste sans trace, comme annoncé.
  */
 
-const SUPABASE_URL = process.env["SUPABASE_URL"];
-const SERVICE_KEY = process.env["SUPABASE_SERVICE_ROLE_KEY"];
 
 /** Durée de validité d'un lien de connexion. Court : c'est un secret transmis par e-mail. */
 export const MAGIC_LINK_TTL_MINUTES = 15;
@@ -121,32 +120,16 @@ export function normalizeEmail(value: string): string {
   return value.trim().toLowerCase();
 }
 
-class SupabaseAccounts implements Accounts {
+class PostgresAccounts implements Accounts {
   readonly available = true as const;
 
-  constructor(
-    private readonly url: string,
-    private readonly key: string,
-  ) {}
+  constructor(private readonly sql: Sql) {}
 
-  private async request<T>(path: string, init: RequestInit = {}): Promise<T> {
-    const res = await fetch(`${this.url}/rest/v1/${path}`, {
-      ...init,
-      headers: {
-        apikey: this.key,
-        Authorization: `Bearer ${this.key}`,
-        "Content-Type": "application/json",
-        Prefer: "return=representation",
-        ...init.headers,
-      },
-      cache: "no-store",
-    });
-    if (!res.ok) {
-      const detail = await res.text();
-      throw new Error(`Supabase ${res.status} sur ${path} : ${detail.slice(0, 200)}`);
-    }
-    if (res.status === 204) return undefined as T;
-    return (await res.json()) as T;
+  private async upsertAccount(email: string): Promise<void> {
+    // Création ou récupération, sans révéler lequel des deux a eu lieu.
+    await this.sql`
+      insert into accounts (email) values (${email})
+      on conflict (email) do update set updated_at = now()`;
   }
 
   async requestMagicLink(email: string): Promise<{ token: string; expiresAt: string }> {
@@ -157,19 +140,10 @@ class SupabaseAccounts implements Accounts {
     // Le compte est créé à la première demande. On ne révèle jamais à
     // l'appelant s'il existait déjà : ce serait un moyen de tester si une
     // adresse est cliente.
-    await this.request("rpc/konsent_upsert_account", {
-      method: "POST",
-      body: JSON.stringify({ p_email: normalized }),
-    });
-
-    await this.request("login_tokens", {
-      method: "POST",
-      body: JSON.stringify({
-        email: normalized,
-        token_hash: fingerprint(token),
-        expires_at: expiresAt,
-      }),
-    });
+    await this.upsertAccount(normalized);
+    await this.sql`
+      insert into login_tokens (email, token_hash, expires_at)
+      values (${normalized}, ${fingerprint(token)}, ${expiresAt})`;
 
     return { token, expiresAt };
   }
@@ -177,128 +151,85 @@ class SupabaseAccounts implements Accounts {
   async consumeMagicLink(
     token: string,
   ): Promise<{ sessionToken: string; account: Account } | null> {
-    const hash = fingerprint(token);
-    const nowIso = new Date().toISOString();
-
-    // La consommation est atomique : le jeton est marqué utilisé ET renvoyé
-    // dans la même requête. Sans cela, deux ouvertures simultanées du même
-    // lien créeraient deux sessions.
-    const rows = await this.request<Record<string, unknown>[]>(
-      `login_tokens?token_hash=eq.${hash}&used_at=is.null&expires_at=gt.${nowIso}`,
-      { method: "PATCH", body: JSON.stringify({ used_at: nowIso }) },
-    );
-
+    // Consommation atomique : le jeton est marqué utilisé ET renvoyé dans la
+    // même requête. Deux ouvertures simultanées ne créent pas deux sessions.
+    const rows = await this.sql`
+      update login_tokens set used_at = now()
+      where token_hash = ${fingerprint(token)} and used_at is null and expires_at > now()
+      returning email`;
     const row = rows[0];
     if (!row) return null;
 
-    const email = String(row["email"]);
-    const accounts = await this.request<Record<string, unknown>[]>(
-      `accounts?email=eq.${encodeURIComponent(email)}&select=*`,
-    );
+    const accounts = await this.sql`select * from accounts where email = ${String(row["email"])}`;
     const accountRow = accounts[0];
     if (!accountRow) return null;
 
     const sessionToken = newToken();
-    await this.request("sessions", {
-      method: "POST",
-      body: JSON.stringify({
-        account_id: accountRow["id"],
-        token_hash: fingerprint(sessionToken),
-        expires_at: new Date(Date.now() + SESSION_TTL_DAYS * 86_400_000).toISOString(),
-      }),
-    });
+    const sessionExpiry = new Date(Date.now() + SESSION_TTL_DAYS * 86_400_000).toISOString();
+    await this.sql`
+      insert into sessions (account_id, token_hash, expires_at)
+      values (${accountRow["id"]}, ${fingerprint(sessionToken)}, ${sessionExpiry})`;
 
     return { sessionToken, account: toAccount(accountRow) };
   }
 
   async accountForSession(sessionToken: string): Promise<Account | null> {
-    const hash = fingerprint(sessionToken);
-    const nowIso = new Date().toISOString();
-    const rows = await this.request<Record<string, unknown>[]>(
-      `sessions?token_hash=eq.${hash}&expires_at=gt.${nowIso}&select=account_id,accounts(*)`,
-    );
-    const row = rows[0];
-    if (!row) return null;
-    const nested = row["accounts"] as Record<string, unknown> | undefined;
-    return nested ? toAccount(nested) : null;
+    const rows = await this.sql`
+      select a.* from sessions s join accounts a on a.id = s.account_id
+      where s.token_hash = ${fingerprint(sessionToken)} and s.expires_at > now()
+      limit 1`;
+    return rows[0] ? toAccount(rows[0]) : null;
   }
 
   async endSession(sessionToken: string): Promise<void> {
-    await this.request(`sessions?token_hash=eq.${fingerprint(sessionToken)}`, {
-      method: "DELETE",
-      headers: { Prefer: "return=minimal" },
-    });
+    await this.sql`delete from sessions where token_hash = ${fingerprint(sessionToken)}`;
   }
 
   async purgeExpired(): Promise<number> {
-    const nowIso = new Date().toISOString();
-    const sessions = await this.request<Record<string, unknown>[]>(
-      `sessions?expires_at=lt.${nowIso}`,
-      { method: "DELETE" },
-    );
-    const tokens = await this.request<Record<string, unknown>[]>(
-      `login_tokens?expires_at=lt.${nowIso}`,
-      { method: "DELETE" },
-    );
-    return (sessions?.length ?? 0) + (tokens?.length ?? 0);
+    const sessions = await this.sql`delete from sessions where expires_at < now() returning id`;
+    const tokens = await this.sql`delete from login_tokens where expires_at < now() returning id`;
+    return sessions.length + tokens.length;
   }
 
   async subAccounts(parentId: string): Promise<readonly Account[]> {
-    const rows = await this.request<Record<string, unknown>[]>(
-      `accounts?parent_id=eq.${encodeURIComponent(parentId)}&order=created_at.asc`,
-    );
+    const rows = await this.sql`
+      select * from accounts where parent_id = ${parentId} order by created_at asc`;
     return rows.map(toAccount);
   }
 
   async inviteSubAccount(parentId: string, email: string): Promise<boolean> {
     const normalized = normalizeEmail(email);
-
-    await this.request("rpc/konsent_upsert_account", {
-      method: "POST",
-      body: JSON.stringify({ p_email: normalized }),
-    });
-
-    // Un compte de premier niveau SANS sous-comptes peut seul être invité ;
-    // la base refusera de toute façon l'imbrication au moment de l'accepter.
-    const rows = await this.request<Record<string, unknown>[]>(
-      `accounts?email=eq.${encodeURIComponent(normalized)}&parent_id=is.null`,
-      { method: "PATCH", body: JSON.stringify({ invited_parent_id: parentId }) },
-    );
+    await this.upsertAccount(normalized);
+    // N'écrit JAMAIS parent_id : seule une invitation est posée.
+    const rows = await this.sql`
+      update accounts set invited_parent_id = ${parentId}, updated_at = now()
+      where email = ${normalized} and parent_id is null and id <> ${parentId}
+      returning id`;
     return rows.length > 0;
   }
 
   async accountById(id: string): Promise<Account | null> {
-    const rows = await this.request<Record<string, unknown>[]>(
-      `accounts?id=eq.${encodeURIComponent(id)}&select=*`,
-    );
+    const rows = await this.sql`select * from accounts where id = ${id} limit 1`;
     return rows[0] ? toAccount(rows[0]) : null;
   }
 
   async acceptInvitation(childId: string, parentId: string): Promise<boolean> {
-    const rows = await this.request<Record<string, unknown>[]>(
-      `accounts?id=eq.${encodeURIComponent(childId)}&parent_id=is.null&invited_parent_id=eq.${encodeURIComponent(parentId)}`,
-      {
-        method: "PATCH",
-        body: JSON.stringify({ parent_id: parentId, invited_parent_id: null }),
-      },
-    );
+    const rows = await this.sql`
+      update accounts
+      set parent_id = ${parentId}, invited_parent_id = null, updated_at = now()
+      where id = ${childId} and parent_id is null and invited_parent_id = ${parentId}
+      returning id`;
     return rows.length > 0;
   }
 
   async declineInvitation(childId: string): Promise<void> {
-    await this.request(`accounts?id=eq.${encodeURIComponent(childId)}`, {
-      method: "PATCH",
-      headers: { Prefer: "return=minimal" },
-      body: JSON.stringify({ invited_parent_id: null }),
-    });
+    await this.sql`
+      update accounts set invited_parent_id = null, updated_at = now() where id = ${childId}`;
   }
 
   async detachSubAccount(childId: string): Promise<void> {
-    await this.request(`accounts?id=eq.${encodeURIComponent(childId)}`, {
-      method: "PATCH",
-      headers: { Prefer: "return=minimal" },
-      body: JSON.stringify({ parent_id: null }),
-    });
+    await this.sql`
+      update accounts set parent_id = null, updated_at = now() where id = ${childId}`;
   }
 }
 
@@ -307,9 +238,7 @@ function toAccount(row: Record<string, unknown>): Account {
     id: String(row["id"]),
     email: String(row["email"]),
     plan: (row["plan"] as PlanId) ?? "libre",
-    createdAt: String(row["created_at"]),
-    // Absent des lignes antérieures à la migration 0004 : lu comme « aucun
-    // parent », ce qui est exact — les sous-comptes n'existaient pas.
+    createdAt: iso(row["created_at"]),
     parentId: (row["parent_id"] as string | null) ?? null,
     invitedParentId: (row["invited_parent_id"] as string | null) ?? null,
   };
@@ -319,7 +248,7 @@ let cached: Accounts | AccountsUnavailable | null = null;
 
 export function getAccounts(): Accounts | AccountsUnavailable {
   if (cached) return cached;
-  if (!SUPABASE_URL || !SERVICE_KEY) {
+  if (!dbConfigured()) {
     cached = {
       available: false,
       reason:
@@ -327,6 +256,6 @@ export function getAccounts(): Accounts | AccountsUnavailable {
     };
     return cached;
   }
-  cached = new SupabaseAccounts(SUPABASE_URL.replace(/\/$/, ""), SERVICE_KEY);
+  cached = new PostgresAccounts(getSql());
   return cached;
 }

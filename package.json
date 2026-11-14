@@ -27,9 +27,11 @@
     "test:docs": "tsx scripts/test-docs.mjs",
     "build:qr": "node scripts/generate-qr.mjs",
     "test:contact": "tsx scripts/test-contact.mjs",
-    "test:legal": "tsx scripts/test-legal.mjs"
+    "test:legal": "tsx scripts/test-legal.mjs",
+    "db:schema": "node scripts/db-schema.mjs"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^1.2.1",
     "motion": "^12.43.0",
     "next": "15.5.29",
     "react": "19.1.1",
