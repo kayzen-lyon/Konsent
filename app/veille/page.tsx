@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { Disclaimer } from "@/components/primitives";
+import { NewsletterForm } from "@/components/veille/NewsletterForm";
+import { newsletterAvailable } from "@/lib/newsletter";
 import { getRule } from "@/lib/rulepack";
 import { STATUS_LABELS, WATCH_ENTRIES, type WatchStatus } from "@/lib/regwatch/entries";
 
@@ -28,7 +30,23 @@ const STATUS_STYLES: Record<WatchStatus, string> = {
   WITHDRAWN: "bg-slate-200 text-slate-600",
 };
 
-export default function RegWatchPage() {
+/** Retour des liens de confirmation et de désabonnement. */
+const SUBSCRIPTION_NOTICES: Record<string, string> = {
+  confirme: "Inscription confirmée. Vous recevrez la lettre le 1er de chaque mois où la veille a évolué.",
+  retire: "Désabonnement effectué : votre adresse a été effacée.",
+  invalide:
+    "Ce lien n'est plus valable : il a déjà servi, ou l'inscription n'a pas été confirmée sous sept jours.",
+};
+
+export default async function RegWatchPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const state = (await searchParams)["abonnement"];
+  const notice = typeof state === "string" ? (SUBSCRIPTION_NOTICES[state] ?? null) : null;
+  const newsletterOpen = newsletterAvailable();
+
   const inForce = WATCH_ENTRIES.filter(
     (e) => e.status === "IN_FORCE" || e.status === "CASE_LAW",
   );
@@ -172,6 +190,45 @@ export default function RegWatchPage() {
             </section>
           ),
         )}
+
+        <section id="lettre" className="mb-6 scroll-mt-28 rounded-xl bg-ink p-6">
+          <p className="tech text-[10px] text-flame-soft">Lettre mensuelle</p>
+          <h2 className="display mt-2 text-xl text-white">Recevoir la veille par e-mail</h2>
+          <p className="mt-3 text-[14.5px] leading-relaxed text-white/70">
+            Le 1er du mois, en texte brut, les entrées ajoutées le mois précédent — et rien les
+            mois où rien n&apos;a changé. Ni pixel de suivi, ni lien traqué. Inscription
+            confirmée par e-mail (double opt-in) ; une adresse non confirmée est effacée sous
+            sept jours.
+          </p>
+          {notice ? (
+            <p role="status" className="mt-4 rounded-lg bg-white/10 px-4 py-3 text-[14px] text-white">
+              {notice}
+            </p>
+          ) : null}
+          {newsletterOpen ? (
+            <NewsletterForm />
+          ) : (
+            <p className="mt-4 rounded-lg bg-white/10 px-4 py-3 text-[14px] leading-relaxed text-white/80">
+              La lettre ouvrira dès que l&apos;envoi d&apos;e-mails sera activé. D&apos;ici là, nous
+              ne collectons aucune adresse que nous ne pourrions pas confirmer : les flux{" "}
+              <a href="/veille/rss.xml" className="text-flame-soft underline">
+                RSS
+              </a>{" "}
+              et{" "}
+              <a href="/veille/feed.json" className="text-flame-soft underline">
+                JSON Feed
+              </a>{" "}
+              restent disponibles.
+            </p>
+          )}
+          <p className="mt-3 text-[12px] leading-relaxed text-white/50">
+            Détails dans la{" "}
+            <Link href="/confidentialite#lettre-veille" className="underline">
+              politique de confidentialité
+            </Link>
+            .
+          </p>
+        </section>
 
         <section className="rounded-xl bg-ink p-6">
           <p className="tech text-[10px] text-flame-soft">Méthode</p>

@@ -86,6 +86,17 @@ const INTEGRATIONS: readonly Integration[] = [
     link: { href: "/integrations/github", label: "Documentation de l'action GitHub" },
   },
   {
+    id: "extensions",
+    eyebrow: "Extensions",
+    title: "Navigateur et WordPress",
+    body: "Une extension Chrome, Edge et Firefox qui ouvre l'audit de la page affichée, et une extension WordPress qui affiche le score du site dans le tableau de bord. Open source (licence MIT), permissions minimales, aucune donnée collectée.",
+    points: [
+      "Navigateur : une seule permission, activeTab, ni script injecté ni accès permanent aux sites.",
+      "WordPress : widget réservé aux administrateurs, résultat mis en cache 12 heures, rien sur les pages publiques.",
+    ],
+    link: { href: "/integrations/extensions", label: "Télécharger les extensions" },
+  },
+  {
     id: "badge",
     eyebrow: "Badge",
     title: "Le score sur votre site ou votre README",
@@ -111,7 +122,7 @@ export default function IntegrationsPage() {
       <p className="tech text-[10px] text-accent">Intégrations</p>
       <h1 className="display mt-2 text-4xl text-ink-2">Branchez Konsent sur vos outils</h1>
       <p className="mt-5 max-w-3xl text-lg leading-relaxed text-muted">
-        Une API, un serveur MCP, une action GitHub, un badge et un flux RSS. Les mêmes règles et le
+        Une API, un serveur MCP, une action GitHub, un badge, un flux RSS et des extensions navigateur et WordPress. Les mêmes règles et le
         même avertissement partout : un résultat d&apos;analyse technique, indicatif, jamais une
         qualification juridique.
       </p>

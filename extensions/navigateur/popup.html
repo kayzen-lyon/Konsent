@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Konsent — audit RGPD</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header class="head">
+      <img src="icons/icon-32.png" width="24" height="24" alt="" />
+      <p class="brand">Konsent</p>
+    </header>
+
+    <main>
+      <p class="label">Page affichée</p>
+      <p id="cible" class="target">Lecture de l'onglet…</p>
+      <p id="message" class="message" role="status" hidden></p>
+
+      <button id="auditer" type="button" class="primary" disabled>Auditer cette page</button>
+
+      <ul class="links">
+        <li><button id="synthese" type="button" class="link" disabled>Synthèse dirigeant</button></li>
+        <li><button id="outils" type="button" class="link">Outils</button></li>
+      </ul>
+    </main>
+
+    <footer class="foot">
+      <p>
+        Seule l'adresse de la page (sans paramètres) est transmise, à votre clic, à
+        konsent.kayzen-lyon.com. L'extension ne collecte rien.
+      </p>
+    </footer>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

@@ -41,6 +41,8 @@ export interface EmailMessage {
    */
   text: string;
   replyTo?: string;
+  /** En-têtes supplémentaires (ex. `List-Unsubscribe`, RFC 8058). */
+  headers?: Record<string, string>;
 }
 
 export async function sendEmail(message: EmailMessage): Promise<SendResult> {
@@ -68,6 +70,7 @@ export async function sendEmail(message: EmailMessage): Promise<SendResult> {
         subject: message.subject,
         text: message.text,
         ...(message.replyTo ? { reply_to: message.replyTo } : {}),
+        ...(message.headers ? { headers: message.headers } : {}),
       }),
       cache: "no-store",
     });
@@ -165,6 +168,106 @@ export function magicLinkEmail(input: {
       ``,
       `Si vous n'avez pas demandé à vous connecter, ignorez ce message : personne`,
       `ne peut accéder à votre espace sans ce lien.`,
+      ``,
+      `Konsent — KAYZEN (Tarek BELHADJ EI)`,
+    ].join("\n"),
+  };
+}
+
+export function newsletterConfirmEmail(input: { url: string; expiresDays: number }): EmailMessage {
+  return {
+    to: "",
+    subject: "Confirmez votre inscription à la veille Konsent",
+    text: [
+      `Bonjour,`,
+      ``,
+      `Une inscription à la lettre mensuelle de la veille réglementaire Konsent a été`,
+      `demandée pour cette adresse. Pour la confirmer, ouvrez ce lien :`,
+      ``,
+      input.url,
+      ``,
+      `Sans confirmation, rien ne vous sera envoyé et l'adresse sera effacée sous`,
+      `${input.expiresDays} jours.`,
+      ``,
+      `Si vous n'êtes pas à l'origine de cette demande, ignorez ce message.`,
+      ``,
+      `Konsent — KAYZEN (Tarek BELHADJ EI)`,
+    ].join("\n"),
+  };
+}
+
+export function newsletterDigestEmail(input: {
+  monthLabel: string;
+  entries: readonly { title: string; url: string; text: string }[];
+  veilleUrl: string;
+  unsubscribeUrl: string;
+}): EmailMessage {
+  const body = input.entries.flatMap((e, i) => [
+    `${i + 1}. ${e.title}`,
+    e.url,
+    ``,
+    e.text,
+    ``,
+    `—`,
+    ``,
+  ]);
+  return {
+    to: "",
+    subject: `Veille réglementaire Konsent — ${input.monthLabel}`,
+    text: [
+      `Bonjour,`,
+      ``,
+      `Voici les entrées ajoutées à la veille réglementaire pour ${input.monthLabel}.`,
+      `Chacune porte son statut : un projet n'est pas un texte en vigueur.`,
+      ``,
+      ...body,
+      `Toute la veille : ${input.veilleUrl}`,
+      ``,
+      `Ce message résume des sources publiques. Il ne constitue pas un avis juridique.`,
+      ``,
+      `Vous recevez cette lettre parce que vous vous y êtes inscrit et l'avez confirmé.`,
+      `Pour vous désabonner (l'adresse est alors effacée) : ${input.unsubscribeUrl}`,
+      ``,
+      `Konsent — KAYZEN (Tarek BELHADJ EI)`,
+    ].join("\n"),
+  };
+}
+
+export function reportEmail(input: {
+  hostname: string;
+  score: number;
+  grade: string;
+  scannedAt: string;
+  /** Vrai si l'analyse vient d'être relancée faute d'historique. */
+  fresh: boolean;
+  priorities: readonly { title: string; severityLabel: string }[];
+  scanUrl: string;
+  synthesisUrl: string;
+}): EmailMessage {
+  const priorities =
+    input.priorities.length > 0
+      ? input.priorities.map((p, i) => `${i + 1}. [${p.severityLabel}] ${p.title}`)
+      : [`Aucun écart relevé par cette analyse.`];
+  return {
+    to: "",
+    subject: `${input.hostname} — résumé de l'analyse Konsent`,
+    text: [
+      `Bonjour,`,
+      ``,
+      `Vous avez demandé depuis votre espace le résumé de l'analyse de ${input.hostname}.`,
+      ``,
+      `Analyse du ${input.scannedAt}${input.fresh ? " (relancée à votre demande)" : ""}`,
+      `Score indicatif : ${input.score} / 100 — note ${input.grade}`,
+      ``,
+      `Points à examiner en priorité :`,
+      ...priorities,
+      ``,
+      `Rapport complet : ${input.scanUrl}`,
+      `Synthèse : ${input.synthesisUrl}`,
+      ``,
+      `Ce message est produit par une analyse technique automatisée. Il constate des`,
+      `écarts, il ne qualifie pas une infraction : seule la CNIL ou un juge peut le`,
+      `faire.`,
       ``,
       `Konsent — KAYZEN (Tarek BELHADJ EI)`,
     ].join("\n"),

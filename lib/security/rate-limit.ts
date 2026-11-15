@@ -34,6 +34,10 @@ export const RATE_RULES = {
   loginIp: { name: "lien-ip", limit: 5, windowSeconds: 900 },
   loginEmail: { name: "lien-email", limit: 3, windowSeconds: 900 },
   contact: { name: "contact", limit: 5, windowSeconds: 3600 },
+  newsletterIp: { name: "veille-ip", limit: 5, windowSeconds: 3600 },
+  newsletterEmail: { name: "veille-email", limit: 3, windowSeconds: 86400 },
+  reportEmail: { name: "rapport-email", limit: 3, windowSeconds: 3600 },
+  share: { name: "partage", limit: 5, windowSeconds: 3600 },
 } as const satisfies Record<string, RateRule>;
 
 export interface RateDecision {

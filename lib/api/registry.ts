@@ -100,6 +100,16 @@ export const INTERNAL_ROUTES: readonly string[] = [
   "/api/surveillance/webhook",
   "/api/surveillance/plan",
   "/api/surveillance/confirmer",
+  // Lien de rapport figé (opt-in, 30 jours) : appelé par le bouton du rapport,
+  // origine contrôlée et débit limité. Relance l'analyse côté serveur.
+  "/api/rapport/partager",
+  // Lettre mensuelle de la veille : inscription (origine + pot de miel),
+  // liens de confirmation et de désabonnement reçus par e-mail.
+  "/api/veille/abonnement",
+  "/api/veille/confirmer",
+  "/api/veille/desabonner",
+  // Envoi du résumé d'analyse à l'adresse du compte : session + origine.
+  "/api/espace/rapport-email",
   "/api/auth/lien",
   "/api/auth/session",
   // Fiche de contact de l'éditeur. Ne sert aucune donnée d'audit et ne

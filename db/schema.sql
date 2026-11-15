@@ -350,3 +350,39 @@ create table if not exists action_items (
   updated_at  timestamptz not null default now(),
   primary key (domain_id, rule_id)
 );
+
+-- ═════════════════════════════ liens de rapport figés (opt-in, 30 jours) ════
+-- Créés uniquement sur clic « Créer un lien de partage ». Le résultat est
+-- produit par le serveur (analyse relancée), jamais reçu du client. Aucune
+-- donnée personnelle : jeton aléatoire, nom d'hôte et résultat technique.
+create table if not exists shared_reports (
+  id          text primary key,
+  hostname    text not null,
+  result      jsonb not null,
+  degraded    jsonb,
+  created_at  timestamptz not null default now(),
+  expires_at  timestamptz not null
+);
+create index if not exists shared_reports_expires_idx on shared_reports (expires_at);
+
+-- ═══════════════════════════════════ lettre mensuelle de la veille ══════════
+-- Double opt-in : seul le hash du jeton de confirmation est stocké, remis à
+-- null à la confirmation. Désinscription = suppression de la ligne.
+create table if not exists newsletter_subscribers (
+  id              uuid primary key default gen_random_uuid(),
+  email           text not null unique check (email = lower(email)),
+  token_hash      text,
+  created_at      timestamptz not null default now(),
+  confirmed_at    timestamptz,
+  unsubscribed_at timestamptz
+);
+create unique index if not exists newsletter_subscribers_token_idx
+  on newsletter_subscribers (token_hash) where token_hash is not null;
+create index if not exists newsletter_subscribers_unconfirmed_idx
+  on newsletter_subscribers (created_at) where confirmed_at is null;
+
+create table if not exists newsletter_sends (
+  month   text primary key,
+  sent_at timestamptz not null default now(),
+  count   integer not null default 0
+);

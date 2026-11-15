@@ -36,6 +36,7 @@ const SECTIONS: { title: string; links: [string, string][] }[] = [
       ["/outils/registre-traitements", "Générateur de registre des traitements"],
       ["/outils/procedure-cnil", "Simulateur de procédure CNIL"],
       ["/integrations", "Intégrations : API, MCP, GitHub"],
+      ["/integrations/extensions", "Extensions navigateur et WordPress"],
       ["/outils/generateur-mentions-legales", "Générateur de mentions légales"],
       ["/outils/generateur-confidentialite", "Générateur de politique de confidentialité"],
       ["/recherche", "Recherche"],

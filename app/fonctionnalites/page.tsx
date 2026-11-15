@@ -115,7 +115,7 @@ const MODULES = [
     lead: "Être conforme un jour ne sert à rien si personne ne regarde le lendemain.",
     body: [
       "Le moteur compare l'état actuel d'un site à une analyse de référence et ne remonte que ce qui a changé : nouvel écart, nouveau destinataire, juridiction inédite, page légale disparue lors d'une refonte.",
-      "La référence est un jeton que vous conservez, protégé contre l'altération. Nous ne stockons rien : notre politique de confidentialité annonce qu'aucun résultat n'est conservé, et nous nous y tenons.",
+      "La référence est un jeton que vous conservez, protégé contre l'altération. Nous ne stockons rien : notre politique de confidentialité annonce qu'aucun résultat n'est conservé, sauf si vous créez un lien de partage, et nous nous y tenons.",
     ],
     bullets: [
       "Message d'alerte nominatif prêt à l'envoi",
@@ -285,7 +285,8 @@ export default function FeaturesPage() {
             Ce qui suppose une base de données
           </h2>
           <p className="mt-2 max-w-3xl text-[14px] leading-relaxed text-muted">
-            Cette instance ne conserve aucun résultat d&apos;analyse — c&apos;est ce
+            Cette instance ne conserve aucun résultat d&apos;analyse, sauf si vous créez un
+            lien de partage (30 jours) — c&apos;est ce
             qu&apos;annonce notre politique de confidentialité, et nous nous y tenons. Trois
             fonctions en dépendent donc et ne sont pas actives ici : la surveillance{" "}
             <em>planifiée</em> (les moteurs de comparaison et d&apos;alerte, eux, fonctionnent

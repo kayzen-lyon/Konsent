@@ -26,6 +26,50 @@ const SERVICES = [
   ["Référent RGPD externalisé", "190 € / mois"],
 ];
 
+/**
+ * Comparatif croisé. Les offres sont cumulatives : chacune inclut celle qui
+ * la précède. Une promesse non livrée reste marquée « à venir », comme sur
+ * les cartes : le tableau ne doit jamais être plus optimiste qu'elles.
+ */
+type Cell = string | boolean | "soon";
+const COMPARISON: readonly { label: string; cells: readonly [Cell, Cell, Cell, Cell] }[] = [
+  { label: "Analyse à la demande et rapport complet", cells: [true, true, true, true] },
+  { label: "Outils libres et référentiel", cells: [true, true, true, true] },
+  { label: "Domaines surveillés", cells: [false, "1", "5", "25"] },
+  { label: "Analyse automatique", cells: [false, "Mensuelle", "Hebdomadaire", "Hebdomadaire"] },
+  { label: "Alerte en cas de nouveau traceur", cells: [false, true, true, true] },
+  { label: "Historique de score (13 mois)", cells: [false, true, true, true] },
+  { label: "Détection de régression", cells: [false, false, true, true] },
+  { label: "Archive de preuve signée", cells: [false, false, true, true] },
+  { label: "Documents générés", cells: ["Brouillon cookies", "6", "soon", "soon"] },
+  { label: "Accès API avec clé", cells: [false, false, "soon", "soon"] },
+  { label: "250 pages par analyse", cells: [false, false, "soon", "soon"] },
+  { label: "Protocole complet en trois phases", cells: [false, "soon", "soon", "soon"] },
+  { label: "Vue portefeuille et sous-comptes clients", cells: [false, false, false, true] },
+  { label: "Marque blanche et devis à votre grille", cells: [false, false, false, true] },
+];
+
+function ComparisonCell({ value }: { value: Cell }) {
+  if (value === true) {
+    return (
+      <>
+        <span aria-hidden="true" className="font-bold text-ok">✓</span>
+        <span className="sr-only">Inclus</span>
+      </>
+    );
+  }
+  if (value === false) {
+    return (
+      <>
+        <span aria-hidden="true" className="text-muted">—</span>
+        <span className="sr-only">Non inclus</span>
+      </>
+    );
+  }
+  if (value === "soon") return <span className="text-[12px] text-muted">À venir</span>;
+  return <span className="font-semibold text-ink-2">{value}</span>;
+}
+
 export default function PricingPage() {
   return (
     <div className="mx-auto max-w-6xl px-5 py-12 sm:py-16">
@@ -121,6 +165,51 @@ export default function PricingPage() {
           );
         })}
       </div>
+
+      <section className="mt-14" aria-labelledby="comparatif">
+        <h2 id="comparatif" className="text-xl font-semibold tracking-tight text-ink-2">
+          Comparatif détaillé
+        </h2>
+        <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-muted">
+          Chaque offre inclut celle qui la précède. « À venir » signale une promesse qui
+          n&apos;est pas encore livrée : elle n&apos;est pas facturée tant qu&apos;elle ne l&apos;est pas.
+        </p>
+        <div className="mt-5 overflow-x-auto rounded-xl border border-line bg-surface">
+          <table className="w-full min-w-[40rem] text-left text-sm">
+            <caption className="sr-only">Comparatif des offres Konsent</caption>
+            <thead className="bg-surface-low">
+              <tr>
+                <th scope="col" className="px-4 py-3 font-semibold text-ink-2">
+                  Fonctionnalité
+                </th>
+                {PLANS.map((p) => (
+                  <th key={p.id} scope="col" className="px-4 py-3 text-center font-semibold text-ink-2">
+                    {p.name}
+                    <span className="block text-[12px] font-normal text-muted">
+                      {formatAmount(p.amountCents)}
+                      {p.amountCents === null ? "" : " / mois"}
+                    </span>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-line">
+              {COMPARISON.map((row) => (
+                <tr key={row.label}>
+                  <th scope="row" className="px-4 py-2.5 font-normal text-ink-2">
+                    {row.label}
+                  </th>
+                  {row.cells.map((c, i) => (
+                    <td key={PLANS[i]?.id ?? i} className="px-4 py-2.5 text-center">
+                      <ComparisonCell value={c} />
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
 
       <section className="mt-14">
         <h2 className="text-xl font-semibold tracking-tight text-ink-2">
