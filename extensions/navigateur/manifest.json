@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "name": "Konsent — audit RGPD",
+  "short_name": "Konsent",
+  "version": "1.0.0",
+  "description": "Ouvre l'audit RGPD et cookies Konsent de la page affichée. Aucune donnée collectée.",
+  "homepage_url": "https://konsent.kayzen-lyon.com/integrations/extensions",
+  "permissions": ["activeTab"],
+  "action": {
+    "default_title": "Konsent — audit RGPD",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "konsent@kayzen-lyon.com",
+      "strict_min_version": "109.0",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
+    }
+  }
+}

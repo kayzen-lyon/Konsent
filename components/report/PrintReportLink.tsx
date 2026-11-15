@@ -1,11 +1,8 @@
 /**
  * Adresse du rapport, sur le papier uniquement.
  *
- * Un QR code était prévu ici. Le paquet `qrcode` n'est qu'une dépendance de
- * développement : l'importer à l'exécution ferait dépendre la production
- * d'un paquet qui n'y est pas déclaré. En attendant qu'il passe en
- * `dependencies`, le papier porte l'adresse en clair — lisible, recopiable,
- * et sans aucun appel réseau.
+ * Complète le QR code de l'en-tête (`ReportQr`) : le papier porte aussi
+ * l'adresse en clair — lisible, recopiable, et sans aucun appel réseau.
  */
 export function PrintReportLink({ url }: { url: string }) {
   return (

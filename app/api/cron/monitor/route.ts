@@ -7,6 +7,9 @@ import { createBaseline } from "@/lib/monitoring/baseline";
 import { alertSummary, diffAgainstBaseline } from "@/lib/monitoring/diff";
 import { getStorage, nextRun, type MonitoredDomain, type Storage } from "@/lib/storage";
 import { deliverWebhook, type WebhookAlert } from "@/lib/webhooks";
+import { dbConfigured } from "@/lib/db";
+import { purgeUnconfirmedSubscribers, sendMonthlyDigest } from "@/lib/newsletter";
+import { purgeExpiredSharedReports } from "@/lib/report/shared";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -65,10 +68,19 @@ export async function GET(request: Request) {
     return Response.json({ error: "Non autorisé." }, { status: 401 });
   }
 
+  // Indépendants de la surveillance : lettre mensuelle et purges de
+  // rétention (inscriptions non confirmées, liens de partage expirés).
+  const newsletter = await sendMonthlyDigest(new Date());
+  const purgedUnconfirmedSubscribers = await purgeUnconfirmedSubscribers();
+  const purgedSharedReports = dbConfigured()
+    ? await purgeExpiredSharedReports().catch(() => 0)
+    : 0;
+  const extra = { newsletter, purgedUnconfirmedSubscribers, purgedSharedReports };
+
   const storage = getStorage();
   if (!storage.available) {
     return Response.json(
-      { skipped: true, reason: storage.reason, disclaimer: DISCLAIMER_SHORT },
+      { skipped: true, reason: storage.reason, disclaimer: DISCLAIMER_SHORT, ...extra },
       { status: 200 },
     );
   }
@@ -198,6 +210,7 @@ export async function GET(request: Request) {
       disclaimer: DISCLAIMER_SHORT,
       processed: results.length,
       purgedHistoryRows: purged,
+      ...extra,
       results,
     },
     { status: 200, headers: { "Cache-Control": "no-store" } },

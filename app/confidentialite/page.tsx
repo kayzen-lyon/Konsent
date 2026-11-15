@@ -72,10 +72,18 @@ export default function PrivacyPage() {
       <section className="mt-8">
         <h2 className="text-lg font-semibold text-ink-2">Durées de conservation</h2>
         <p className="mt-2 text-[15px] leading-relaxed text-ink-2">
-          <strong>Audit à la demande :</strong> les résultats ne sont pas conservés. Ils sont
-          calculés à la demande et disparaissent à la fermeture de la page. Les journaux
-          techniques de l&apos;hébergeur sont conservés selon la politique de rétention de
-          celui-ci.
+          <strong>Audit à la demande :</strong> les résultats ne sont pas conservés, sauf si
+          vous créez un lien de partage. Ils sont calculés à la demande et disparaissent à la
+          fermeture de la page. Les journaux techniques de l&apos;hébergeur sont conservés selon
+          la politique de rétention de celui-ci.
+        </p>
+        <p className="mt-3 text-[15px] leading-relaxed text-ink-2">
+          <strong>Lien de partage :</strong> si — et seulement si — vous cliquez « Créer un lien
+          de partage » sur un rapport, nous relançons l&apos;analyse et conservons son seul
+          résultat technique (score, constats, services tiers observés sur le site analysé) sous
+          une adresse aléatoire, pendant <strong>30 jours</strong>, puis il est supprimé. Aucune
+          donnée vous concernant (adresse IP, adresse électronique, compte) n&apos;y est
+          associée ; toute personne disposant du lien peut lire le rapport.
         </p>
         <p className="mt-3 text-[15px] leading-relaxed text-ink-2">
           <strong>Surveillance planifiée :</strong> si — et seulement si — vous inscrivez
@@ -126,6 +134,32 @@ export default function PrivacyPage() {
           société de droit américain), région Francfort (AWS eu-central-1), au sein de
           l&apos;Union européenne. Les données restent stockées dans l&apos;UE ; l&apos;accès
           éventuel du prestataire est encadré par ses clauses contractuelles types.
+        </p>
+      </section>
+
+      <section id="lettre-veille" className="mt-8 scroll-mt-28">
+        <h2 className="text-lg font-semibold text-ink-2">Lettre mensuelle de la veille</h2>
+        <p className="mt-2 text-[15px] leading-relaxed text-ink-2">
+          <strong>Finalité :</strong> vous envoyer, le 1er du mois, les entrées ajoutées à la
+          veille réglementaire le mois précédent. Seule votre adresse e-mail est traitée, avec la
+          date d&apos;inscription et de confirmation. La lettre est en texte brut : ni pixel de
+          suivi, ni lien traqué, aucune mesure d&apos;ouverture.
+        </p>
+        <p className="mt-3 text-[15px] leading-relaxed text-ink-2">
+          <strong>Base légale :</strong> votre consentement (article 6(1)(a) du RGPD), recueilli
+          par une case non pré-cochée puis confirmé par un lien envoyé à l&apos;adresse (double
+          opt-in). Vous le retirez à tout moment par le lien présent dans chaque lettre.
+        </p>
+        <p className="mt-3 text-[15px] leading-relaxed text-ink-2">
+          <strong>Durée de conservation :</strong> jusqu&apos;au désabonnement, qui efface
+          l&apos;adresse immédiatement ; <strong>sept jours</strong> au plus pour une inscription
+          non confirmée, supprimée ensuite par une purge automatique.
+        </p>
+        <p className="mt-3 text-[15px] leading-relaxed text-ink-2">
+          <strong>Destinataire :</strong> notre prestataire d&apos;acheminement des e-mails
+          (Resend), qui reçoit l&apos;adresse et le contenu de chaque lettre pour la seule
+          finalité de l&apos;envoi. L&apos;adresse est stockée dans la même base que la
+          surveillance (Neon, région Francfort).
         </p>
       </section>
 

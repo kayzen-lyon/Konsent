@@ -54,7 +54,8 @@ export default function TermsOfUsePage() {
         <p>
           L&apos;analyse d&apos;une page d&apos;accueil est accessible <strong>sans compte, sans
           adresse électronique et sans paiement</strong>. Aucun résultat n&apos;est conservé dans ce
-          mode.
+          mode, sauf si vous créez un lien de partage : le résultat technique est alors conservé
+          30 jours.
         </p>
         <p>
           Les fonctions de surveillance planifiée, de conservation d&apos;historique et

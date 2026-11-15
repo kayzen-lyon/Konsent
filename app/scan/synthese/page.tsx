@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { PrintReportButton } from "@/components/PrintReportButton";
 import { ScoreGauge } from "@/components/ScoreGauge";
 import { SeverityBadge } from "@/components/primitives";
+import { ReportQr } from "@/components/report/ReportQr";
 import { ErrorPanel, ScanSkeleton, runScanOrPanel } from "@/components/report/ScanStates";
 import { DISCLAIMER_SHORT, EDITOR } from "@/lib/disclaimer";
 import { buildQuote } from "@/lib/remediation/quote";
@@ -12,6 +13,7 @@ import { ADEQUACY_SHORT, countryName } from "@/lib/report/jurisdictions";
 import { rankFindings } from "@/lib/report/priorities";
 import { executiveSummary } from "@/lib/report/summary";
 import { getRule } from "@/lib/rulepack";
+import { siteOrigin } from "@/lib/security/origin";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -108,11 +110,14 @@ async function Synthese({ target }: { target: string }) {
               <span className="font-mono">{result.id}</span>
             </p>
           </div>
-          <p className="text-right text-[11px] text-muted">
-            Konsent
-            <br />
-            {EDITOR.productSite.replace(/^https:\/\//, "")}
-          </p>
+          <div className="flex items-start gap-3">
+            <p className="text-right text-[11px] text-muted">
+              Konsent
+              <br />
+              {EDITOR.productSite.replace(/^https:\/\//, "")}
+            </p>
+            <ReportQr url={`${siteOrigin()}/scan?url=${enc}`} className="text-ink-2" />
+          </div>
         </header>
 
         <div className="grid items-center gap-4 sm:grid-cols-[auto_1fr]">

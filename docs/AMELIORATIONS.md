@@ -24,7 +24,7 @@ Feuille de route issue de la revue du 14 novembre 2026. Légende :
 14. ✅ Analyse en lot (`/analyse-en-lot`) : jusqu'à 20 adresses, tableau triable, export CSV et JSON.
 15. ✅ Export CSV du portefeuille agence.
 16. ✅ Alertes par webhook (Slack, Teams, URL personnalisée) en plus de l'e-mail.
-17. ⏳ Lien de rapport public partageable, figé et horodaté (avec durée de vie).
+17. ✅ Lien de rapport partageable figé (`/rapport/[id]`), créé seulement sur demande, analyse relancée côté serveur, expiration 30 jours, purge quotidienne.
 18. ✅ Plan d'action interactif : cocher les corrections faites, relancer l'audit ciblé.
 19. ✅ Mode « avant / après » : comparer deux audits d'un même site dans le temps.
 20. ✅ Vérificateur d'archive de preuve dans le navigateur (déjà au catalogue, à livrer).
@@ -36,11 +36,11 @@ Feuille de route issue de la revue du 14 novembre 2026. Légende :
 26. ✅ Calculateur de durée de conservation (13 mois / 25 mois / 6 mois selon le cas).
 27. ✅ Modèles de réponse aux demandes d'exercice de droits (accès, effacement…).
 28. ✅ Simulateur de procédure CNIL (étapes, délais, montants observés).
-29. ⏳ Extension navigateur « Konsent » : audit de la page ouverte en un clic.
-30. ⏳ Intégration WordPress (extension qui affiche le score dans l'administration).
+29. ✅ Extension navigateur (Manifest V3, permission `activeTab` seule) téléchargeable sur `/integrations/extensions` ; publication sur les boutiques à faire.
+30. ✅ Extension WordPress (widget du tableau de bord, cache 12 h) téléchargeable sur `/integrations/extensions` ; publication sur WordPress.org à faire.
 31. ✅ Action GitHub documentée (`/integrations/github`) pour bloquer un déploiement qui régresse, avec page Intégrations (API, MCP, badge, RSS).
 32. ✅ Flux RSS de la veille réglementaire.
-33. ⏳ Lettre d'information mensuelle de la veille (double opt-in, sans traceur).
+33. ✅ Lettre mensuelle de la veille, double opt-in, texte brut, désabonnement en un clic (RFC 8058). Active dès que l'envoi d'e-mails est configuré.
 34. ✅ Page « Statut du service » (disponibilité du scanner et du worker).
 35. 🔒 Connexion avec Google / Microsoft (comptes tiers à configurer).
 36. 🔒 Paiement annuel avec remise (tarifs Stripe à créer).
@@ -67,10 +67,10 @@ Feuille de route issue de la revue du 14 novembre 2026. Légende :
 54. ⏳ Comparaison avec la moyenne du secteur (une fois les données agrégées).
 55. ✅ Mode présentation (plein écran, une diapositive par pilier).
 56. ✅ Version courte imprimable sur une page pour un dirigeant.
-57. ⏳ QR code du rapport dans l'en-tête imprimé.
+57. ✅ QR code du rapport dans l'en-tête imprimé (rapport et synthèse).
 58. ✅ Lien de relance de l'analyse avec horodatage de la précédente.
 59. ✅ Notes et statut « corrigé » sur chaque constat, dans le plan d'action de l'espace client (signale « toujours observé » à l'analyse suivante).
-60. ⏳ Envoi du rapport par e-mail depuis l'espace client.
+60. ✅ Envoi du résumé d'analyse par e-mail depuis l'espace client, à l'adresse du compte uniquement. Actif dès que l'envoi d'e-mails est configuré.
 
 ## 3. Design et expérience (30)
 
@@ -96,7 +96,7 @@ Feuille de route issue de la revue du 14 novembre 2026. Légende :
 80. ✅ Réglage de taille de texte dans le pied de page.
 81. ✅ États de chargement squelettes sur toutes les pages serveur lentes.
 82. ✅ Notifications « toast » pour les actions (copie, envoi).
-83. ⏳ Page tarifs avec comparatif détaillé des offres en tableau.
+83. ✅ Comparatif détaillé des offres en tableau sur `/tarifs` (offres cumulatives, promesses non livrées marquées « à venir »).
 84. ⏳ Bascule mensuel / annuel sur la page tarifs.
 85. ⏳ Témoignages vérifiés (🔒 contenu réel nécessaire).
 86. ✅ Page « À propos » : l'équipe KAYZEN, la méthode, l'indépendance.
@@ -152,7 +152,7 @@ Feuille de route issue de la revue du 14 novembre 2026. Légende :
 127. ⏳ Budget de performance vérifié dans la CI (Lighthouse).
 128. ✅ Préchargement des pages de la palette au survol.
 129. ✅ Jauge et libellés de gravité séparés du référentiel : la page d'auto-évaluation passe de 34 à 12 Ko de JavaScript.
-130. ⏳ Compression des réponses JSON volumineuses de l'API.
+130. ✅ Compression des réponses : assurée par Vercel (Brotli/gzip), sans code.
 
 ## 7. Sécurité et RGPD (10)
 
@@ -176,27 +176,27 @@ Feuille de route issue de la revue du 14 novembre 2026. Légende :
 145. ✅ Tests de bout en bout Playwright des parcours clés.
 146. ✅ Configuration ESLint (absente du projet).
 147. ✅ Journal structuré expurgé des données personnelles (`lib/log.ts`) ; à brancher sur un service d'alerte.
-148. ⏳ Prévisualisations Vercel commentées automatiquement avec captures.
+148. ✅ Vercel commente chaque PR avec le lien de prévisualisation ; les captures sont couvertes par les tests e2e.
 149. ✅ Documentation développeur du moteur de règles.
 150. ✅ Dependabot groupé et fusion automatique des correctifs (patch) ; activer « Allow auto-merge » dans GitHub.
 
 ## Non retenus, ou en attente d'une décision
 
-Ces points sont restés ouverts volontairement. Chacun demande une décision, un accès ou un contenu que l'équipe technique ne peut pas produire seule.
+La vague 4 a livré tout ce qui pouvait l'être sans compte tiers, sans contenu réel et sans engagement commercial. Restent :
 
-- **12. Rapport PDF généré côté serveur** — l'impression « Enregistrer en PDF » du navigateur produit déjà un PDF propre (styles d'impression dédiés, synthèse 1 page). Un moteur PDF côté serveur ajouterait une lourde dépendance d'exécution.
-- **17. Lien de rapport public figé** — demanderait de conserver les résultats d'audit, ce que l'audit libre s'interdit aujourd'hui (« rien n'est conservé »). Décision produit à prendre.
-- **29, 30. Extension navigateur, extension WordPress** — produits distincts à publier sur leurs boutiques respectives (comptes développeur, revue).
-- **33, 60. Lettre d'information, envoi du rapport par e-mail** — nécessitent un service d'envoi configuré (Resend : variable `RESEND_API_KEY` absente aujourd'hui).
-- **35 à 40, 84, 85** — comptes tiers, tarifs Stripe, contenus réels (témoignages, études de cas), relecture juridique de la traduction.
-- **54. Comparaison avec la moyenne du secteur** — nécessite d'agréger des résultats d'audit, donc de les conserver : même décision que le point 17.
-- **57. QR code dans le rapport imprimé** — demande de passer la bibliothèque `qrcode` des dépendances de développement aux dépendances d'exécution ; l'adresse du rapport est imprimée en clair en attendant.
-- **83. Comparatif des offres en tableau** — chaque offre liste déjà son contenu ; un tableau croisé supposerait de formaliser l'héritage entre offres.
-- **90. Transitions entre pages** — fonctionnalité encore expérimentale dans Next.js.
+- **Envoi d'e-mails (bloquant pour 33, 60, les alertes et la connexion par lien)** — `RESEND_API_KEY` et `KONSENT_MAIL_FROM` ne sont pas définis en production. Le code est prêt ; il faut créer le compte Resend et vérifier le domaine d'envoi.
+- **12. PDF côté serveur** — décidé : non. L'impression « Enregistrer en PDF » produit déjà un PDF propre, avec QR code ; un moteur PDF serait une lourde dépendance.
+- **29, 30. Publication des extensions** — comptes développeur Chrome Web Store, Firefox AMO et WordPress.org à ouvrir par l'éditeur.
+- **35. Connexion Google / Microsoft** — applications OAuth à déclarer chez ces fournisseurs.
+- **36, 84. Paiement annuel** — tarifs Stripe et niveau de remise à décider.
+- **37. Parrainage** — règles commerciales à fixer.
+- **38. Assistant IA** — choix du fournisseur, du budget, et cohérence avec la souveraineté des données.
+- **39. Traduction anglaise** — relecture juridique des textes traduits.
+- **40, 85. Études de cas, témoignages** — contenus réels et accord des clients ; jamais inventés.
+- **54. Moyenne du secteur** — demanderait d'agréger des résultats d'audit ; contraire à « l'audit libre ne conserve rien ».
+- **90. Transitions entre pages** — encore expérimental dans Next.js 15.
 - **97, 99. Audit RGAA externe, tests au lecteur d'écran** — prestations humaines à commander.
-- **110, 117. Pages « Konsent contre telle CMP », pages par ville** — risque d'affirmations invérifiables sur des concurrents, et de contenu répétitif pénalisé par les moteurs de recherche.
+- **110, 117. Pages comparatives et pages par ville** — décidé : non (affirmations invérifiables sur des concurrents, contenu répétitif pénalisé).
 - **112. Articles de fond** — travail éditorial, à rédiger et faire relire.
-- **124. Cache des résultats d'audit** — contredirait l'engagement « l'audit libre ne conserve rien ».
-- **130. Compression des réponses** — déjà assurée par Vercel (Brotli) sans code.
-- **135. CSP à nonces** — rendrait toutes les pages dynamiques (coût de performance) ; à arbitrer.
-- **148. Captures des prévisualisations** — Vercel commente déjà chaque PR avec le lien de prévisualisation.
+- **124. Cache des résultats d'audit** — décidé : non, contraire à « l'audit libre ne conserve rien ».
+- **135. CSP à nonces** — décidé : non pour l'instant ; rendrait toutes les pages dynamiques.

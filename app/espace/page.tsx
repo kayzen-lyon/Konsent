@@ -7,11 +7,13 @@ import { InvitationPrompt } from "@/components/InvitationPrompt";
 import { DeleteAccount } from "@/components/account/DeleteAccount";
 import { ScoreHistory } from "@/components/account/ScoreHistory";
 import { SessionLog } from "@/components/account/SessionLog";
+import { ReportEmailButton } from "@/components/account/ReportEmailButton";
 import { ActionPlan } from "@/components/monitoring/ActionPlan";
 import { WebhookSettings } from "@/components/monitoring/WebhookSettings";
 import { Disclaimer, SectionTitle } from "@/components/primitives";
 import { SESSION_COOKIE, getAccounts } from "@/lib/accounts";
 import { domainQuotaFor } from "@/lib/agency/tenancy";
+import { emailConfigured } from "@/lib/email";
 import { buildActionPlan } from "@/lib/monitoring/action-plan";
 import { SEVERITY_LABELS } from "@/lib/rulepack";
 import { getStorage, type ActionItem, type AlertWebhookView } from "@/lib/storage";
@@ -204,13 +206,19 @@ export default async function AccountPage({
         ) : (
           <div className="grid gap-4">
             {plans.map((p) => (
-              <ActionPlan
-                key={p.domain.id}
-                domainId={p.domain.id}
-                hostname={p.domain.hostname}
-                scannedAt={p.scannedAt}
-                rows={p.rows}
-              />
+              <div key={p.domain.id}>
+                <ActionPlan
+                  domainId={p.domain.id}
+                  hostname={p.domain.hostname}
+                  scannedAt={p.scannedAt}
+                  rows={p.rows}
+                />
+                <ReportEmailButton
+                  domainId={p.domain.id}
+                  hostname={p.domain.hostname}
+                  configured={emailConfigured()}
+                />
+              </div>
             ))}
           </div>
         )}

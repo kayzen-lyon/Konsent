@@ -57,6 +57,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/outils/procedure-cnil",
     "/integrations",
     "/integrations/github",
+    "/integrations/extensions",
     "/secteurs/e-commerce",
     "/secteurs/sante",
     "/secteurs/collectivites-territoriales",

@@ -15,9 +15,12 @@ import { READING_LEVELS, readingLevel, type ReadingLevel } from "@/lib/report/le
 export function ReadingLevelPicker({
   target,
   current,
+  hrefFor,
 }: {
   target: string;
   current: ReadingLevel;
+  /** Adresse d'une vue ; par défaut, le rapport en direct `/scan`. */
+  hrefFor?: (level: ReadingLevel) => string;
 }) {
   const spec = readingLevel(current);
 
@@ -31,7 +34,11 @@ export function ReadingLevelPicker({
             return (
               <Link
                 key={level.id}
-                href={`/scan?url=${encodeURIComponent(target)}&vue=${level.id}`}
+                href={
+                  hrefFor
+                    ? hrefFor(level.id)
+                    : `/scan?url=${encodeURIComponent(target)}&vue=${level.id}`
+                }
                 aria-current={active ? "true" : undefined}
                 className={`tech rounded px-3 py-1.5 text-[10px] transition ${
                   active

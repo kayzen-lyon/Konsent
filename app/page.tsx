@@ -128,7 +128,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "Puis-je comparer mon site à celui d'un concurrent ?",
-    a: "Oui. Le comparateur lance les deux analyses en parallèle et les présente côte à côte : score, écarts communs, écarts propres à chacun et destinataires situés hors de l'Union européenne. Comme pour l'audit simple, rien n'est conservé.",
+    a: "Oui. Le comparateur lance les deux analyses en parallèle et les présente côte à côte : score, écarts communs, écarts propres à chacun et destinataires situés hors de l'Union européenne. Comme pour l'audit simple, rien n'est conservé, sauf si vous créez un lien de partage.",
   },
   {
     q: "Et ce qu'un scanner ne peut pas voir — registre, contrats, droits des personnes ?",
