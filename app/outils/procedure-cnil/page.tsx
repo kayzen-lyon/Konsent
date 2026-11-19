@@ -1,4 +1,3 @@
-import { JsonLd } from "@/components/JsonLd";
 import { toolJsonLd } from "@/lib/seo/jsonld";
 import { getTool } from "@/lib/tools/catalog";
 import Link from "next/link";
@@ -17,8 +16,8 @@ export const metadata: Metadata = {
 export default function CnilProcedurePage() {
   return (
     <div className="mx-auto max-w-7xl px-6 py-16">
-      <JsonLd data={toolJsonLd(getTool("procedure-cnil")!)} />
       <Breadcrumbs
+        jsonLd={[toolJsonLd(getTool("procedure-cnil")!)]}
         items={[
           { href: "/outils", label: "Outils" },
           { href: "/outils/procedure-cnil", label: "Simulateur de procédure CNIL" },

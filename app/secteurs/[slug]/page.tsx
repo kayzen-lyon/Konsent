@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Faq } from "@/components/Faq";
-import { JsonLd } from "@/components/JsonLd";
 import { getRule } from "@/lib/rulepack";
 import { CATEGORY_LABELS, getTrackerBySlug } from "@/lib/trackers/db";
 import { faqPageJsonLd } from "@/lib/seo/jsonld";
@@ -46,8 +45,8 @@ export default async function SectorPage({ params }: { params: Promise<{ slug: s
           { href: "/secteurs", label: "Secteurs" },
           { href: `/secteurs/${sector.slug}`, label: sector.name },
         ]}
+        jsonLd={[faqPageJsonLd(sector.faq)]}
       />
-      <JsonLd data={faqPageJsonLd(sector.faq)} />
 
       <header>
         <p className="tech text-[10px] text-flame">Secteur · {sector.name}</p>
