@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { ImageResponse } from "next/og";
 import { getTool } from "@/lib/tools/catalog";
 
@@ -10,6 +12,14 @@ import { getTool } from "@/lib/tools/catalog";
  */
 export const OG_SIZE = { width: 1200, height: 630 };
 export const OG_CONTENT_TYPE = "image/png";
+
+/**
+ * Emblème Konsent, variante pour fond marine (399 × 320), lu au build et
+ * embarqué en data URL : le moteur de rendu ne fait aucune requête.
+ */
+export const OG_EMBLEM_SRC = `data:image/png;base64,${readFileSync(
+  join(process.cwd(), "lib/seo/og-embleme.png"),
+).toString("base64")}`;
 
 const NAVY = "#132944";
 const TERRACOTTA = "#B7481F";
@@ -69,26 +79,8 @@ export function toolOgImage(tool: string | OgTool): ImageResponse {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
-          <svg width="52" height="52" viewBox="0 0 32 32" fill="none">
-            <path
-              d="M16 3.2 27 7.6v8.2c0 6.4-4.3 11.6-11 14.2-6.7-2.6-11-7.8-11-14.2V7.6L16 3.2Z"
-              fill={TERRACOTTA}
-              opacity="0.35"
-            />
-            <path
-              d="M16 3.2 27 7.6v8.2c0 6.4-4.3 11.6-11 14.2-6.7-2.6-11-7.8-11-14.2V7.6L16 3.2Z"
-              stroke={SOFT}
-              strokeWidth="2"
-              strokeLinejoin="round"
-            />
-            <path
-              d="m11.4 16.2 3.2 3.3 6-6.4"
-              stroke={SOFT}
-              strokeWidth="2.4"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={OG_EMBLEM_SRC} width={70} height={56} alt="" />
           <div style={{ fontSize: 30, fontWeight: 800, letterSpacing: -1 }}>KONSENT</div>
           <div
             style={{

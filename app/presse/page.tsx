@@ -48,17 +48,26 @@ export default function PressPage() {
       <h2 className="display mt-12 text-2xl text-ink-2">Logo</h2>
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
         <figure className="flex flex-col items-center gap-3 rounded-3xl border border-line bg-white p-8">
-          <img src="/icon.svg" alt="Logo Konsent sur fond clair" width={96} height={96} />
+          <img src="/brand/konsent-logo.png" alt="Logo Konsent sur fond clair" width={176} height={144} />
           <figcaption className="text-[13px] text-[#586474]">Sur fond clair</figcaption>
         </figure>
         <figure className="flex flex-col items-center gap-3 rounded-3xl border border-line bg-navy-deep p-8">
-          <img src="/icon.svg" alt="Logo Konsent sur fond sombre" width={96} height={96} />
+          <img src="/brand/konsent-logo-sombre.png" alt="Logo Konsent sur fond sombre" width={176} height={144} />
           <figcaption className="text-[13px] text-white/75">Sur fond sombre</figcaption>
         </figure>
       </div>
       <p className="mt-4 text-sm text-muted">
-        <a href="/icon.svg" download="konsent-logo.svg" className="text-flame">
-          Télécharger le logo (SVG vectoriel)
+        Télécharger le logo (PNG transparent) :{" "}
+        <a href="/brand/konsent-logo.png" download className="text-flame">
+          fond clair
+        </a>
+        ,{" "}
+        <a href="/brand/konsent-logo-sombre.png" download className="text-flame">
+          fond sombre
+        </a>
+        ,{" "}
+        <a href="/brand/konsent-embleme.png" download className="text-flame">
+          emblème seul
         </a>{" "}
         · Couleur principale : terracotta <code className="font-mono">#B7481F</code> · Typographies :
         Outfit et Plus Jakarta Sans.

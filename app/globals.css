@@ -679,3 +679,14 @@ html[data-motion="reduce"] *::after {
   transition: none !important;
   scroll-behavior: auto !important;
 }
+
+/* Logo : variante claire par défaut, variante sombre en thème sombre (components/Logo.tsx). */
+.logo-auto .logo-sombre {
+  display: none;
+}
+.dark .logo-auto .logo-clair {
+  display: none;
+}
+.dark .logo-auto .logo-sombre {
+  display: block;
+}

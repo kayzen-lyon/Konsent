@@ -1,25 +1,39 @@
-/** Marque Konsent : un bouclier de contrôle, tracé en SVG (aucune ressource externe). */
-export function Logo({ className = "" }: { className?: string }) {
+import Image from "next/image";
+import embleme from "./brand/embleme-clair.webp";
+import emblemeSombre from "./brand/embleme-sombre.webp";
+
+/**
+ * Emblème Konsent (K et bouclier, circuits terracotta), servi depuis le
+ * site lui-même : aucune ressource externe.
+ *
+ * `fond` choisit la variante :
+ * - `clair`  : K marine, pour un fond clair ;
+ * - `sombre` : K blanc, pour un fond marine ;
+ * - `auto`   : suit le thème du site (classe `.dark` sur `<html>`), voir
+ *   `.logo-auto` dans globals.css.
+ *
+ * Images en 96 px de haut : nettes en Retina jusqu'à 48 px affichés.
+ * Décoratives (`alt=""`) : le nom « Konsent » est toujours écrit à côté.
+ */
+export function Logo({
+  className = "",
+  fond = "auto",
+}: {
+  className?: string;
+  fond?: "auto" | "clair" | "sombre";
+}) {
+  const img = (src: typeof embleme, variant: string) => (
+    <Image
+      src={src}
+      alt=""
+      unoptimized
+      className={`logo-${variant} h-full w-full object-contain`}
+    />
+  );
   return (
-    <svg viewBox="0 0 32 32" className={className} fill="none" aria-hidden="true">
-      <path
-        d="M16 3.2 27 7.6v8.2c0 6.4-4.3 11.6-11 14.2-6.7-2.6-11-7.8-11-14.2V7.6L16 3.2Z"
-        fill="currentColor"
-        opacity="0.16"
-      />
-      <path
-        d="M16 3.2 27 7.6v8.2c0 6.4-4.3 11.6-11 14.2-6.7-2.6-11-7.8-11-14.2V7.6L16 3.2Z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-      <path
-        d="m11.4 16.2 3.2 3.3 6-6.4"
-        stroke="currentColor"
-        strokeWidth="2.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
+    <span className={`inline-flex shrink-0 ${fond === "auto" ? "logo-auto" : ""} ${className}`} aria-hidden="true">
+      {fond !== "sombre" ? img(embleme, "clair") : null}
+      {fond !== "clair" ? img(emblemeSombre, "sombre") : null}
+    </span>
   );
 }

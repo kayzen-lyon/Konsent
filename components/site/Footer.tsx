@@ -198,7 +198,7 @@ export function Footer() {
               className="mb-5 inline-flex items-center gap-2 rounded-xl bg-white px-3 py-2"
               aria-label="Konsent — accueil"
             >
-              <Logo className="h-7 w-7 text-flame" />
+              <Logo className="h-7 w-9" fond="clair" />
               <span className="font-display text-base font-extrabold tracking-tight text-[#1f2937]">
                 Konsent
               </span>
