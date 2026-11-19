@@ -7,7 +7,7 @@ import { TRACKERS } from "@/lib/trackers/db";
 export const metadata: Metadata = {
   title: "À propos",
   description:
-    "Konsent est un service du groupe KAYZEN, agence web lyonnaise. Pourquoi un auditeur indépendant de toute plateforme de consentement, et comment nous travaillons.",
+    "Konsent est un service KAYZEN, agence web lyonnaise. Pourquoi un auditeur indépendant de toute plateforme de consentement, et comment nous travaillons.",
 };
 
 const PRINCIPLES = [
@@ -66,22 +66,22 @@ export default function AboutPage() {
         ))}
       </ul>
 
-      <h2 className="display mt-16 text-3xl text-ink-2">Le groupe KAYZEN</h2>
+      <h2 className="display mt-16 text-3xl text-ink-2">L&apos;écosystème KAYZEN</h2>
       <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-muted">
-        Konsent partage son équipe, sa charte et ses exigences avec les autres services du groupe :
+        Konsent partage son équipe, sa charte et ses exigences avec les autres services KAYZEN :
         Nexus pour l&apos;audit SEO et la visibilité dans les IA, DocuSûr pour les outils PDF.
       </p>
       <ul className="mt-6 flex flex-wrap gap-3">
         {[
-          [EDITOR.groupSite, "Agence web KAYZEN"],
-          ["https://nexus.kayzen-lyon.com", "Nexus"],
-          ["https://docusur.kayzen-lyon.com", "DocuSûr"],
+          [`${EDITOR.groupSite}/?ref=konsent`, "Agence web KAYZEN"],
+          ["https://nexus.kayzen-lyon.com/?ref=konsent", "Nexus"],
+          ["https://docusur.kayzen-lyon.com/?ref=konsent", "DocuSûr"],
         ].map(([href, label]) => (
           <li key={href}>
             <a
               href={href}
               target="_blank"
-              rel="noopener noreferrer"
+              rel="noopener"
               className="font-display inline-flex min-h-11 items-center rounded-full border border-line px-5 text-sm font-semibold text-ink-2 transition-colors hover:border-flame hover:text-flame"
             >
               {label}
