@@ -1,0 +1,163 @@
+{
+  "editeur": {
+    "nom": "KAYZEN",
+    "url": "https://www.kayzen-lyon.com/",
+    "organization_id": "https://www.kayzen-lyon.com/#organization",
+    "logo": "https://www.kayzen-lyon.com/favicon-512x512.png"
+  },
+  "applications": [
+    {
+      "id": "studio-ai",
+      "nom": "Studio AI",
+      "url": "https://studio-ai.kayzen-lyon.com/",
+      "categorie": "Médias",
+      "resume": "Dix-huit outils photo et vidéo dopés à l'IA, gratuits et sans compte.",
+      "statut": "disponible",
+      "liens_utiles": ["docusur"]
+    },
+    {
+      "id": "restomix",
+      "nom": "Restomix",
+      "url": "https://restomix-app.vercel.app/",
+      "categorie": "Restauration",
+      "resume": "Le menu QR qui prend les commandes et encaisse à table.",
+      "statut": "disponible",
+      "liens_utiles": ["studio-ai", "omnillink"]
+    },
+    {
+      "id": "flux",
+      "nom": "KAYZEN Flux",
+      "url": "https://flux.kayzen-lyon.com/",
+      "categorie": "Médias",
+      "resume": "Téléchargez et convertissez vos vidéos et vos musiques en MP3, M4A, Opus, FLAC ou MP4, directement sur votre ordinateur.",
+      "statut": "disponible",
+      "liens_utiles": ["studio-ai"]
+    },
+    {
+      "id": "juris-limen",
+      "nom": "JURIS LIMEN",
+      "url": "https://juris-limen.vercel.app/",
+      "categorie": "Juridique",
+      "resume": "Le droit français à la source : jurisprudence, codes à la date des faits, doctrine en accès libre et références vérifiées sur Légifrance et Judilibre.",
+      "statut": "beta",
+      "liens_utiles": ["konsent", "konforme"]
+    },
+    {
+      "id": "radar-ai",
+      "nom": "KAYZEN AI Radar",
+      "url": "https://radar-ai.kayzen-lyon.com/",
+      "categorie": "IA & veille",
+      "resume": "Le média francophone de l'IA édité par KAYZEN : modèles, agents, MCP et open source.",
+      "statut": "disponible",
+      "liens_utiles": ["omnillink", "juris-limen", "synaptik"]
+    },
+    {
+      "id": "omnillink",
+      "nom": "Omnillink",
+      "url": "https://omnillink.kayzen-lyon.com/",
+      "categorie": "IA & veille",
+      "resume": "Une API REST qui lit une page web à votre place : métadonnées, capture d'écran, export PDF, extraction sur mesure et contenu en Markdown pour vos agents IA.",
+      "statut": "disponible",
+      "liens_utiles": []
+    },
+    {
+      "id": "docusur",
+      "nom": "DocuSûr",
+      "url": "https://docusur.kayzen-lyon.com/",
+      "categorie": "Documents",
+      "resume": "Des outils gratuits pour vos PDF, images et fichiers Word, Excel et PowerPoint : fusionner, convertir, compresser, protéger.",
+      "statut": "disponible",
+      "liens_utiles": ["studio-ai"]
+    },
+    {
+      "id": "synaptik",
+      "nom": "Synaptik",
+      "url": "https://synaptik.kayzen-lyon.com/",
+      "categorie": "SEO",
+      "resume": "Les IA peuvent-elles lire votre site ? Synaptik sonde 8 robots IA, lit vos données structurées et vos coordonnées, puis rend un rapport priorisé.",
+      "statut": "disponible",
+      "liens_utiles": ["nexus", "konsent", "konforme", "omnillink"]
+    },
+    {
+      "id": "nexus",
+      "nom": "Nexus SEO",
+      "url": "https://nexus.kayzen-lyon.com/",
+      "categorie": "SEO",
+      "resume": "Obtenez un audit gratuit de votre SEO technique, de votre contenu et de votre visibilité dans les réponses des moteurs IA.",
+      "statut": "disponible",
+      "liens_utiles": ["synaptik", "konsent", "konforme"]
+    },
+    {
+      "id": "konsent",
+      "nom": "Konsent",
+      "url": "https://konsent.kayzen-lyon.com/",
+      "categorie": "Conformité",
+      "resume": "Vérifiez les traceurs déposés avant le consentement, les destinataires des données et les références applicables.",
+      "statut": "disponible",
+      "liens_utiles": ["nexus", "synaptik", "konforme", "juris-limen"]
+    },
+    {
+      "id": "konforme",
+      "nom": "Konforme",
+      "url": "https://konforme.kayzen-lyon.com/",
+      "categorie": "Conformité",
+      "resume": "Évaluez l'accessibilité de votre site avec des contrôles RGAA et WCAG, des explications et des pistes de correction.",
+      "statut": "disponible",
+      "liens_utiles": ["nexus", "synaptik", "konsent", "juris-limen"]
+    },
+    {
+      "id": "nutriea",
+      "nom": "Nutriéa",
+      "url": "https://nutriea.kayzen-lyon.com/",
+      "categorie": "Santé & nutrition",
+      "resume": "Le portail francophone de la naturopathie et de la nutrithérapie édité par KAYZEN.",
+      "statut": "disponible",
+      "liens_utiles": []
+    },
+    {
+      "id": "sesame",
+      "nom": "Sésame",
+      "url": "https://sesame.kayzen-lyon.com/",
+      "categorie": "Cybersécurité",
+      "resume": "Un coffre de mots de passe chiffré de bout en bout, open source et gratuit, avec synchronisation et partage familial.",
+      "statut": "disponible",
+      "liens_utiles": ["eclair"]
+    },
+    {
+      "id": "eclair",
+      "nom": "Sésame Éclair",
+      "url": "https://eclair.kayzen-lyon.com/",
+      "categorie": "Cybersécurité",
+      "resume": "Partagez un mot de passe ou une clé API avec un lien à usage unique, chiffré dans votre navigateur.",
+      "statut": "disponible",
+      "liens_utiles": ["sesame"]
+    },
+    {
+      "id": "security",
+      "nom": "Kayzen Security",
+      "url": "https://kayzen-security.vercel.app/",
+      "categorie": "Cybersécurité",
+      "resume": "Filtrage DNS, correctifs, antivirus et rapports de conformité réunis dans un seul agent et une seule console.",
+      "statut": "beta",
+      "liens_utiles": ["sesame", "vpn", "sentinel"]
+    },
+    {
+      "id": "sentinel",
+      "nom": "Sentinel",
+      "url": "https://sentinel.kayzen-lyon.com/",
+      "categorie": "Cybersécurité",
+      "resume": "Des agents de sécurité testent réellement votre application et documentent les vulnérabilités exploitables avec des preuves rejouables.",
+      "statut": "disponible",
+      "liens_utiles": ["konsent"]
+    },
+    {
+      "id": "vpn",
+      "nom": "Kayzen VPN",
+      "url": "https://vpn.kayzen-lyon.com/",
+      "categorie": "Cybersécurité",
+      "resume": "Un VPN conçu à Lyon, avec des critères de confiance publiés et une offre gratuite prévue au lancement.",
+      "statut": "bientot",
+      "liens_utiles": []
+    }
+  ]
+}

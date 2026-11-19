@@ -3,7 +3,8 @@ import { Outfit, Plus_Jakarta_Sans } from "next/font/google";
 import { EDITOR } from "@/lib/disclaimer";
 import { MotionProvider } from "@/components/bits/MotionProvider";
 import { Header } from "@/components/site/Header";
-import { Footer } from "@/components/site/Footer";
+import { Footer, type EcosystemGroup } from "@/components/site/Footer";
+import { getEcosystem, groupByCategory, withRef } from "@/lib/ecosystem";
 import { Toaster } from "@/components/site/Toaster";
 import { THEME_BOOT_SCRIPT } from "@/components/site/theme";
 import "./globals.css";
@@ -59,7 +60,20 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // Lu côté serveur : le pied de page reçoit des liens déjà construits.
+  const ecosystem: EcosystemGroup[] = groupByCategory(await getEcosystem()).map(
+    ([category, apps]) => ({
+      category,
+      apps: apps.map((a) => ({
+        name: a.nom,
+        // Une application annoncée n'a pas encore de page : pas de lien.
+        href: a.statut === "bientot" ? null : withRef(a.url),
+        status: a.statut,
+      })),
+    }),
+  );
+
   return (
     <html
       lang="fr"
@@ -92,7 +106,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <main id="contenu" tabIndex={-1} className="outline-none">
             {children}
           </main>
-          <Footer />
+          <Footer ecosystem={ecosystem} />
           <Toaster />
         </MotionProvider>
       </body>
