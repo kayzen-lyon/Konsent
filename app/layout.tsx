@@ -39,23 +39,22 @@ export const metadata: Metadata = {
     template: "%s · Konsent",
   },
   description:
-    "Votre plateforme de consentement gère le consentement. Konsent vérifie ce qui se dépose vraiment avant que vos visiteurs aient pu répondre — traceurs, destinataires, juridictions. Auditeur indépendant de toute CMP.",
+    "Konsent vérifie ce que votre site dépose avant le choix du visiteur : traceurs, destinataires, juridictions. Audit RGPD gratuit, indépendant de toute CMP.",
   /* Canonique relative : chaque page se déclare elle-même, sans paramètre
    * d'URL. Évite les doublons d'indexation entre `?url=` et la page nue. */
   alternates: { canonical: "./" },
+  /* Ni titre ni description ici : Next les reprend de chaque page, pour que
+   * le partage d'une page interne n'affiche pas le texte de l'accueil.
+   * `url` relative, résolue comme la canonique : og:url lui est identique. */
   openGraph: {
     siteName: "Konsent",
-    title: "Konsent — l'audit RGPD que votre bandeau ne fait pas",
-    description:
-      "Que dépose votre site avant que vos visiteurs aient pu répondre ? Vérifiez-le gratuitement.",
+    url: "./",
     locale: "fr_FR",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Konsent — l'audit RGPD que votre bandeau ne fait pas",
-    description:
-      "Que dépose votre site avant que vos visiteurs aient pu répondre ? Vérifiez-le gratuitement.",
+    site: "@KayzenLyon",
   },
   robots: { index: true, follow: true },
 };

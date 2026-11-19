@@ -6,7 +6,7 @@ import { RULEPACK } from "@/lib/rulepack";
 export const metadata: Metadata = {
   title: "Méthodologie",
   description:
-    "Comment Konsent observe un site, calcule un score et applique ses plafonds. Méthodologie publiée intégralement.",
+    "Comment Konsent observe un site en trois phases, calcule un score et applique ses plafonds. Méthodologie publiée intégralement, avec ses limites.",
 };
 
 export default function MethodologyPage() {
