@@ -6,6 +6,7 @@ import { GLOSSARY } from "@/lib/seo/glossary";
 import { GUIDES } from "@/lib/seo/guides";
 import { SECTORS } from "@/lib/seo/sectors";
 import { FREE_TOOLS, toolHref } from "@/lib/tools/catalog";
+import { getEcosystem, groupByCategory, withRef } from "@/lib/ecosystem";
 
 /**
  * /llms.txt (https://llmstxt.org) : la carte du site à l'usage des modèles
@@ -14,7 +15,7 @@ import { FREE_TOOLS, toolHref } from "@/lib/tools/catalog";
  */
 export const dynamic = "force-static";
 
-export function GET() {
+export async function GET() {
   const B = EDITOR.productSite;
   const link = (path: string, label: string, note?: string) =>
     `- [${label}](${B}${path})${note ? `: ${note}` : ""}`;
@@ -22,6 +23,15 @@ export function GET() {
   const families = FAMILY_ORDER.map(
     (f) => `${FAMILY_LABELS[f]} (${rulesByFamily(f).length})`,
   ).join(", ");
+
+  // Les autres applications KAYZEN, depuis ecosystem.json (lu au build).
+  const ecosystem = groupByCategory(await getEcosystem()).flatMap(([, apps]) =>
+    apps.map((a) =>
+      a.statut === "bientot"
+        ? `- ${a.nom} (bientôt disponible) : ${a.resume}`
+        : `- [${a.nom}](${withRef(a.url)}) : ${a.resume}`,
+    ),
+  );
 
   const body = [
     "# Konsent",
@@ -76,6 +86,14 @@ export function GET() {
     link("/accessibilite", "Déclaration d'accessibilité"),
     link("/plan-du-site", "Plan du site"),
     `- [Sitemap XML](${B}/sitemap.xml)`,
+    "",
+    "## Écosystème KAYZEN",
+    "",
+    ...ecosystem,
+    "",
+    "## Éditeur",
+    "",
+    "KAYZEN, Lyon — https://www.kayzen-lyon.com/",
     "",
   ].join("\n");
 
