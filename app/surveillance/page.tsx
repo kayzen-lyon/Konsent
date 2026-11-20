@@ -8,6 +8,7 @@ import { runVerdictScan } from "@/lib/engine/orchestrate";
 import { ScanError } from "@/lib/engine/scan";
 import { decodeBaseline } from "@/lib/monitoring/baseline";
 import { alertSummary, diffAgainstBaseline } from "@/lib/monitoring/diff";
+import { Mur } from "@/components/immersive/Mur";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -225,7 +226,7 @@ export default async function MonitoringPage({
 
   return (
     <>
-      <section className="grid-bg-dark bg-ink">
+      <section className="grid-bg-dark bg-ink imm-murhote">
         <div className="mx-auto max-w-7xl px-5 py-14">
           <p className="tech text-[10px] text-flame-soft">Surveillance</p>
           <h1 className="display mt-3 max-w-3xl text-3xl text-white sm:text-[2.8rem]">
@@ -237,6 +238,7 @@ export default async function MonitoringPage({
             l&apos;état actuel de votre site à une analyse de référence.
           </p>
         </div>
+        <Mur />
       </section>
 
       <div className="mx-auto max-w-4xl px-5 py-14">

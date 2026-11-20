@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Disclaimer } from "@/components/primitives";
 import { PILLARS, RULEPACK, RULES } from "@/lib/rulepack";
 import { TRACKERS } from "@/lib/trackers/db";
+import { Mur } from "@/components/immersive/Mur";
 
 export const metadata: Metadata = {
   title: "Fonctionnalités",
@@ -208,7 +209,7 @@ const MODULES = [
 export default function FeaturesPage() {
   return (
     <>
-      <section className="grid-bg-dark bg-ink">
+      <section className="grid-bg-dark bg-ink imm-murhote">
         <div className="mx-auto max-w-7xl px-5 py-14">
           <p className="tech text-[10px] text-flame-soft">Le produit</p>
           <h1 className="display mt-3 max-w-3xl text-3xl text-white sm:text-[2.8rem]">
@@ -220,6 +221,7 @@ export default function FeaturesPage() {
             ce qui est promis.
           </p>
         </div>
+        <Mur />
       </section>
 
       {/* ── Piliers d'analyse ── */}

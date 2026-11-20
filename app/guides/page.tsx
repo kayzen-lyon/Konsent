@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Pill } from "@/components/primitives";
 import { CATEGORY_LABELS } from "@/lib/trackers/db";
 import { GUIDES } from "@/lib/seo/guides";
+import { Mur } from "@/components/immersive/Mur";
 
 export const metadata: Metadata = {
   title: "Guides de correction",
@@ -22,7 +23,7 @@ export default function GuidesIndexPage() {
 
   return (
     <>
-      <section className="grid-bg-dark bg-ink">
+      <section className="grid-bg-dark bg-ink imm-murhote">
         <div className="mx-auto max-w-7xl px-5 py-14">
           <p className="tech text-[10px] text-flame-soft">Guides</p>
           <h1 className="display mt-3 max-w-3xl text-3xl text-white sm:text-[2.8rem]">
@@ -34,6 +35,7 @@ export default function GuidesIndexPage() {
             pas donné, et le code pour le faire.
           </p>
         </div>
+        <Mur />
       </section>
 
       <div className="mx-auto max-w-5xl px-5 py-12">

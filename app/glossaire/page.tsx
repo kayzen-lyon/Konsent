@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { GLOSSARY } from "@/lib/seo/glossary";
+import { Mur } from "@/components/immersive/Mur";
 
 export const metadata: Metadata = {
   title: "Glossaire RGPD, cookies et traceurs",
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
 export default function GlossaryPage() {
   return (
     <>
-      <section className="grid-bg-dark bg-ink">
+      <section className="grid-bg-dark bg-ink imm-murhote">
         <div className="mx-auto max-w-7xl px-5 py-14">
           <p className="tech text-[10px] text-flame-soft">Glossaire</p>
           <h1 className="display mt-3 max-w-3xl text-3xl text-white sm:text-[2.8rem]">
@@ -23,6 +24,7 @@ export default function GlossaryPage() {
             qui découvre, avec leur référence quand elle existe.
           </p>
         </div>
+        <Mur />
       </section>
 
       <div className="mx-auto max-w-5xl px-5 py-12">
