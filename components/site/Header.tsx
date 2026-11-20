@@ -78,7 +78,7 @@ export function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-50 border-b border-line bg-paper/95 backdrop-blur-sm transition-shadow ${
+      className={`sticky top-0 z-50 border-b border-line bg-paper transition-shadow ${
         scrolled ? "shadow-xl" : ""
       }`}
     >
