@@ -7,6 +7,7 @@ import { Footer } from "@/components/site/Footer";
 import { Toaster } from "@/components/site/Toaster";
 import { THEME_BOOT_SCRIPT } from "@/components/site/theme";
 import "./globals.css";
+import "@/components/immersive/immersive.css";
 
 /**
  * next/font télécharge et auto-héberge les fichiers de police au moment du

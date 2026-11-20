@@ -2,7 +2,7 @@
  * Captures des écrans réels de Konsent, pour l'aperçu immersif.
  *
  * Usage : serveur de développement lancé, puis
- *   node app/apercu-immersif/captures/capturer.mjs [http://localhost:3000]
+ *   node components/immersive/captures/capturer.mjs [http://localhost:3000]
  *
  * Chaque page est photographiée telle qu'elle est servie (1440 × 810, thème
  * clair, animations réduites), puis déclinée en deux formats WebP :

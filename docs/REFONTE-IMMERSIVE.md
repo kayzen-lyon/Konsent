@@ -3,17 +3,25 @@
 Rédigé le 20 novembre 2026, branche `feat/site-immersif`. Étapes 0 à 2 de la
 feuille de route. Rien n'est intégré dans les vraies pages.
 
-## Ouvrir l'aperçu
+## Suite donnée
 
-```
-npm run dev
-```
+L'aperçu a été validé et intégré le même jour dans les vraies pages ; le
+dossier d'aperçu a été retiré. Les composants vivent dans
+`components/immersive/` :
 
-- Accueil : http://localhost:3000/apercu-immersif
-- Page intérieure avec le mur : http://localhost:3000/apercu-immersif/fonctionnalites
+| Fichier | Rôle |
+|---|---|
+| `SceneOutils.tsx` | scène fixe et défilement des outils (accueil) |
+| `Mur.tsx` | mur en perspective des bandes de titre |
+| `immersive.css` | styles, préfixe `imm-`, jetons de `globals.css` uniquement |
+| `captures/` et `captures.ts` | captures réelles et script qui les régénère |
 
-Le thème se change avec l'interrupteur habituel (lune dans le menu, ou
-« Clair / Sombre / Système » dans le pied de page).
+Pages touchées : accueil ; menu et pied de page (toutes les pages) ; mur sur
+Fonctionnalités, Surveillance, Comparatif, Agence, Glossaire, Guides, Cookies.
+Laissées telles quelles : outils, formulaires, contact, pages légales, et les
+pages générées depuis la base (règles, traceurs, fiches).
+
+Le reste de ce document est le diagnostic d'origine.
 
 ## Faut-il toucher au site ?
 

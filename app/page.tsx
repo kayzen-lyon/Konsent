@@ -1,15 +1,15 @@
 import Link from "next/link";
 import CountUp from "@/components/bits/CountUp";
 import FadeContent from "@/components/bits/FadeContent";
-import SpotlightCard from "@/components/bits/SpotlightCard";
 import { Faq } from "@/components/Faq";
 import { JsonLd } from "@/components/JsonLd";
 import { FineSimulator } from "@/components/FineSimulator";
 import { ScanForm } from "@/components/ScanForm";
 import { HeroMotion } from "@/components/HeroMotion";
+import { DefileOutils, SceneOutils } from "@/components/immersive/SceneOutils";
 import { Heart, Scale, ShieldCheck, Zap } from "@/components/site/icons";
 import { RULEPACK } from "@/lib/rulepack";
-import { FREE_TOOLS, toolHref } from "@/lib/tools/catalog";
+import { FREE_TOOLS } from "@/lib/tools/catalog";
 import { COOKIES } from "@/lib/seo/cookies";
 import {
   faqPageJsonLd,
@@ -59,6 +59,10 @@ const FEATURED_SLUGS = [
 const FEATURED_TOOLS = FEATURED_SLUGS.map((slug) => AVAILABLE_TOOLS.find((t) => t.slug === slug)).filter(
   (t): t is (typeof AVAILABLE_TOOLS)[number] => Boolean(t),
 );
+
+/* Les outils disponibles qui ne sont pas dans la scène fixe : le défilement
+   les montre, si bien que la section présente bien tous les outils annoncés. */
+const OTHER_TOOLS = AVAILABLE_TOOLS.filter((t) => !FEATURED_SLUGS.includes(t.slug));
 
 const BLIND_SPOTS = [
   {
@@ -156,7 +160,7 @@ export default function HomePage() {
           Gabarit Nexus : surtitres en pilule, promesse avec une phrase en
           terracotta, formulaire dans le héros, réassurances, signature, et
           à droite la démonstration animée d'un audit. */}
-      <section className="hero-glow border-b border-line bg-paper px-4 pb-12 pt-10 sm:px-6 md:pb-16 md:pt-16 lg:px-8">
+      <section className="border-b border-line bg-paper px-4 pb-12 pt-10 sm:px-6 md:pb-16 md:pt-16 lg:px-8">
         <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-16">
           <div className="rise">
             <ul className="mb-6 flex flex-wrap gap-2.5">
@@ -282,7 +286,7 @@ export default function HomePage() {
 
       {/* ═══════════════════ OUTILS GRATUITS ═══════════════════ */}
       <section aria-labelledby="outils-titre" className="border-y border-line bg-surface-low">
-        <div className="mx-auto max-w-7xl px-5 py-20">
+        <div className="mx-auto max-w-7xl px-5 pt-20">
           <div className="mx-auto max-w-2xl text-center">
             <p className="tech text-[10px] text-accent">Gratuits, sans inscription</p>
             <h2 id="outils-titre" className="display mt-3 text-3xl text-ink-2 sm:text-4xl">
@@ -292,33 +296,7 @@ export default function HomePage() {
               Chacun rend son verdict immédiatement et ne conserve rien de ce que vous lui confiez.
             </p>
           </div>
-          <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {FEATURED_TOOLS.map((tool, i) => (
-              <li key={tool.slug} className={i === 0 ? "sm:col-span-2 lg:col-span-1 lg:row-span-2" : ""}>
-                <Link
-                  href={toolHref(tool)}
-                  className="reveal card-lift group flex h-full flex-col rounded-3xl border border-line bg-surface p-7 shadow-md"
-                >
-                  <span className="tech text-[10px] text-muted">
-                    {tool.processing === "navigateur" ? "Dans votre navigateur" : "Sur nos serveurs, à Paris"}
-                  </span>
-                  <span className="mt-3 text-lg font-bold leading-snug text-ink-2 group-hover:text-flame">
-                    {tool.title}
-                  </span>
-                  <span className="mt-2 text-sm italic leading-relaxed text-ink-2/80">
-                    « {tool.question} »
-                  </span>
-                  <span className="mt-3 flex-1 text-sm leading-relaxed text-muted">{tool.description}</span>
-                  <span className="font-display mt-5 inline-flex items-center gap-1.5 text-sm font-bold text-flame">
-                    Ouvrir l&apos;outil
-                    <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">
-                      →
-                    </span>
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <SceneOutils tools={FEATURED_TOOLS} />
           <div className="mt-10 text-center">
             <Link
               href="/outils"
@@ -328,6 +306,7 @@ export default function HomePage() {
             </Link>
           </div>
         </div>
+        <DefileOutils tools={OTHER_TOOLS} />
       </section>
 
       {/* ══════════════ CE QUE LES BANDEAUX NE VOIENT PAS ══════════════ */}
@@ -346,10 +325,7 @@ export default function HomePage() {
         <div className="mt-12 grid gap-5 md:grid-cols-3">
           {BLIND_SPOTS.map((b, i) => (
             <FadeContent key={b.title} delay={i * 120}>
-              <SpotlightCard
-                as="article"
-                className="h-full rounded-xl border-l-2 border-secondary bg-surface p-6 shadow-md ring-1 ring-line"
-              >
+              <article className="h-full rounded-xl border-l-2 border-secondary bg-surface p-6 shadow-md ring-1 ring-line">
                 <svg viewBox="0 0 24 24" className="h-6 w-6 text-accent" fill="none" aria-hidden="true">
                   <path
                     d={b.icon}
@@ -361,7 +337,7 @@ export default function HomePage() {
                 </svg>
                 <h3 className="mt-4 text-lg font-bold text-ink-2">{b.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-muted">{b.body}</p>
-              </SpotlightCard>
+              </article>
             </FadeContent>
           ))}
         </div>
@@ -419,13 +395,13 @@ export default function HomePage() {
 
         <div className="mt-12 grid gap-px overflow-hidden rounded-xl bg-line ring-1 ring-line sm:grid-cols-2 lg:grid-cols-3">
           {ARSENAL.map((f, i) => (
-            <SpotlightCard key={f.title} as="article" className="bg-surface p-7">
+            <article key={f.title} className="bg-surface p-7">
               <span className="tech text-[10px] text-accent">
                 {String(i + 1).padStart(2, "0")}
               </span>
               <h3 className="mt-3 text-[17px] font-bold leading-snug text-ink-2">{f.title}</h3>
               <p className="mt-2.5 text-sm leading-relaxed text-muted">{f.body}</p>
-            </SpotlightCard>
+            </article>
           ))}
         </div>
 
@@ -447,7 +423,7 @@ export default function HomePage() {
 
       {/* ═══════════════ POSITION / NEUTRALITÉ ═══════════════ */}
       <section className="border-y border-line bg-surface">
-        <FadeContent blur className="mx-auto max-w-4xl px-5 py-20 text-center">
+        <FadeContent className="mx-auto max-w-4xl px-5 py-20 text-center">
           <svg
             viewBox="0 0 24 24"
             className="mx-auto h-8 w-8 text-accent"

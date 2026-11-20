@@ -23,6 +23,9 @@ export function Mur() {
   const [paused, setPaused] = useState(false);
 
   useEffect(() => {
+    // Sous 900 px le mur est masqué : ne pas le monter évite de télécharger
+    // ses vignettes pour rien.
+    if (!window.matchMedia("(min-width: 901px)").matches) return;
     if (typeof window.requestIdleCallback === "function") {
       const id = window.requestIdleCallback(() => setReady(true));
       return () => window.cancelIdleCallback(id);
@@ -32,12 +35,12 @@ export function Mur() {
   }, []);
 
   return (
-    <div className={paused ? "apv-mur apv-mur--pause" : "apv-mur"}>
+    <div className={paused ? "imm-mur imm-mur--pause" : "imm-mur"}>
       {ready ? (
-        <div className="apv-mur-scene" aria-hidden="true">
-          <div className="apv-mur-grille">
+        <div className="imm-mur-scene" aria-hidden="true">
+          <div className="imm-mur-grille">
             {CHUNKS.map((col, i) => (
-              <div key={i} className="apv-mur-col">
+              <div key={i} className="imm-mur-col">
                 {/* Chaque colonne est répétée pour couvrir toute la hauteur. */}
                 {[...col, ...col].map((img, j) => (
                   <Image key={j} src={img} alt="" width={480} height={270} unoptimized loading="eager" />
@@ -47,7 +50,7 @@ export function Mur() {
           </div>
         </div>
       ) : null}
-      <button type="button" className="apv-mur-bouton" aria-pressed={paused} onClick={() => setPaused((p) => !p)}>
+      <button type="button" className="imm-mur-bouton" aria-pressed={paused} onClick={() => setPaused((p) => !p)}>
         {paused ? "Relancer le mur" : "Mettre le mur en pause"}
       </button>
     </div>

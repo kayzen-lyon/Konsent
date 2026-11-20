@@ -1,75 +1,27 @@
-/* Aperçu immersif — préfixe « apv- ».
+/* Aperçu immersif — préfixe « imm- ».
    Couleurs : uniquement les jetons de globals.css, donc le thème clair par
    défaut ET le thème sombre de l'interrupteur fonctionnent sans rien
    redéfinir. Aucun dégradé, aucun halo, aucun flou : aplats et arêtes nettes.
    Dérivé de immersive.css (kayzen-lyon.com). */
 
-/* ── Retouches du menu et du pied de page réels, sur l'aperçu seulement ── */
-body:has(.apv) > div > header,
-body:has(.apv) header.sticky {
-  background: var(--color-paper);
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-}
-body:has(.apv) .scroll-progress {
-  background: var(--color-flame);
-}
-body:has(.apv) #pied-de-page {
-  margin-top: 0;
-  overflow: hidden;
-}
-/* Signature en filigrane. Décorative : le nom est déjà lu en haut du pied. */
-body:has(.apv) #pied-de-page::after {
-  content: "Konsent";
-  display: block;
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: clamp(5rem, 25vw, 24rem);
-  line-height: 0.74;
-  letter-spacing: -0.05em;
-  text-align: center;
-  white-space: nowrap;
-  color: rgb(255 255 255 / 0.07);
-  user-select: none;
-  pointer-events: none;
-}
-
-/* ── Bandeau d'aperçu ── */
-.apv-bar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem 1.25rem;
-  align-items: center;
-  margin: 0;
-  padding: 0.6rem 1.25rem;
-  font-size: 0.8rem;
-  color: var(--color-ink-2);
-  background: var(--color-surface-high);
-  border-bottom: 1px solid var(--color-line);
-}
-.apv-bar a {
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
 /* ── Mur en perspective ── */
-.apv-mur {
+.imm-mur {
   position: absolute;
   inset: 0 0 0 54%;
   clip-path: polygon(18% 0, 100% 0, 100% 100%, 0 100%);
   background: var(--color-navy-deep);
   overflow: hidden;
 }
-.apv-mur-scene {
+.imm-mur-scene {
   position: absolute;
   left: 50%;
   top: 50%;
   width: 2300px;
   height: 2300px;
   translate: -50% -50%;
-  animation: apv-apparait 0.8s ease both;
+  animation: imm-apparait 0.8s ease both;
 }
-.apv-mur-grille {
+.imm-mur-grille {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 26px;
@@ -78,17 +30,17 @@ body:has(.apv) #pied-de-page::after {
   transform: rotateX(55deg) rotateZ(-45deg);
   transform-origin: center;
 }
-.apv-mur-col {
+.imm-mur-col {
   display: flex;
   flex-direction: column;
   gap: 26px;
-  animation: apv-monte 14s ease-in-out infinite alternate;
+  animation: imm-monte 14s ease-in-out infinite alternate;
 }
-.apv-mur-col:nth-child(even) {
-  animation-name: apv-descend;
+.imm-mur-col:nth-child(even) {
+  animation-name: imm-descend;
   animation-duration: 19s;
 }
-.apv-mur-col img {
+.imm-mur-col img {
   display: block;
   width: 100%;
   height: auto;
@@ -96,10 +48,10 @@ body:has(.apv) #pied-de-page::after {
   border-radius: 14px;
   border: 1px solid rgb(255 255 255 / 0.14);
 }
-.apv-mur--pause .apv-mur-col {
+.imm-mur--pause .imm-mur-col {
   animation-play-state: paused;
 }
-.apv-mur-bouton {
+.imm-mur-bouton {
   position: absolute;
   right: 1rem;
   bottom: 1rem;
@@ -114,60 +66,56 @@ body:has(.apv) #pied-de-page::after {
   font-weight: 600;
   cursor: pointer;
 }
-.apv-mur-bouton:focus-visible {
+.imm-mur-bouton:focus-visible {
   outline-color: #fff;
 }
-@keyframes apv-apparait {
+@keyframes imm-apparait {
   from {
     opacity: 0;
   }
 }
-@keyframes apv-monte {
+@keyframes imm-monte {
   to {
     transform: translateY(140px);
   }
 }
-@keyframes apv-descend {
+@keyframes imm-descend {
   to {
     transform: translateY(-140px);
   }
 }
 
-/* Mur posé sur la bande de titre d'une page intérieure existante : la page
-   est rendue telle quelle, seule sa première section est élargie en hauteur
-   et son texte tenu à gauche. Sous 900 px le mur est masqué, rien ne change. */
-.apv-murpage {
+/* Mur posé sur la bande de titre marine d'une page intérieure : la section
+   porte `imm-murhote`. Elle gagne en hauteur et son texte est tenu à gauche.
+   Sous 900 px le mur n'est pas monté et rien ne change. */
+.imm-murhote {
   position: relative;
 }
-.apv-murpage .apv-mur {
-  inset: 0 0 auto 54%;
-  height: 24rem;
-}
 @media (min-width: 901px) {
-  .apv-murpage > section:first-of-type {
+  .imm-murhote {
     min-height: 24rem;
     display: grid;
     align-items: center;
   }
-  .apv-murpage > section:first-of-type :is(h1, p) {
+  .imm-murhote > div :is(h1, p) {
     max-width: min(38rem, 48%);
   }
 }
 @media (max-width: 900px) {
-  .apv-murpage .apv-mur {
+  .imm-mur {
     display: none;
   }
 }
 
 /* ── Cadre de navigateur (captures entières, jamais rognées) ── */
-.apv-cadre {
+.imm-cadre {
   border: 1px solid var(--color-line);
   border-radius: 1.25rem;
   overflow: hidden;
   background: var(--color-surface);
   box-shadow: var(--shadow-lg);
 }
-.apv-navigateur {
+.imm-navigateur {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -176,14 +124,14 @@ body:has(.apv) #pied-de-page::after {
   background: var(--color-surface-low);
   border-bottom: 1px solid var(--color-line);
 }
-.apv-navigateur i {
+.imm-navigateur i {
   width: 9px;
   height: 9px;
   border-radius: 50%;
   background: var(--color-line-2);
   opacity: 0.5;
 }
-.apv-navigateur span {
+.imm-navigateur span {
   margin-left: 10px;
   font: 500 0.7rem var(--font-mono);
   color: var(--color-muted);
@@ -193,23 +141,23 @@ body:has(.apv) #pied-de-page::after {
 }
 
 /* ── Outils : scène fixe + liste qui défile ── */
-.apv-scene {
+.imm-scene {
   display: grid;
   grid-template-columns: 1.45fr 1fr;
   gap: clamp(2rem, 4vw, 4.5rem);
   align-items: start;
   margin-top: 3rem;
 }
-.apv-scene-fixe {
+.imm-scene-fixe {
   position: sticky;
   top: 7.5rem;
   display: grid;
   gap: 0.9rem;
 }
-.apv-scene-pile {
+.imm-scene-pile {
   display: grid;
 }
-.apv-scene-image {
+.imm-scene-image {
   grid-area: 1 / 1;
   display: block;
   width: 100%;
@@ -219,25 +167,25 @@ body:has(.apv) #pied-de-page::after {
      transparentes donnent un texte brouillé. */
   visibility: hidden;
 }
-.apv-scene-image--active {
+.imm-scene-image--active {
   visibility: visible;
 }
-.apv-scene-pied {
+.imm-scene-pied {
   margin: 0;
   font: 500 0.8rem var(--font-mono);
   color: var(--color-muted);
 }
-.apv-scene-pied b {
+.imm-scene-pied b {
   font-size: 1rem;
   color: var(--color-ink-2);
 }
-.apv-scene-liste {
+.imm-scene-liste {
   list-style: none;
   margin: 0;
   padding: 4vh 0 16vh;
   display: grid;
 }
-.apv-outil {
+.imm-outil {
   display: grid;
   gap: 0.7rem;
   justify-items: start;
@@ -245,10 +193,10 @@ body:has(.apv) #pied-de-page::after {
   border-left: 3px solid var(--color-line);
   transition: border-color 0.35s ease;
 }
-.apv-outil--actif {
+.imm-outil--actif {
   border-left-color: var(--color-flame);
 }
-.apv-outil-titre {
+.imm-outil-titre {
   margin: 0;
   font-family: var(--font-display);
   font-weight: 800;
@@ -260,44 +208,44 @@ body:has(.apv) #pied-de-page::after {
   color: var(--color-muted);
   transition: color 0.35s ease;
 }
-.apv-outil--actif .apv-outil-titre {
+.imm-outil--actif .imm-outil-titre {
   color: var(--color-ink-2);
 }
-.apv-outil-vignette {
+.imm-outil-vignette {
   display: none;
 }
 
 /* ── Défilement : deux rangées en sens opposés ── */
-.apv-defile {
+.imm-defile {
   margin-top: 3.5rem;
   overflow: hidden;
 }
-.apv-defile-rangee {
+.imm-defile-rangee {
   overflow: hidden;
   padding-block: 0.6rem;
 }
-.apv-defile-piste {
+.imm-defile-piste {
   display: flex;
   gap: 1.25rem;
   width: max-content;
   margin: 0;
   padding: 0;
   list-style: none;
-  animation: apv-defile 60s linear infinite;
+  animation: imm-defile 60s linear infinite;
 }
-.apv-defile-rangee--retour .apv-defile-piste {
+.imm-defile-rangee--retour .imm-defile-piste {
   animation-direction: reverse;
 }
-.apv-defile-rangee:hover .apv-defile-piste,
-.apv-defile-rangee:focus-within .apv-defile-piste {
+.imm-defile-rangee:hover .imm-defile-piste,
+.imm-defile-rangee:focus-within .imm-defile-piste {
   animation-play-state: paused;
 }
-@keyframes apv-defile {
+@keyframes imm-defile {
   to {
     transform: translateX(calc(-50% - 0.625rem));
   }
 }
-.apv-defile-carte {
+.imm-defile-carte {
   flex: none;
   width: min(24rem, 78vw);
   border: 1px solid var(--color-line);
@@ -306,26 +254,26 @@ body:has(.apv) #pied-de-page::after {
   background: var(--color-surface);
   transition: border-color 0.2s ease;
 }
-.apv-defile-carte:hover {
+.imm-defile-carte:hover {
   border-color: var(--color-flame);
 }
-.apv-defile-carte a {
+.imm-defile-carte a {
   display: block;
   height: 100%;
 }
-.apv-defile-carte img {
+.imm-defile-carte img {
   display: block;
   width: 100%;
   height: auto;
   aspect-ratio: 16 / 9;
   border-bottom: 1px solid var(--color-line);
 }
-.apv-defile-corps {
+.imm-defile-corps {
   display: grid;
   gap: 0.35rem;
   padding: 1rem 1.15rem 1.15rem;
 }
-.apv-defile-nom {
+.imm-defile-nom {
   font-family: var(--font-display);
   font-weight: 800;
   font-size: 1.15rem;
@@ -335,13 +283,11 @@ body:has(.apv) #pied-de-page::after {
 }
 
 /* ── Ouverture du pied de page : le contact en très grand ── */
-.apv-contact {
+.imm-contact {
   padding: clamp(3.5rem, 8vw, 6.5rem) 0 clamp(2rem, 4vw, 3rem);
-  background: var(--color-navy-deep);
   border-bottom: 1px solid rgb(255 255 255 / 0.1);
-  color: rgb(255 255 255 / 0.8);
 }
-.apv-contact-mail {
+.imm-contact-mail {
   display: block;
   width: fit-content;
   max-width: 100%;
@@ -358,11 +304,11 @@ body:has(.apv) #pied-de-page::after {
   text-underline-offset: 0.12em;
   transition: text-decoration-color 0.2s ease;
 }
-.apv-contact-mail:hover,
-.apv-contact-mail:focus-visible {
+.imm-contact-mail:hover,
+.imm-contact-mail:focus-visible {
   text-decoration-color: var(--color-gold);
 }
-.apv-contact-suite {
+.imm-contact-suite {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -373,7 +319,7 @@ body:has(.apv) #pied-de-page::after {
   font-size: clamp(1.1rem, 2vw, 1.6rem);
   color: #fff;
 }
-.apv-contact-lien {
+.imm-contact-lien {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -384,39 +330,51 @@ body:has(.apv) #pied-de-page::after {
   font-size: 0.95rem;
   transition: background-color 0.2s ease;
 }
-.apv-contact-lien:hover {
+.imm-contact-lien:hover {
   background: rgb(255 255 255 / 0.1);
 }
-.apv-contact :focus-visible {
-  outline-color: #fff;
+
+/* Signature en filigrane, au bas du pied de page. Décorative. */
+.imm-filigrane {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(5rem, 25vw, 24rem);
+  line-height: 0.74;
+  letter-spacing: -0.05em;
+  text-align: center;
+  white-space: nowrap;
+  color: rgb(255 255 255 / 0.07);
+  user-select: none;
+  pointer-events: none;
 }
 
 /* ── Mobile ── */
 @media (max-width: 900px) {
-  .apv-scene {
+  .imm-scene {
     grid-template-columns: 1fr;
   }
-  .apv-scene-fixe {
+  .imm-scene-fixe {
     display: none;
   }
-  .apv-scene-liste {
+  .imm-scene-liste {
     padding: 0;
     gap: 1rem;
   }
-  .apv-outil {
+  .imm-outil {
     padding: 0 0 1.25rem;
     border: 1px solid var(--color-line);
     border-radius: 1.25rem;
     overflow: hidden;
     background: var(--color-surface);
   }
-  .apv-outil > *:not(.apv-outil-vignette) {
+  .imm-outil > *:not(.imm-outil-vignette) {
     margin-inline: 1.25rem;
   }
-  .apv-outil-titre {
+  .imm-outil-titre {
     color: var(--color-ink-2);
   }
-  .apv-outil-vignette {
+  .imm-outil-vignette {
     display: block;
     width: 100%;
     height: auto;
@@ -428,10 +386,10 @@ body:has(.apv) #pied-de-page::after {
 /* Sans animation : les rangées se parcourent à la main. La règle globale de
    globals.css coupe déjà les animations ; ceci rend le contenu atteignable. */
 @media (prefers-reduced-motion: reduce) {
-  .apv-defile-rangee {
+  .imm-defile-rangee {
     overflow-x: auto;
   }
 }
-html[data-motion="reduce"] .apv-defile-rangee {
+html[data-motion="reduce"] .imm-defile-rangee {
   overflow-x: auto;
 }
