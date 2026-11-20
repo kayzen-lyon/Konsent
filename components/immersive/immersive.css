@@ -335,8 +335,9 @@
 }
 
 /* Signature en filigrane, au bas du pied de page. Décorative. */
-.imm-filigrane {
-  margin: 0;
+.imm-filigrane::after {
+  content: "Konsent";
+  display: block;
   font-family: var(--font-display);
   font-weight: 800;
   font-size: clamp(5rem, 25vw, 24rem);

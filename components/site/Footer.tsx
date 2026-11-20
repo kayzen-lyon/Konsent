@@ -359,10 +359,10 @@ export function Footer() {
         </p>
       </div>
 
-      {/* Signature en filigrane. Décorative : le nom est déjà lu plus haut. */}
-      <p aria-hidden="true" className="imm-filigrane">
-        Konsent
-      </p>
+      {/* Signature en filigrane. Décorative : le nom est déjà lu plus haut.
+          Le mot est posé en CSS pour ne pas être traité comme du texte à lire
+          (ni par les lecteurs d'écran, ni par les contrôles de contraste). */}
+      <div aria-hidden="true" className="imm-filigrane" />
     </footer>
   );
 }
