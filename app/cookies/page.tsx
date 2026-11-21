@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import CountUp from "@/components/bits/CountUp";
 import { Pill } from "@/components/primitives";
 import { COOKIES, lifetimeLabel } from "@/lib/seo/cookies";
+import { Mur } from "@/components/immersive/Mur";
 
 export const metadata: Metadata = {
   title: "Que fait ce cookie ? Index des cookies expliqués",
@@ -23,7 +24,7 @@ export default function CookieIndexPage() {
 
   return (
     <>
-      <section className="grid-bg-dark bg-ink">
+      <section className="grid-bg-dark bg-ink imm-murhote">
         <div className="mx-auto max-w-7xl px-5 py-14">
           <p className="tech text-[10px] text-flame-soft">Index</p>
           <h1 className="display mt-3 max-w-3xl text-3xl text-white sm:text-[2.8rem]">
@@ -51,6 +52,7 @@ export default function CookieIndexPage() {
             </div>
           </div>
         </div>
+        <Mur />
       </section>
 
       <div className="mx-auto max-w-5xl px-5 py-12">

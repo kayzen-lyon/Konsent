@@ -549,7 +549,7 @@ a.text-flame:not([class*="rounded"]) {
   z-index: 60;
   transform-origin: 0 50%;
   transform: scaleX(0);
-  background: linear-gradient(90deg, var(--color-flame), var(--color-gold));
+  background: var(--color-flame);
   pointer-events: none;
 }
 @supports (animation-timeline: scroll()) {
@@ -632,13 +632,6 @@ h3 {
 /* Défilement fin, aux couleurs du thème. */
 html {
   scrollbar-color: var(--color-line-2) transparent;
-}
-
-/* Lueur terracotta derrière le héros, très diffuse. */
-.hero-glow {
-  background:
-    radial-gradient(60% 50% at 85% 20%, color-mix(in srgb, var(--color-flame) 10%, transparent), transparent 70%),
-    radial-gradient(40% 40% at 10% 90%, color-mix(in srgb, var(--color-gold) 9%, transparent), transparent 70%);
 }
 
 /* ═══════════════════════ Préférences d'affichage ═════════════════════════

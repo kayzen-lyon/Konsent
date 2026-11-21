@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Disclaimer } from "@/components/primitives";
 import { RULEPACK } from "@/lib/rulepack";
+import { Mur } from "@/components/immersive/Mur";
 
 export const metadata: Metadata = {
   title: "Konsent et votre plateforme de consentement",
@@ -87,7 +88,7 @@ const ROWS: readonly { label: string; cmp: string; konsent: string; edge: boolea
 export default function ComparisonPage() {
   return (
     <>
-      <section className="grid-bg-dark bg-ink">
+      <section className="grid-bg-dark bg-ink imm-murhote">
         <div className="mx-auto max-w-7xl px-5 py-14">
           <p className="tech text-[10px] text-flame-soft">Positionnement</p>
           <h1 className="display mt-3 max-w-3xl text-3xl text-white sm:text-[2.8rem]">
@@ -100,6 +101,7 @@ export default function ComparisonPage() {
             n&apos;est en position de s&apos;auditer lui-même.
           </p>
         </div>
+        <Mur />
       </section>
 
       <div className="mx-auto max-w-7xl px-5 py-14">

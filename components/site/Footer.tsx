@@ -251,7 +251,33 @@ export function Footer({ ecosystem = [] }: { ecosystem?: EcosystemGroup[] }) {
   const year = new Date().getFullYear();
 
   return (
-    <footer id="pied-de-page" tabIndex={-1} className="mt-24 bg-navy-deep text-white/75 outline-none">
+    <footer
+      id="pied-de-page"
+      tabIndex={-1}
+      className="mt-24 overflow-hidden bg-navy-deep text-white/75 outline-none"
+    >
+      {/* Ouverture : le contact en très grand. Les coordonnées sont celles
+          de l'éditeur (lib/disclaimer.ts), déjà publiées sur /contact. */}
+      <section aria-labelledby="pied-contact" className="imm-contact">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <h2
+            id="pied-contact"
+            className="font-display text-xs font-bold uppercase tracking-wider text-gold"
+          >
+            Nous écrire
+          </h2>
+          <a href={`mailto:${EDITOR.email}`} className="imm-contact-mail">
+            {EDITOR.email}
+          </a>
+          <p className="imm-contact-suite">
+            <a href={`tel:${EDITOR.phoneE164}`}>{EDITOR.phone}</a>
+            <Link href="/contact" className="imm-contact-lien">
+              Contact <span aria-hidden="true">→</span>
+            </Link>
+          </p>
+        </div>
+      </section>
+
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid gap-10 py-14 lg:grid-cols-[1.2fr_2.8fr]">
           <div className="max-w-sm">
@@ -396,6 +422,11 @@ export function Footer({ ecosystem = [] }: { ecosystem?: EcosystemGroup[] }) {
           sanction. Analyse technique automatisée, sans valeur de consultation juridique.
         </p>
       </div>
+
+      {/* Signature en filigrane. Décorative : le nom est déjà lu plus haut.
+          Le mot est posé en CSS pour ne pas être traité comme du texte à lire
+          (ni par les lecteurs d'écran, ni par les contrôles de contraste). */}
+      <div aria-hidden="true" className="imm-filigrane" />
     </footer>
   );
 }
