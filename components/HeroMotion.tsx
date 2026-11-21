@@ -133,7 +133,7 @@ export function HeroMotion() {
             </div>
             <div className="km-flow h-0.5 flex-1 rounded-full" />
             <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-navy-deep">
-              <Logo className="h-7 w-7 text-gold" />
+              <Logo className="h-7 w-9" fond="sombre" />
             </div>
             <div className="km-flow h-0.5 flex-1 rounded-full" />
             <div className="relative flex h-14 w-14 items-center justify-center">

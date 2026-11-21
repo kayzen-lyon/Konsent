@@ -66,5 +66,5 @@ addons.mozilla.org) est à venir.
 - `manifest.json` — déclaration de l'extension.
 - `popup.html`, `popup.css`, `popup.js` — l'interface, sans script en ligne
   (CSP Manifest V3).
-- `icons/` — icônes 16, 32, 48 et 128 px, générées depuis `app/icon.svg` par
+- `icons/` — icônes 16, 32, 48 et 128 px, générées depuis `public/icons/icon-512.png` par
   `npm run build:extensions`.

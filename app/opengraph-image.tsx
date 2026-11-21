@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { OG_EMBLEM_SRC } from "@/lib/seo/og";
 
 /**
  * Image de partage (Open Graph, Twitter), rendue au build.
@@ -29,36 +30,22 @@ export default function OpenGraphImage() {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
-          <svg width="56" height="56" viewBox="0 0 32 32" fill="none">
-            <path
-              d="M16 3.2 27 7.6v8.2c0 6.4-4.3 11.6-11 14.2-6.7-2.6-11-7.8-11-14.2V7.6L16 3.2Z"
-              fill="#b74831"
-              opacity="0.35"
-            />
-            <path
-              d="M16 3.2 27 7.6v8.2c0 6.4-4.3 11.6-11 14.2-6.7-2.6-11-7.8-11-14.2V7.6L16 3.2Z"
-              stroke="#ffb399"
-              strokeWidth="2"
-              strokeLinejoin="round"
-            />
-            <path
-              d="m11.4 16.2 3.2 3.3 6-6.4"
-              stroke="#ffb399"
-              strokeWidth="2.4"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={OG_EMBLEM_SRC} width={75} height={60} alt="" />
           <div style={{ fontSize: 34, fontWeight: 800, letterSpacing: -1 }}>KONSENT</div>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
-          <div style={{ fontSize: 66, fontWeight: 800, lineHeight: 1.08, letterSpacing: -2.5 }}>
-            Votre bandeau gère le consentement.
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 40 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 22, maxWidth: 720 }}>
+            <div style={{ fontSize: 58, fontWeight: 800, lineHeight: 1.08, letterSpacing: -2 }}>
+              Votre bandeau gère le consentement.
+            </div>
+            <div style={{ fontSize: 58, fontWeight: 800, lineHeight: 1.08, letterSpacing: -2, color: "#ffb399" }}>
+              Il ne vérifie pas ce qui passe derrière.
+            </div>
           </div>
-          <div style={{ fontSize: 66, fontWeight: 800, lineHeight: 1.08, letterSpacing: -2.5, color: "#ffb399" }}>
-            Il ne vérifie pas ce qui passe derrière.
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={OG_EMBLEM_SRC} width={299} height={240} alt="" />
         </div>
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -70,6 +57,8 @@ export default function OpenGraphImage() {
               display: "flex",
               padding: "14px 30px",
               borderRadius: 9999,
+              flexShrink: 0,
+              whiteSpace: "nowrap",
               background: "#b74831",
               fontSize: 24,
               fontWeight: 700,

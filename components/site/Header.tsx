@@ -88,7 +88,7 @@ export function Header() {
             href="/"
             className="flex shrink-0 items-center gap-2.5 rounded-lg"
           >
-            <Logo className="h-8 w-8 text-flame" />
+            <Logo className="h-9 w-11" />
             <span className="flex flex-col leading-none">
               <span className="font-display text-lg font-extrabold tracking-tight text-ink-2">
                 Konsent

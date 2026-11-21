@@ -13,7 +13,7 @@
  * versions de Node). Les entrées sont triées et datées d'une date fixe : deux
  * constructions du même contenu produisent le même fichier, octet pour octet.
  *
- * Les icônes de l'extension navigateur sont régénérées depuis app/icon.svg
+ * Les icônes de l'extension navigateur sont régénérées depuis public/icons/icon-512.png
  * quand `sharp` est installé (il l'est avec Next) ; sinon, les PNG déjà
  * présents dans le dossier sont utilisés tels quels.
  */
@@ -37,11 +37,11 @@ async function buildIcons() {
     console.warn("  sharp indisponible : icônes existantes conservées.");
     return;
   }
-  const svg = readFileSync(join(ROOT, "app", "icon.svg"));
+  const source = readFileSync(join(ROOT, "public", "icons", "icon-512.png"));
   mkdirSync(join(BROWSER, "icons"), { recursive: true });
   for (const size of [16, 32, 48, 128]) {
-    const png = await sharp(svg, { density: Math.ceil((72 * size) / 32) * 2 })
-      .resize(size, size)
+    const png = await sharp(source)
+      .resize(size, size, { kernel: "lanczos3" })
       .png()
       .toBuffer();
     writeFileSync(join(BROWSER, "icons", `icon-${size}.png`), png);
