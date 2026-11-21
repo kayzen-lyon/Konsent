@@ -11,12 +11,7 @@ import { Heart, Scale, ShieldCheck, Zap } from "@/components/site/icons";
 import { RULEPACK } from "@/lib/rulepack";
 import { FREE_TOOLS, toolHref } from "@/lib/tools/catalog";
 import { COOKIES } from "@/lib/seo/cookies";
-import {
-  faqPageJsonLd,
-  organizationJsonLd,
-  softwareApplicationJsonLd,
-  webSiteJsonLd,
-} from "@/lib/seo/jsonld";
+import { faqPageJsonLd, softwareApplicationJsonLd } from "@/lib/seo/jsonld";
 import { TRACKERS } from "@/lib/trackers/db";
 
 const CMPS = [
@@ -145,8 +140,6 @@ export default function HomePage() {
     <>
       <JsonLd
         data={[
-          organizationJsonLd(),
-          webSiteJsonLd(),
           softwareApplicationJsonLd(),
           faqPageJsonLd(FAQ_ITEMS),
         ]}

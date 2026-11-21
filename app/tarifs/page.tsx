@@ -7,7 +7,7 @@ import { Disclaimer } from "@/components/primitives";
 export const metadata: Metadata = {
   title: "Tarifs",
   description:
-    "Analyse gratuite sans inscription. Abonnements de surveillance et prestations de mise en conformité.",
+    "Tarifs Konsent : analyse RGPD gratuite et sans inscription, abonnements de surveillance des traceurs et prestations de mise en conformité à prix affichés.",
 };
 
 /**

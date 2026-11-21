@@ -23,7 +23,7 @@ import { applyTheme, readTheme, type ThemeChoice } from "./theme";
 import { DisplayPrefs } from "./DisplayPrefs";
 
 /**
- * Pied de page commun aux services du groupe KAYZEN — même structure que
+ * Pied de page commun aux services KAYZEN — même structure que
  * Nexus et DocuSûr : marque et indicateurs, partage, quatre colonnes de
  * liens, bandeau légal avec sélecteur de thème et retour en haut.
  *
@@ -32,6 +32,12 @@ import { DisplayPrefs } from "./DisplayPrefs";
  * visiteur ne clique pas.
  */
 type FooterLink = { label: string; href: string; external?: boolean };
+
+/** Applications de l'écosystème KAYZEN, préparées côté serveur (lib/ecosystem). */
+export type EcosystemGroup = {
+  category: string;
+  apps: { name: string; href: string | null; status: "disponible" | "beta" | "bientot" }[];
+};
 
 const COLUMNS: Record<string, FooterLink[]> = {
   Outils: [
@@ -57,11 +63,6 @@ const COLUMNS: Record<string, FooterLink[]> = {
     { label: "Presse", href: "/presse" },
     { label: "Statut du service", href: "/statut" },
     { label: "Nous écrire", href: "/contact" },
-  ],
-  "Groupe KAYZEN": [
-    { label: "Agence web KAYZEN", href: EDITOR.groupSite, external: true },
-    { label: "Nexus — audit SEO et IA", href: "https://nexus.kayzen-lyon.com", external: true },
-    { label: "DocuSûr — outils PDF", href: "https://docusur.kayzen-lyon.com", external: true },
   ],
   Légal: [
     { label: "Mentions légales", href: "/mentions-legales" },
@@ -185,7 +186,68 @@ function ThemeSwitcher() {
   );
 }
 
-export function Footer() {
+/**
+ * « Écosystème KAYZEN » : les autres applications, par catégorie. Liens
+ * suivis (pas de `nofollow` : ce sont nos propres sites), `noopener` car
+ * ouverts dans un nouvel onglet.
+ */
+function EcosystemLinks({ groups }: { groups: EcosystemGroup[] }) {
+  if (groups.length === 0) return null;
+  return (
+    <nav aria-labelledby="pied-ecosysteme" className="border-t border-white/10 py-10">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
+        <h2
+          id="pied-ecosysteme"
+          className="font-display text-xs font-bold uppercase tracking-wider text-gold"
+        >
+          Écosystème KAYZEN
+        </h2>
+        <a
+          href={`${EDITOR.groupSite}/contact?ref=konsent`}
+          target="_blank"
+          rel="noopener"
+          className="text-sm font-semibold text-white underline decoration-gold underline-offset-2 hover:text-gold"
+        >
+          Un projet web ? KAYZEN, Lyon
+          <span className="sr-only"> (nouvel onglet)</span>
+        </a>
+      </div>
+      <div className="mt-6 grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-4">
+        {groups.map((group) => (
+          <div key={group.category}>
+            <h3 className="font-display mb-3 text-[11px] font-bold uppercase tracking-wider text-white/70">
+              {group.category}
+            </h3>
+            <ul className="space-y-2">
+              {group.apps.map((app) => (
+                <li key={app.name} className="text-sm">
+                  {app.href ? (
+                    <a
+                      href={app.href}
+                      target="_blank"
+                      rel="noopener"
+                      className="text-white/80 transition-colors hover:text-white hover:underline"
+                    >
+                      {app.name}
+                      {app.status === "beta" ? <span className="text-white/60"> (bêta)</span> : null}
+                      <span className="sr-only"> (nouvel onglet)</span>
+                    </a>
+                  ) : (
+                    <span className="text-white/60">
+                      {app.name} : bientôt disponible
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </nav>
+  );
+}
+
+export function Footer({ ecosystem = [] }: { ecosystem?: EcosystemGroup[] }) {
   const year = new Date().getFullYear();
 
   return (
@@ -234,7 +296,7 @@ export function Footer() {
             </a>
           </div>
 
-          <nav aria-label="Liens du pied de page" className="grid grid-cols-2 gap-8 sm:grid-cols-4">
+          <nav aria-label="Liens du pied de page" className="grid grid-cols-2 gap-8 sm:grid-cols-3">
             {Object.entries(COLUMNS).map(([title, links]) => {
               const id = `pied-${title.toLowerCase().replace(/\s+/g, "-")}`;
               return (
@@ -274,6 +336,8 @@ export function Footer() {
             })}
           </nav>
         </div>
+
+        <EcosystemLinks groups={ecosystem} />
 
         <div className="flex flex-col gap-5 border-t border-white/10 py-7 lg:flex-row lg:items-center lg:justify-between">
           <div className="space-y-1 text-xs leading-relaxed">

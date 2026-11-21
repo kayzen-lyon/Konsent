@@ -2,7 +2,7 @@
   "name": "konsent",
   "version": "0.1.0",
   "private": true,
-  "description": "Konsent — audit automatisé RGPD / cookies / traceurs. Édité par KAYZEN LYON SASU.",
+  "description": "Konsent — audit automatisé RGPD / cookies / traceurs. Édité par KAYZEN (Tarek BELHADJ, entrepreneur individuel).",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

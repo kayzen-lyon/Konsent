@@ -11,7 +11,7 @@ import { Close, Menu, Moon, Sun } from "./icons";
 import { applyTheme } from "./theme";
 
 /**
- * En-tête commun aux services du groupe KAYZEN (gabarit Nexus) : barre
+ * En-tête commun aux services KAYZEN (gabarit Nexus) : barre
  * blanche translucide qui suit le thème, ombre au défilement, navigation
  * soulignée en terracotta sur la page active, carte de contact, bascule de
  * thème, connexion et appel à l'action en pilule.

@@ -7,7 +7,17 @@ import { EDITOR } from "@/lib/disclaimer";
  * l'affiche à la place de l'URL dans les résultats, et le lecteur d'écran
  * sait où il se trouve (dernier élément en `aria-current="page"`).
  */
-export function Breadcrumbs({ items }: { items: { href: string; label: string }[] }) {
+/**
+ * `jsonLd` : nœuds schema.org propres à la page, fusionnés dans le même
+ * graphe que le fil d'Ariane (une page ne rend qu'un seul bloc JSON-LD).
+ */
+export function Breadcrumbs({
+  items,
+  jsonLd = [],
+}: {
+  items: { href: string; label: string }[];
+  jsonLd?: Record<string, unknown>[];
+}) {
   const all = [{ href: "/", label: "Accueil" }, ...items];
   return (
     <>
@@ -33,16 +43,18 @@ export function Breadcrumbs({ items }: { items: { href: string; label: string }[
         </ol>
       </nav>
       <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "BreadcrumbList",
-          itemListElement: all.map((item, i) => ({
-            "@type": "ListItem",
-            position: i + 1,
-            name: item.label,
-            item: `${EDITOR.productSite}${item.href === "/" ? "" : item.href}`,
-          })),
-        }}
+        data={[
+          ...jsonLd,
+          {
+            "@type": "BreadcrumbList",
+            itemListElement: all.map((item, i) => ({
+              "@type": "ListItem",
+              position: i + 1,
+              name: item.label,
+              item: `${EDITOR.productSite}${item.href === "/" ? "/" : item.href}`,
+            })),
+          },
+        ]}
       />
     </>
   );
