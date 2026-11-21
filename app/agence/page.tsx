@@ -15,6 +15,7 @@ import {
   parseBranding,
   scanPortfolio,
 } from "@/lib/agency/portfolio";
+import { Mur } from "@/components/immersive/Mur";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -291,7 +292,7 @@ export default async function AgencyPage({
 
   return (
     <>
-      <section className="grid-bg-dark bg-ink">
+      <section className="grid-bg-dark bg-ink imm-murhote">
         <div className="mx-auto max-w-7xl px-5 py-14">
           <p className="tech text-[10px] text-flame-soft">Programme agence</p>
           <h1 className="display mt-3 max-w-3xl text-3xl text-white sm:text-[2.8rem]">
@@ -303,6 +304,7 @@ export default async function AgencyPage({
             des rapports personnalisables à votre marque.
           </p>
         </div>
+        <Mur />
       </section>
 
       <div className="mx-auto max-w-6xl px-5 py-14">

@@ -3,10 +3,12 @@ import { Outfit, Plus_Jakarta_Sans } from "next/font/google";
 import { EDITOR } from "@/lib/disclaimer";
 import { MotionProvider } from "@/components/bits/MotionProvider";
 import { Header } from "@/components/site/Header";
-import { Footer } from "@/components/site/Footer";
+import { Footer, type EcosystemGroup } from "@/components/site/Footer";
+import { getEcosystem, groupByCategory, withRef } from "@/lib/ecosystem";
 import { Toaster } from "@/components/site/Toaster";
 import { THEME_BOOT_SCRIPT } from "@/components/site/theme";
 import "./globals.css";
+import "@/components/immersive/immersive.css";
 
 /**
  * next/font télécharge et auto-héberge les fichiers de police au moment du
@@ -39,28 +41,40 @@ export const metadata: Metadata = {
     template: "%s · Konsent",
   },
   description:
-    "Votre plateforme de consentement gère le consentement. Konsent vérifie ce qui se dépose vraiment avant que vos visiteurs aient pu répondre — traceurs, destinataires, juridictions. Auditeur indépendant de toute CMP.",
+    "Konsent vérifie ce que votre site dépose avant le choix du visiteur : traceurs, destinataires, juridictions. Audit RGPD gratuit, indépendant de toute CMP.",
   /* Canonique relative : chaque page se déclare elle-même, sans paramètre
    * d'URL. Évite les doublons d'indexation entre `?url=` et la page nue. */
   alternates: { canonical: "./" },
+  /* Ni titre ni description ici : Next les reprend de chaque page, pour que
+   * le partage d'une page interne n'affiche pas le texte de l'accueil.
+   * `url` relative, résolue comme la canonique : og:url lui est identique. */
   openGraph: {
     siteName: "Konsent",
-    title: "Konsent — l'audit RGPD que votre bandeau ne fait pas",
-    description:
-      "Que dépose votre site avant que vos visiteurs aient pu répondre ? Vérifiez-le gratuitement.",
+    url: "./",
     locale: "fr_FR",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Konsent — l'audit RGPD que votre bandeau ne fait pas",
-    description:
-      "Que dépose votre site avant que vos visiteurs aient pu répondre ? Vérifiez-le gratuitement.",
+    site: "@KayzenLyon",
   },
   robots: { index: true, follow: true },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // Lu côté serveur : le pied de page reçoit des liens déjà construits.
+  const ecosystem: EcosystemGroup[] = groupByCategory(await getEcosystem()).map(
+    ([category, apps]) => ({
+      category,
+      apps: apps.map((a) => ({
+        name: a.nom,
+        // Une application annoncée n'a pas encore de page : pas de lien.
+        href: a.statut === "bientot" ? null : withRef(a.url),
+        status: a.statut,
+      })),
+    }),
+  );
+
   return (
     <html
       lang="fr"
@@ -93,7 +107,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <main id="contenu" tabIndex={-1} className="outline-none">
             {children}
           </main>
-          <Footer />
+          <Footer ecosystem={ecosystem} />
           <Toaster />
         </MotionProvider>
       </body>

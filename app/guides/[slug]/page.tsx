@@ -7,7 +7,6 @@ import { getRule } from "@/lib/rulepack";
 import { ADEQUACY_LABELS, CATEGORY_LABELS } from "@/lib/trackers/db";
 import { GUIDES, cookiesOfGuide, getGuide } from "@/lib/seo/guides";
 import { lifetimeLabel } from "@/lib/seo/cookies";
-import { JsonLd } from "@/components/JsonLd";
 import { SeeAlso } from "@/components/SeeAlso";
 import { howToJsonLd } from "@/lib/seo/jsonld";
 import { relatedForGuide } from "@/lib/seo/related";
@@ -45,14 +44,14 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
           { href: "/guides", label: "Guides" },
           { href: `/guides/${slug}`, label: guide.title },
         ]}
-      />
-      <JsonLd
-        data={howToJsonLd({
-          name: guide.title,
-          description: guide.metaDescription,
-          path: `/guides/${guide.slug}`,
-          steps: guide.steps,
-        })}
+        jsonLd={[
+          howToJsonLd({
+            name: guide.title,
+            description: guide.metaDescription,
+            path: `/guides/${guide.slug}`,
+            steps: guide.steps,
+          }),
+        ]}
       />
 
       <header>

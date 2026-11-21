@@ -13,8 +13,14 @@ import { RULEPACK } from "@/lib/rulepack";
  * que ce produit reproche aux autres.
  */
 const BASE = EDITOR.productSite;
-const ORG_ID = `${BASE}/#organisation`;
-const SITE_ID = `${BASE}/#site`;
+/**
+ * Identifiants communs à tout l'écosystème KAYZEN : chaque site déclare la
+ * même Organization, ce qui permet aux moteurs de relier les applications
+ * à un seul éditeur. Ne pas les dériver de `BASE`.
+ */
+const ORG_ID = "https://www.kayzen-lyon.com/#organization";
+const KAYZEN_SITE_ID = "https://www.kayzen-lyon.com/#website";
+const SITE_ID = `${BASE}/#website`;
 const APP_ID = `${BASE}/#logiciel`;
 
 export function organizationJsonLd() {
@@ -22,10 +28,11 @@ export function organizationJsonLd() {
     "@context": "https://schema.org",
     "@type": "Organization",
     "@id": ORG_ID,
-    name: EDITOR.legalName,
-    alternateName: EDITOR.tradeName,
-    url: BASE,
-    logo: `${BASE}/opengraph-image`,
+    name: EDITOR.tradeName,
+    legalName: EDITOR.legalName,
+    url: "https://www.kayzen-lyon.com/",
+    // Logo publié par kayzen-lyon.com (référencé dans son ecosystem.json).
+    logo: "https://www.kayzen-lyon.com/favicon-512x512.png",
     email: EDITOR.email,
     telephone: EDITOR.phoneE164,
     taxID: EDITOR.siret.replace(/\s/g, ""),
@@ -36,7 +43,7 @@ export function organizationJsonLd() {
       addressLocality: EDITOR.city,
       addressCountry: "FR",
     },
-    sameAs: [EDITOR.groupSite, EDITOR.agencySite],
+    sameAs: ["https://www.linkedin.com/in/kayzen-lyon/", "https://x.com/KayzenLyon"],
   };
 }
 
@@ -46,7 +53,7 @@ export function webSiteJsonLd() {
     "@type": "WebSite",
     "@id": SITE_ID,
     name: "Konsent",
-    url: BASE,
+    url: `${BASE}/`,
     inLanguage: "fr-FR",
     publisher: { "@id": ORG_ID },
   };
@@ -79,6 +86,7 @@ export function softwareApplicationJsonLd() {
       priceCurrency: "EUR",
       description: "Audit libre, sans inscription",
     },
+    isPartOf: { "@id": KAYZEN_SITE_ID },
     author: { "@id": ORG_ID },
     publisher: { "@id": ORG_ID },
   };

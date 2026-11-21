@@ -10,6 +10,7 @@ import { ShareReportButton } from "@/components/report/ShareReportButton";
 import { ScoreGauge } from "@/components/ScoreGauge";
 import { PhaseTimeline, Timeline } from "@/components/Timeline";
 import { ExecutiveSummary } from "@/components/report/ExecutiveSummary";
+import { GoFurther } from "@/components/report/GoFurther";
 import { PillarScores } from "@/components/report/PillarScores";
 import { PrintReportLink } from "@/components/report/PrintReportLink";
 import { VendorTable } from "@/components/Vendors";
@@ -512,6 +513,8 @@ export function ReportView({
         )}
 
         <PrintReportLink url={frozen ? onlineUrl : publicReportUrl(target, level)} />
+
+        <GoFurther hostname={result.hostname} />
 
         <section className="mt-10">
           <Disclaimer />

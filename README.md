@@ -2,7 +2,7 @@
 
 **Audit automatisé RGPD, cookies et traceurs — auditeur indépendant de toute plateforme de consentement.**
 
-Édité par KAYZEN LYON SASU (SIREN 999 418 346).
+Édité par KAYZEN (Tarek BELHADJ, entrepreneur individuel) — identité de référence : `EDITOR` dans `lib/disclaimer.ts`.
 
 ---
 

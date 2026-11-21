@@ -1,4 +1,3 @@
-import { JsonLd } from "@/components/JsonLd";
 import { toolJsonLd } from "@/lib/seo/jsonld";
 import { getTool } from "@/lib/tools/catalog";
 import Link from "next/link";
@@ -36,8 +35,8 @@ const POINTS: { title: string; body: string }[] = [
 export default function ProcessingRegisterPage() {
   return (
     <div className="mx-auto max-w-7xl px-6 py-16">
-      <JsonLd data={toolJsonLd(getTool("registre-traitements")!)} />
       <Breadcrumbs
+        jsonLd={[toolJsonLd(getTool("registre-traitements")!)]}
         items={[
           { href: "/outils", label: "Outils" },
           { href: "/outils/registre-traitements", label: "Registre des traitements" },
