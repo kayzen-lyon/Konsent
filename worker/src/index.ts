@@ -17,6 +17,7 @@ const USER_AGENT =
   "Mozilla/5.0 (compatible; KonsentBot/1.0; +https://konsent.kayzen-lyon.com/bot) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0 Safari/537.36";
 
 const SETTLE_MS = 6_000;
+const SCREENSHOT_TIMEOUT_MS = 12_000;
 
 interface CapturedRequest {
   url: string;
@@ -130,6 +131,38 @@ async function newContext(browser: Browser): Promise<BrowserContext> {
   return context;
 }
 
+/**
+ * Captures une par une. Les trois phases tournent en parallèle et le rendu
+ * est logiciel : trois captures simultanées se privent mutuellement de
+ * processeur et dépassent toutes leur délai.
+ */
+let screenshotQueue: Promise<unknown> = Promise.resolve();
+function inScreenshotQueue<T>(task: () => Promise<T>): Promise<T> {
+  const run = screenshotQueue.then(task, task);
+  screenshotQueue = run.catch(() => {});
+  return run;
+}
+
+async function takeScreenshot(
+  page: import("playwright").Page,
+  phase: Snapshot["phase"],
+): Promise<string | null> {
+  const started = Date.now();
+  try {
+    const buf = await page.screenshot({
+      type: "jpeg",
+      quality: SCREENSHOT_QUALITY,
+      timeout: SCREENSHOT_TIMEOUT_MS,
+    });
+    return buf.toString("base64");
+  } catch (error) {
+    // Durée et première ligne seulement : jamais l'adresse analysée.
+    const reason = error instanceof Error ? error.message.split("\n")[0] : "inconnue";
+    process.stderr.write(`capture ${phase} : échec après ${Date.now() - started} ms (${reason})\n`);
+    return null;
+  }
+}
+
 async function capture(
   context: BrowserContext,
   phase: Snapshot["phase"],
@@ -176,10 +209,7 @@ async function capture(
 
   // Capture d'écran visible. Un échec (page qui se ferme, rendu bloqué)
   // n'empêche pas l'instantané : la preuve visuelle est un complément.
-  const screenshot = await page
-    .screenshot({ type: "jpeg", quality: SCREENSHOT_QUALITY, timeout: 8_000 })
-    .then((buf) => buf.toString("base64"))
-    .catch(() => null);
+  const screenshot = await inScreenshotQueue(() => takeScreenshot(page, phase));
 
   const serviceWorkers = await page.evaluate(async () => {
     if (!navigator.serviceWorker) return [];
