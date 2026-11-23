@@ -699,23 +699,71 @@ html[data-motion="reduce"] *::after {
 .scan-bar {
   animation: scan-bar 1.6s ease-in-out infinite;
 }
-@keyframes scan-fade {
-  from {
+/* Compteur de secondes en CSS pur. Pendant l'analyse, l'écran d'attente est
+ * le repli d'un Suspense encore en attente côté serveur : React ne l'hydrate
+ * pas avant la fin du rapport, un minuteur JavaScript y resterait figé à 0. */
+@property --scan-s {
+  syntax: "<integer>";
+  initial-value: 0;
+  inherits: false;
+}
+@keyframes scan-count {
+  to {
+    --scan-s: 600;
+  }
+}
+.scan-counter {
+  animation: scan-count 600s linear forwards;
+  counter-reset: scan-s var(--scan-s);
+}
+.scan-counter::before {
+  content: counter(scan-s);
+}
+
+/* Rotation des vérifications : 9 libellés de 3 s, cycle de 27 s. */
+@keyframes scan-rotate {
+  0% {
     opacity: 0;
     transform: translateY(4px);
   }
-  to {
+  1.5%,
+  10% {
     opacity: 1;
     transform: none;
   }
+  11.1%,
+  100% {
+    opacity: 0;
+  }
 }
-.scan-fade {
-  animation: scan-fade 0.4s ease-out both;
+.scan-rotate > * {
+  grid-area: 1 / 1;
+  opacity: 0;
+  animation: scan-rotate 27s linear infinite;
+}
+
+/* Message « plus long que d'habitude », affiché après un délai. */
+@keyframes scan-late {
+  to {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+.scan-late {
+  opacity: 0;
+  visibility: hidden;
+  animation: scan-late 0.4s ease-out forwards;
 }
 @media (prefers-reduced-motion: reduce) {
-  .scan-bar,
-  .scan-fade {
+  .scan-bar {
     animation: none;
+  }
+  /* Sans mouvement : le premier libellé reste affiché, fixe. */
+  .scan-rotate > * {
+    animation: none;
+  }
+  .scan-rotate > :first-child {
+    opacity: 1;
   }
   .scan-bar {
     width: 100%;
