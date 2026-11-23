@@ -179,7 +179,13 @@ function toCookies(snapshot: WorkerSnapshot): ObservedCookie[] {
   });
 }
 
-function toCmp(banner: WorkerBanner): CmpDetection {
+function toCmp(banner: WorkerBanner, refusalClicked = false): CmpDetection {
+  // Bandeau maison, inconnu des signatures : si le bouton « Refuser » a pu
+  // être cliqué, un mécanisme de consentement existe bel et bien. Le dire
+  // « absent » produisait un faux constat critique (KZC-BANNER-001).
+  if (banner.resolution === "UNRESOLVED" && refusalClicked) {
+    return { detected: true, name: "Bandeau propre au site", method: "heuristic", confidence: "low" };
+  }
   const method: CmpDetection["method"] =
     banner.resolution === "API"
       ? "api_signature"
@@ -239,7 +245,7 @@ export function observationFromWorker(
     durationMs: 0,
     requests,
     cookies,
-    cmp: toCmp(output.banner),
+    cmp: toCmp(output.banner, output.refusalClicked === true),
     legalPages: statics?.legalPages ?? [],
     dns: statics?.dns ?? [],
     headers:

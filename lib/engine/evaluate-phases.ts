@@ -182,9 +182,15 @@ export function evaluatePhases(cmp: PhaseComparison): readonly Finding[] {
     })),
   );
 
+  // Un Service Worker est forcément propre au site (même origine) et sert
+  // le plus souvent au fonctionnement hors ligne. Seul, il ne prouve aucun
+  // suivi : on ne le relève que s'il cohabite avec des traceurs déposés
+  // avant consentement, qu'il pourrait alors rendre persistants.
+  const trackingBeforeConsent =
+    cmp.depositedBeforeConsent.length > 0 || cmp.cookiesBeforeConsent.length > 0;
   add(
     "KZC-STORAGE-003",
-    cmp.serviceWorkersBeforeConsent.map((scope) => ({
+    (trackingBeforeConsent ? cmp.serviceWorkersBeforeConsent : []).map((scope) => ({
       kind: "dom" as const,
       label: `Service Worker enregistré sur ${scope}`,
       detail: "Composant persistant installé avant tout accord du visiteur.",
