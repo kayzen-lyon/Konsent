@@ -6,7 +6,7 @@ import { dbConfigured } from "@/lib/db";
 import { parseReadingLevel, type ReadingLevel } from "@/lib/report/levels";
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 60;
+export const maxDuration = 150;
 
 export const metadata: Metadata = {
   title: "Rapport d'audit",

@@ -74,7 +74,7 @@ writeFileSync(
       launcherType: "Nodejs",
       shouldAddHelpers: false,
       memory: 2048,
-      maxDuration: 90,
+      maxDuration: 150,
       regions: ["cdg1"],
     },
     null,

@@ -49,7 +49,7 @@ export function executiveSummary(result: ScanResult): readonly string[] {
     ? `Point à examiner en priorité : « ${top.rule.title} ». ${constatWording(
         top.rule.references[0] ?? "le référentiel applicable",
       )}`
-    : "Ce résultat ne vaut pas certification : les règles non évaluées restent à vérifier.";
+    : "Ce résultat ne vaut pas certification : les points hors de portée de l'outil, listés en fin de rapport, restent à vérifier.";
 
   return [first, second, third];
 }
