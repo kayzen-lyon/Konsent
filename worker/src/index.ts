@@ -16,7 +16,7 @@ import { ACCEPT_WORDS, REJECT_WORDS, clickByLexicon, resolveBanner, type BannerI
 const USER_AGENT =
   "Mozilla/5.0 (compatible; KonsentBot/1.0; +https://konsent.kayzen-lyon.com/bot) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0 Safari/537.36";
 
-const SETTLE_MS = 3_500;
+const SETTLE_MS = 6_000;
 
 interface CapturedRequest {
   url: string;
@@ -298,7 +298,7 @@ async function runPhase(
   });
 
   await page.goto(url, { waitUntil: "domcontentloaded", timeout: 30_000 });
-  await page.waitForLoadState("networkidle", { timeout: 10_000 }).catch(() => {});
+  await page.waitForLoadState("networkidle", { timeout: 20_000 }).catch(() => {});
 
   const banner = await resolveBanner(page);
 
@@ -362,7 +362,7 @@ export async function runThreePhaseScan(url: string, launch: LaunchOptions = {})
       const clicked = await clickByLexicon(page, REJECT_WORDS);
       refusalClicked = Boolean(clicked);
       if (clicked) {
-        await page.waitForTimeout(1500);
+        await page.waitForTimeout(2000);
         const internal = await page.evaluate(() => {
           const origin = window.location.origin;
           const links = Array.from(document.querySelectorAll<HTMLAnchorElement>("a[href]"))
@@ -371,7 +371,7 @@ export async function runThreePhaseScan(url: string, launch: LaunchOptions = {})
           return links[0] ?? null;
         });
         if (internal) {
-          await page.goto(internal, { waitUntil: "domcontentloaded", timeout: 12_000 }).catch(() => {});
+          await page.goto(internal, { waitUntil: "domcontentloaded", timeout: 20_000 }).catch(() => {});
         }
       }
     }));
