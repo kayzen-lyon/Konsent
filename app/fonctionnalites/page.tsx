@@ -122,7 +122,7 @@ const MODULES = [
       "Message d'alerte nominatif prêt à l'envoi",
       "Comparaison refusée entre deux domaines différents",
       "Signalement d'un changement de version du référentiel",
-      "Surveillance planifiée et historique sur abonnement Pro",
+      "Surveillance planifiée et historique avec un compte gratuit",
     ],
     status: "Disponible sur /surveillance",
   },
@@ -293,12 +293,12 @@ export default function FeaturesPage() {
             fonctions en dépendent donc et ne sont pas actives ici : la surveillance{" "}
             <em>planifiée</em> (les moteurs de comparaison et d&apos;alerte, eux, fonctionnent
             et sont utilisables dès maintenant avec un jeton de référence), l&apos;historique de
-            score dans le temps, et les sous-comptes clients cloisonnés de l&apos;offre Agence.
+            score dans le temps, et les sous-comptes clients cloisonnés de l&apos;espace agence.
           </p>
           <p className="mt-3 max-w-3xl text-[14px] leading-relaxed text-muted">
             Les activer suppose de stocker des données pour votre compte, donc un contrat de
-            sous-traitance et votre consentement explicite. C&apos;est le périmètre des
-            abonnements Pro et Agence, pas celui de l&apos;audit libre.
+            sous-traitance et votre consentement explicite. C&apos;est le périmètre du compte
+            (gratuit), pas celui de l&apos;audit sans inscription.
           </p>
         </div>
       </section>

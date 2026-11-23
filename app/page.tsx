@@ -439,57 +439,56 @@ export default function HomePage() {
       {/* ═══════════════════ TARIFS ═══════════════════ */}
       <section className="mx-auto max-w-7xl px-5 py-20 [content-visibility:auto] [contain-intrinsic-size:auto_1200px] print:[content-visibility:visible]">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="display text-3xl text-ink-2 sm:text-4xl">Tarifs</h2>
+          <h2 className="display text-3xl text-ink-2 sm:text-4xl">Tout est gratuit</h2>
           <p className="mt-4 text-[15px] leading-relaxed text-muted">
-            L&apos;audit est gratuit parce qu&apos;il coûte quelques millièmes d&apos;euro à
-            produire. Ce qui se facture, c&apos;est la surveillance dans le temps et la
-            correction.
+            Analyse, surveillance, archive de preuve et espace agence : toutes les
+            fonctionnalités de Konsent, pour tous, sans abonnement ni carte bancaire. Le code
+            source est public, sous licence FSL-1.1-MIT.
           </p>
         </div>
 
         <div className="mt-12 grid gap-5 lg:grid-cols-3">
           {[
             {
-              name: "Audit libre",
+              name: "Analyser",
               price: "0 €",
               cadence: "",
               features: [
                 "Analyse à la demande, sans inscription",
-                "Rapport complet à l'écran",
+                "Protocole en trois phases, dans un vrai navigateur",
+                "Captures d'écran et archive de preuve signée",
                 "Référentiel et base des traceurs",
-                "Brouillon de politique cookies",
               ],
               cta: "Lancer un audit",
               href: "/#scan",
               featured: false,
             },
             {
-              name: "Pro",
-              price: "89 €",
-              cadence: "/ mois",
+              name: "Surveiller",
+              price: "0 €",
+              cadence: "",
               features: [
-                "5 domaines · 250 pages par analyse",
-                "Protocole complet en trois phases",
-                "Analyse hebdomadaire et alertes de régression",
-                "Archive de preuve horodatée",
-                "24 documents générés · accès API",
+                "25 domaines, propriété vérifiée",
+                "Analyse planifiée et détection de régression",
+                "Historique de score sur 13 mois",
+                "Brouillon de politique cookies et documents générés",
               ],
-              cta: "Nous écrire",
-              href: "mailto:contact@kayzen-lyon.fr",
+              cta: "Créer un compte",
+              href: "/connexion",
               featured: true,
             },
             {
               name: "Agence",
-              price: "249 €",
-              cadence: "/ mois",
+              price: "0 €",
+              cadence: "",
               features: [
-                "25 domaines · vue portefeuille",
+                "Vue portefeuille multi-domaines",
                 "Rapports à votre marque",
                 "Sous-comptes clients cloisonnés",
                 "Devis à votre grille tarifaire",
               ],
-              cta: "Nous écrire",
-              href: "mailto:contact@kayzen-lyon.fr",
+              cta: "Créer un compte",
+              href: "/connexion",
               featured: false,
             },
           ].map((p) => (
@@ -546,7 +545,7 @@ export default function HomePage() {
 
         <p className="mt-6 text-center text-sm text-muted">
           <Link href="/tarifs" className="text-flame hover:underline">
-            Voir la grille complète et les prestations de correction
+            Ce qui est inclus, ce qui ne l&apos;est pas encore, et les prestations facultatives
           </Link>
         </p>
       </section>

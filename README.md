@@ -327,3 +327,18 @@ n'était pas adoptée à la date de rédaction.
 La diffusion de modèles de documents juridiques engage la responsabilité de
 son éditeur et doit faire l'objet d'une validation par un professionnel du
 droit habilité.
+
+## Gratuité et licence
+
+Konsent est **entièrement gratuit** : toutes les fonctionnalités, pour tous,
+sans abonnement. L'interrupteur `ALL_FEATURES_FREE` de
+[`lib/billing/plans.ts`](lib/billing/plans.ts) donne à chaque compte les
+droits de l'offre la plus complète et ferme le paiement en ligne ; les grilles
+payantes restent écrites et testées si l'éditeur voulait y revenir.
+
+Le code est publié sous **[Functional Source License 1.1, MIT Future
+License](LICENSE.md)** (FSL-1.1-MIT) : vous pouvez le lire, l'utiliser, le
+modifier et le redistribuer pour tout usage **autre qu'un service concurrent**.
+Chaque version devient librement utilisable sous **licence MIT deux ans après
+sa publication**. Les extensions de [`extensions/`](extensions/) restent sous
+licence MIT.
