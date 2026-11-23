@@ -70,7 +70,7 @@ export function ConsentDemo() {
               onClick={() => setChoice(id)}
               className={`font-display min-h-11 whitespace-nowrap rounded-full border px-4 text-sm font-semibold transition-colors ${
                 choice === id
-                  ? "border-ink bg-ink text-white"
+                  ? "border-ink-2 bg-ink-2 text-paper"
                   : "border-line-2 bg-surface text-ink-2 hover:bg-surface-high"
               }`}
             >
@@ -83,7 +83,7 @@ export function ConsentDemo() {
       <div ref={container} className="relative flex items-center justify-between gap-8 p-4 sm:px-10 sm:py-8">
         <div
           ref={site}
-          className="relative z-10 flex h-24 w-24 shrink-0 flex-col items-center justify-center rounded-2xl bg-navy-deep text-center text-white sm:h-32 sm:w-40"
+          className="relative z-10 flex h-24 w-24 shrink-0 flex-col items-center justify-center rounded-2xl border border-line-2 bg-navy-deep text-center text-white sm:h-32 sm:w-40"
         >
           <span className="font-display text-sm font-bold sm:text-base">Votre site</span>
           <span className="mt-1 text-xs text-white/80">exemple fictif</span>
