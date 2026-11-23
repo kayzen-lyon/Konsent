@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
     "check:rulepack": "node scripts/check-rulepack.mjs",
     "check:csp": "node scripts/check-csp.mjs",
     "check:sovereignty": "node scripts/check-sovereignty.mjs",
