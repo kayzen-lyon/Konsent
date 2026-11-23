@@ -15,8 +15,8 @@ function tone(score: number): { bar: string; text: string } {
 export function PillarScores({ findings }: { findings: readonly Finding[] }) {
   const scores = pillarScores(findings);
   return (
-    <div className="rounded-lg bg-surface p-4 ring-1 ring-line shadow-md">
-      <h3 className="tech text-[10px] text-muted">Score par pilier</h3>
+    <div className="rounded-2xl bg-surface p-5 ring-1 ring-line shadow-md">
+      <h3 className="tech text-[11px] text-muted">Score par pilier</h3>
       <ul className="mt-3 grid gap-3 sm:grid-cols-2">
         {scores.map((p) => {
           const t = tone(p.score);

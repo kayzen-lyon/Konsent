@@ -7,12 +7,12 @@ export function ExecutiveSummary({ result }: { result: ScanResult }) {
   return (
     <section
       aria-labelledby="resume-executif"
-      className="mb-8 rounded-3xl bg-surface p-6 ring-1 ring-line shadow-md"
+      className="mb-10 rounded-3xl border-l-4 border-flame bg-surface p-7 ring-1 ring-line shadow-md"
     >
-      <h2 id="resume-executif" className="tech text-[10px] text-accent">
-        Résumé exécutif
+      <h2 id="resume-executif" className="tech text-[12px] text-flame">
+        En bref
       </h2>
-      <div className="mt-3 max-w-4xl space-y-2 text-[15px] leading-relaxed text-ink-2">
+      <div className="mt-3 max-w-4xl space-y-2 text-[17px] leading-relaxed text-ink-2">
         {sentences.map((s, i) => (
           <p key={i}>{s}</p>
         ))}

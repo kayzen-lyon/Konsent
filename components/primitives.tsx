@@ -12,11 +12,11 @@ export function SectionTitle({
   description?: string;
 }) {
   return (
-    <div className="mb-6">
-      {eyebrow ? <p className="tech text-[10px] text-accent">{eyebrow}</p> : null}
-      <h2 className="display mt-2 text-2xl text-ink-2 sm:text-3xl">{title}</h2>
+    <div className="mb-8">
+      {eyebrow ? <p className="tech text-[12px] text-flame">{eyebrow}</p> : null}
+      <h2 className="display mt-2 text-3xl text-accent sm:text-4xl">{title}</h2>
       {description ? (
-        <p className="mt-3 max-w-3xl text-[15px] leading-relaxed text-muted">{description}</p>
+        <p className="mt-4 max-w-3xl text-[16px] leading-relaxed text-muted">{description}</p>
       ) : null}
     </div>
   );
@@ -115,10 +115,10 @@ export function Stat({
   }[tone];
 
   return (
-    <div className="rounded-lg bg-surface p-4 ring-1 ring-line shadow-md">
-      <p className="tech text-[9px] text-muted">{label}</p>
-      <p className={`tabular display mt-1.5 text-3xl ${valueTone}`}>{value}</p>
-      {hint ? <p className="mt-1 text-[11px] leading-snug text-muted">{hint}</p> : null}
+    <div className="rounded-2xl bg-surface p-5 ring-1 ring-line shadow-md">
+      <p className="tech text-[11px] text-muted">{label}</p>
+      <p className={`tabular display mt-2 text-4xl ${valueTone}`}>{value}</p>
+      {hint ? <p className="mt-1.5 text-[12px] leading-snug text-muted">{hint}</p> : null}
     </div>
   );
 }
