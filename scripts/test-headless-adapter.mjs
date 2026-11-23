@@ -95,6 +95,7 @@ const output = {
   mode: "headless",
   scannedAt: new Date().toISOString(),
   bannerResolution: "API",
+  refusalClicked: true,
   banner: {
     resolution: "API",
     cmpName: "Plateforme compatible IAB TCF v2.2",

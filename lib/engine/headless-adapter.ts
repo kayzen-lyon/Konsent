@@ -327,14 +327,21 @@ export function comparePhases(output: WorkerOutput): PhaseComparison {
     .filter(([, value]) => looksLikeIdentifier(value))
     .map(([key]) => key);
 
+  // Sans refus effectivement cliqué, la phase B n'est qu'une seconde phase A :
+  // ce qu'on y observe ne vaut pas « après refus ». Les constats qui en
+  // dépendent (REFUS-001, REFUS-002, FP-008) sont alors déclarés non évalués
+  // (voir `phaseUndecided`) au lieu d'accuser le site d'ignorer un refus qui
+  // n'a jamais été exprimé.
+  const refused = output.refusalClicked === true;
+
   return {
     depositedBeforeConsent: trackersOf(a),
-    survivingRefusal: trackersOf(b),
+    survivingRefusal: refused ? trackersOf(b) : [],
     cookiesBeforeConsent: cookiesOf(a),
-    cookiesAfterRefusal: cookiesOf(b),
+    cookiesAfterRefusal: refused ? cookiesOf(b) : [],
     storageIdentifiersBeforeConsent: storageIds,
     fingerprintingBeforeConsent: a?.fingerprinting ?? {},
-    fingerprintingAfterRefusal: b?.fingerprinting ?? {},
+    fingerprintingAfterRefusal: refused ? (b?.fingerprinting ?? {}) : {},
     serviceWorkersBeforeConsent: a?.serviceWorkers ?? [],
     rejectAtFirstLevel: output.banner.hasRejectAtFirstLevel,
     clicksToReject: output.banner.clicksToReject,

@@ -327,6 +327,25 @@ check(
     phaseUndecided(notClickedCmp).includes("KZC-REFUS-006"),
 );
 
+// Même logique pour tout ce qui se lit « après refus » : un traceur ou une
+// empreinte en phase B n'accuse le site que si le refus a été exprimé.
+const notClickedTrackers = workerOutput(
+  snap("A", null, true),
+  { ...snap("B", null, true), cookies: [{ name: "_gcl_au", domain: ".exemple.fr", path: "/", expires: Math.floor(Date.now() / 1000) + 400 * 86400, secure: true, httpOnly: false, sameSite: "Lax" }], fingerprinting: { "canvas.toDataURL": 3 } },
+  snap("C", null, true),
+  false,
+);
+const ntCmp = comparePhases(notClickedTrackers);
+const ntIds = evaluatePhases(ntCmp).map((f) => f.ruleId);
+check(
+  "refus non cliqué : ni REFUS-001 ni FP-008, déclarées non évaluées",
+  !ntIds.includes("KZC-REFUS-001") && !ntIds.includes("KZC-FP-008") &&
+    ["KZC-REFUS-001", "KZC-REFUS-002", "KZC-FP-008"].every((id) => phaseUndecided(ntCmp).includes(id)),
+  ntIds.join(","),
+);
+const clickedIds = evaluatePhases(comparePhases({ ...notClickedTrackers, refusalClicked: true })).map((f) => f.ruleId);
+check("refus cliqué : le même cookie déclenche REFUS-001", clickedIds.includes("KZC-REFUS-001"), clickedIds.join(","));
+
 // Site en HTTP : l'attribut Secure n'a pas de sens, la règle n'est pas regardée.
 const httpCmp = comparePhases({ ...clean, url: "http://exemple.fr/" });
 check("site en HTTP : STORAGE-009 non évaluée", phaseUndecided(httpCmp).includes("KZC-STORAGE-009"));
