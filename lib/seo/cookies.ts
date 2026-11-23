@@ -377,6 +377,12 @@ export function matchCookieName(name: string): CookieEntry | undefined {
     );
     if (pattern.test(name)) return cookie;
   }
+
+  // Suffixe d'instance : Matomo nomme ses cookies `_pk_id.<idSite>.<empreinte>`.
+  // On rattache au nom de base plutôt que d'écrire des motifs, qui changeraient
+  // l'adresse publique des fiches (`cookieSlug`).
+  const instance = /^([^.]+)\.\d+\.[a-z0-9]+$/i.exec(name);
+  if (instance?.[1]) return COOKIES.find((c) => c.name === instance[1]);
   return undefined;
 }
 

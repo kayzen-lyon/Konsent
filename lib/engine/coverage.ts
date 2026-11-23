@@ -18,11 +18,6 @@ export const STATIC_UNDECIDABLE: readonly string[] = [
   // Contenu documentaire : demandent une lecture fine du texte de la politique,
   // au-delà de la simple détection de présence dont le moteur est capable.
   "KZC-DOC-004",
-  "KZC-DOC-007",
-  "KZC-DOC-008",
-  "KZC-DOC-010",
-  "KZC-DOC-014",
-  "KZC-DOC-015",
   "KZC-DOC-016",
   "KZC-DOC-018",
 

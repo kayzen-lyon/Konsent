@@ -58,12 +58,17 @@ export const TCF_RULES: readonly Rule[] = [
     weight: 8,
     phases: ["A", "B", "C"],
     engine: "headless",
-    title: "La chaîne de consentement transmise est illisible ou corrompue",
-    references: [TCF_SPEC, "RGPD, article 7(1)"],
+    title: "La chaîne de consentement transmise est illisible ou invalide au regard de la spécification",
+    references: [
+      TCF_SPEC,
+      "IAB Tech Lab, Consent string and vendor list formats v2",
+      "RGPD, article 7(1)",
+    ],
     omnibusStatus: "Sans objet.",
     messageExec:
-      "Le message de consentement envoyé à vos partenaires ne peut pas être relu. Vous ne pouvez donc pas démontrer ce que vos visiteurs ont accepté.",
-    messageTech: "TCString `{tcstring}` non décodable : {reason}.",
+      "Le message de consentement envoyé à vos partenaires ne peut pas être relu, ou il enfreint les règles du cadre qu'il prétend suivre. Vous ne pouvez donc pas démontrer ce que vos visiteurs ont accepté.",
+    messageTech:
+      "TCString `{tcstring}` non décodable ({reason}), ou décodable mais invalide : version de politique antérieure à TCF 2.2, date de création dans le futur. L'intérêt légitime sur les finalités 1, 3 à 6 relève de KZC-TCF-006.",
     remediation: {
       effort: "MEDIUM",
       billable: true,
@@ -176,12 +181,13 @@ export const TCF_RULES: readonly Rule[] = [
     weight: 4,
     phases: ["A", "C"],
     engine: "headless",
-    title: "Aucune restriction éditeur n'est configurée",
+    title: "Aucune restriction éditeur n'encadre l'intérêt légitime sur le ciblage",
     references: [TCF_SPEC],
     omnibusStatus: "Sans objet.",
     messageExec:
-      "Vous laissez chaque partenaire décider seul de ce qu'il fait des données de vos visiteurs, alors que vous pouvez l'encadrer.",
-    messageTech: "Aucune `publisherRestriction` dans le TCString.",
+      "Des finalités publicitaires restent ouvertes à l'« intérêt légitime » de vos partenaires, alors que vous pouvez l'interdire d'un réglage.",
+    messageTech:
+      "Aucune `publisherRestriction` dans le TCString, alors que les finalités {purposes} sont portées en intérêt légitime.",
     remediation: {
       effort: "LOW",
       billable: true,

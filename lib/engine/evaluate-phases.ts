@@ -1,5 +1,6 @@
 import { requireRule } from "../rulepack";
 import type { Evidence, Finding } from "../rulepack/types";
+import { refusalFinding } from "./evaluate-tcf";
 import type { PhaseComparison } from "./headless-adapter";
 
 /**
@@ -83,14 +84,12 @@ export function evaluatePhases(cmp: PhaseComparison): readonly Finding[] {
     })),
   );
 
+  // La chaîne est DÉCODÉE : un refus correctement enregistré produit lui
+  // aussi une chaîne, vide de consentement. Seul ce qui reste consenti est
+  // un manquement. Une chaîne illisible est traitée par la famille TCF.
   if (cmp.tcStringAfterRefusal) {
-    add("KZC-REFUS-006", [
-      {
-        kind: "note",
-        label: "Chaîne de consentement transmise après refus",
-        detail: `TCString présent en phase B : ${cmp.tcStringAfterRefusal.slice(0, 40)}…. Son contenu doit refléter le refus exprimé.`,
-      },
-    ]);
+    const refusal = refusalFinding(cmp.tcStringAfterRefusal);
+    if (refusal.finding) findings.push(refusal.finding);
   }
 
   // ── Bandeau : symétrie du refus ──
@@ -139,6 +138,55 @@ export function evaluatePhases(cmp: PhaseComparison): readonly Finding[] {
       detail: "Composant persistant installé avant tout accord du visiteur.",
     })),
   );
+
+  // ── Exemption de la mesure d'audience : durée de vie ──
+  // CNIL, recommandation mesure d'audience et fiche 17 du guide RGPD du
+  // développeur : un traceur exempté ne doit pas vivre plus de 13 mois.
+  // Seuls les outils qui pourraient prétendre à l'exemption sont visés : les
+  // autres exigent de toute façon un consentement (KZC-DEPOT-002).
+  add(
+    "KZC-EXEMPT-003",
+    cmp.cookiesObserved
+      .filter(
+        (c) =>
+          c.tracker?.categories.includes("analytics") &&
+          c.tracker.exemptEligible &&
+          c.lifetimeDays !== null &&
+          c.lifetimeDays > MAX_EXEMPT_LIFETIME_DAYS,
+      )
+      .map((c) => ({
+        kind: "cookie" as const,
+        label: `${c.name} sur ${c.domain}`,
+        detail: `${c.tracker?.name} — expiration à ${Math.round(c.lifetimeDays ?? 0)} jours, au-delà des 13 mois (${MAX_EXEMPT_LIFETIME_DAYS} jours) admis pour l'exemption.`,
+      })),
+  );
+
+  // ── Attributs de sécurité des cookies d'identifiant ──
+  // Le worker ne transmet pas les valeurs : un cookie est réputé porter un
+  // identifiant ou une session si son NOM le dit. Périmètre : les cookies du
+  // site lui-même, hors traceurs connus — ceux-là sont posés par le script
+  // d'un tiers, dont l'éditeur ne règle pas les attributs. Les cookies de
+  // session sont inclus : ce sont précisément eux que l'article 32 protège.
+  // Chromium rapporte « Lax » pour un cookie posé sans SameSite (valeur par
+  // défaut du navigateur) : seul `Secure` est donc établi avec certitude.
+  if (cmp.https) {
+    const weak = cmp.cookiesObserved.filter(
+      (c) =>
+        isFirstParty(c.domain, cmp.pageHost) &&
+        !c.tracker &&
+        IDENTIFIER_COOKIE_NAME.test(c.name) &&
+        !c.secure,
+    );
+    add(
+      "KZC-STORAGE-009",
+      weak.slice(0, 20).map((c) => ({
+        kind: "cookie" as const,
+        label: `${c.name} sur ${c.domain}`,
+        detail: `Secure : non — le navigateur l'enverrait aussi sur une connexion non chiffrée (lien en http://, redirection). SameSite effectif : ${c.sameSite || "non rapporté"}.`,
+      })),
+      weak.length,
+    );
+  }
 
   // ── Empreinte du terminal ──
   const fpBefore = cmp.fingerprintingBeforeConsent;
@@ -218,4 +266,35 @@ export const PHASE_RULE_IDS: readonly string[] = [
   "KZC-FP-006",
   "KZC-FP-007",
   "KZC-FP-008",
+  "KZC-EXEMPT-003",
+  "KZC-STORAGE-009",
 ];
+
+/**
+ * 13 mois, plafond de durée de vie d'un traceur de mesure exempté. Treize
+ * mois calendaires font jusqu'à 397 jours : un outil réglé sur « 13 mois »
+ * ne doit pas être signalé à tort.
+ */
+export const MAX_EXEMPT_LIFETIME_DAYS = 397;
+
+/**
+ * Règles du protocole que l'observation n'a pas permis de regarder. Elles
+ * sortent en « non évalué » au lieu d'être réputées satisfaites.
+ */
+export function phaseUndecided(cmp: PhaseComparison): readonly string[] {
+  const out: string[] = [];
+  if (!cmp.https) out.push("KZC-STORAGE-009");
+  if (!cmp.refusalClicked) out.push("KZC-REFUS-006");
+  return out;
+}
+
+/** Noms de cookies qui désignent, par convention, un identifiant ou une session. */
+const IDENTIFIER_COOKIE_NAME = /(^|[_.-])(s?id|sess|session|token|uid|uuid|user|auth|visitor)([_.-]|$)/i;
+
+/** Le cookie est-il posé sur le domaine du site (ou l'un de ses parents) ? */
+function isFirstParty(cookieDomain: string, pageHost: string): boolean {
+  const d = cookieDomain.replace(/^\./, "").toLowerCase();
+  const host = pageHost.toLowerCase();
+  const base = host.replace(/^www\./, "");
+  return host === d || host.endsWith(`.${d}`) || d === base || d.endsWith(`.${base}`);
+}

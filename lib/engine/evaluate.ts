@@ -81,6 +81,11 @@ function policyText(obs: Observation): PolicyView {
 const POLICY_CONTENT_RULES = [
   "KZC-DOC-005",
   "KZC-DOC-006",
+  "KZC-DOC-007",
+  "KZC-DOC-008",
+  "KZC-DOC-010",
+  "KZC-DOC-014",
+  "KZC-DOC-015",
   "KZC-DOC-009",
   "KZC-DOC-011",
   "KZC-DOC-012",
@@ -447,6 +452,42 @@ export function evaluate(obs: Observation): {
     }
     if (!signals.has("cnil")) {
       b.add("KZC-DOC-013", pageEvidence("Droit de réclamation auprès de la CNIL non mentionné"));
+    }
+    // Détection lexicale : l'ABSENCE d'une notion dans un texte substantiel
+    // est un constat fiable ; sa présence ne prouve pas la qualité de la
+    // rédaction, ce que les messages de ces règles disent au lecteur.
+    if (!signals.has("purposes")) {
+      b.add("KZC-DOC-007", pageEvidence("Aucune finalité énoncée dans la politique"));
+    }
+    if (!signals.has("legal_basis_explicit")) {
+      b.add(
+        "KZC-DOC-008",
+        pageEvidence(
+          "Bases légales non nommées",
+          "Ni « base légale », ni « fondement juridique », ni renvoi à l'article 6 du RGPD.",
+        ),
+      );
+    }
+    if (!signals.has("recipients")) {
+      b.add(
+        "KZC-DOC-010",
+        pageEvidence(
+          "Catégories de destinataires absentes",
+          `${new Set(obs.requests.map((r) => r.tracker?.slug).filter(Boolean)).size} destinataire(s) tiers identifié(s) sur la page analysée.`,
+        ),
+      );
+    }
+    if (signals.has("rights") && !(signals.has("rights_exercise") && signals.has("contact_channel"))) {
+      b.add(
+        "KZC-DOC-014",
+        pageEvidence(
+          "Droits énumérés sans modalités d'exercice",
+          "Aucune procédure (« exercer vos droits ») associée à un canal (adresse e-mail, formulaire, courrier).",
+        ),
+      );
+    }
+    if (!signals.has("dated")) {
+      b.add("KZC-DOC-015", pageEvidence("Politique ni datée ni versionnée"));
     }
     if (outsideEea.length > 0 && !signals.has("transfers")) {
       b.add(

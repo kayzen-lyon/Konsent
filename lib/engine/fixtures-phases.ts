@@ -1,3 +1,4 @@
+import { encodeTcStringForTests } from "../tcf/decode";
 import type { WorkerOutput, WorkerSnapshot } from "./headless-adapter";
 
 /**
@@ -66,6 +67,7 @@ export function neutralWorkerOutput(): WorkerOutput {
     mode: "headless",
     scannedAt: new Date(0).toISOString(),
     bannerResolution: "API",
+    refusalClicked: true,
     banner: {
       resolution: "API",
       cmpName: "Témoin",
@@ -152,8 +154,40 @@ export const PHASE_FIXTURES: readonly PhaseFixture[] = [
   },
   {
     ruleId: "KZC-REFUS-006",
-    scenario: "Une chaîne de consentement TCF est encore transmise après le refus.",
-    positive: (o) => setPhase(o, "B", { tcString: "CQJH8AAQJH8AAAHABBENBhFgAAAAAAAAACiQAAAAAAAA" }),
+    scenario: "La chaîne de consentement relevée après le refus garde des finalités consenties.",
+    positive: (o) =>
+      setPhase(o, "B", {
+        tcString: encodeTcStringForTests({ purposesConsent: [1, 3, 4], vendorConsents: [755] }),
+      }),
+    // Un refus correctement enregistré produit LUI AUSSI une chaîne, vide de
+    // tout consentement. Sa seule présence ne doit rien déclencher : c'était
+    // le faux positif critique de la version précédente.
+    negative: (o) => setPhase(o, "B", { tcString: encodeTcStringForTests({}) }),
+  },
+
+  /* ═══════════════ Exemption et attributs des cookies ═══════════════════ */
+
+  {
+    ruleId: "KZC-EXEMPT-003",
+    scenario: "Le cookie d'un outil de mesure exemptable vit 400 jours, au-delà des 13 mois.",
+    positive: (o) => setPhase(o, "C", { cookies: [cookie("_pk_id.1.abcd")] }),
+    // Même outil, durée conforme : 13 mois tout juste.
+    negative: (o) =>
+      setPhase(o, "C", {
+        cookies: [{ ...cookie("_pk_id.1.abcd"), expires: Math.floor(Date.now() / 1000) + 390 * 86_400 }],
+      }),
+  },
+  {
+    ruleId: "KZC-STORAGE-009",
+    scenario: "Un cookie de session du site circule sans l'attribut Secure.",
+    positive: (o) =>
+      setPhase(o, "C", { cookies: [{ ...cookie("app_session_id"), secure: false }] }),
+    // Cookie identique, correctement protégé ; et cookie d'un tiers, que
+    // l'éditeur ne règle pas.
+    negative: (o) =>
+      setPhase(o, "C", {
+        cookies: [cookie("app_session_id"), { ...cookie("uid", ".tiers.example"), secure: false }],
+      }),
   },
 
   /* ═══════════════════ Bandeau — symétrie du refus ═══════════════════════ */

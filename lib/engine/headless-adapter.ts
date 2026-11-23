@@ -48,6 +48,18 @@ export interface WorkerSnapshot {
   fingerprinting: Record<string, number>;
   consentMode: { dataLayer?: unknown[] } | null;
   tcString: string | null;
+  /**
+   * `window.__tcfapi` était-il exposé ? Absent des sorties produites par un
+   * worker antérieur : on le déduit alors de la présence d'une chaîne.
+   */
+  tcfApiPresent?: boolean;
+  /**
+   * La CMP a-t-elle répondu avec succès ? Une interface présente mais muette
+   * (stub seul, CMP bloquée) ne permet pas de conclure à l'absence de chaîne.
+   */
+  tcfResponded?: boolean;
+  /** Origine de la chaîne : réponse de l'API, ou repli sur le cookie `euconsent-v2`. */
+  tcStringSource?: "api" | "cookie";
 }
 
 export interface WorkerBanner {
@@ -63,6 +75,12 @@ export interface WorkerOutput {
   mode: "headless";
   scannedAt: string;
   bannerResolution: WorkerBanner["resolution"];
+  /**
+   * Le bouton de refus a-t-il été cliqué en phase B ? Absent des sorties d'un
+   * worker antérieur : les constats « après refus » qui en dépendent sont
+   * alors déclarés non évalués plutôt que présumés.
+   */
+  refusalClicked?: boolean;
   banner: WorkerBanner;
   snapshots: WorkerSnapshot[];
 }
@@ -255,6 +273,17 @@ export interface PhaseComparison {
   clicksToReject: number | null;
   clicksToAccept: number | null;
   tcStringAfterRefusal: string | null;
+  /** Le refus a-t-il été cliqué en phase B ? */
+  refusalClicked: boolean;
+  /**
+   * Cookies vus en phase A ou C, dédoublonnés par nom et domaine. Sert aux
+   * contrôles qui portent sur les attributs ou la durée d'un cookie, pas sur
+   * le moment de son dépôt.
+   */
+  cookiesObserved: readonly ObservedCookie[];
+  /** Le site est-il servi en HTTPS ? Conditionne le contrôle de `Secure`. */
+  https: boolean;
+  pageHost: string;
 }
 
 const CONSENT_CATEGORIES = new Set([
@@ -310,6 +339,18 @@ export function comparePhases(output: WorkerOutput): PhaseComparison {
     rejectAtFirstLevel: output.banner.hasRejectAtFirstLevel,
     clicksToReject: output.banner.clicksToReject,
     clicksToAccept: output.banner.clicksToAccept,
-    tcStringAfterRefusal: b?.tcString ?? null,
+    // Sans refus effectivement cliqué, la chaîne de phase B n'est pas une
+    // chaîne « après refus » : elle ne doit pas nourrir KZC-REFUS-006.
+    tcStringAfterRefusal: output.refusalClicked === true ? (b?.tcString ?? null) : null,
+    refusalClicked: output.refusalClicked === true,
+    cookiesObserved: [
+      ...new Map(
+        [a, output.snapshots.find((s) => s.phase === "C")]
+          .flatMap((s) => (s ? toCookies(s) : []))
+          .map((c) => [`${c.name}@${c.domain}`, c] as const),
+      ).values(),
+    ],
+    https: new URL(output.url).protocol === "https:",
+    pageHost,
   };
 }
