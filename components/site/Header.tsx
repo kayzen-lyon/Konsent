@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { ContactCard } from "@/components/ContactCard";
 import { CommandPalette } from "./CommandPalette";
 import { ToolsMenu } from "./ToolsMenu";
+import { MobileToolsMenu } from "./MobileToolsMenu";
 import { Logo } from "@/components/Logo";
 import { Close, Menu, Moon, Sun } from "./icons";
 import { applyTheme } from "./theme";
@@ -180,12 +181,19 @@ export function Header() {
         <div
           id="menu-mobile"
           ref={menuRef}
-          className="border-t border-line bg-paper px-4 pb-5 pt-3 shadow-lg lg:hidden"
+          className="max-h-[calc(100dvh-4.5rem)] overflow-y-auto overscroll-contain border-t border-line bg-paper px-4 pb-5 pt-3 shadow-lg lg:hidden"
         >
           <nav aria-label="Navigation mobile">
             <ul className="space-y-1">
               {NAV.map((item) => {
                 const active = isActive(pathname, item.href);
+                if (item.href === "/outils") {
+                  return (
+                    <li key={item.href}>
+                      <MobileToolsMenu active={active} onNavigate={close} />
+                    </li>
+                  );
+                }
                 return (
                   <li key={item.href}>
                     <Link

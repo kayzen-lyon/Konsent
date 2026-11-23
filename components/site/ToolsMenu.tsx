@@ -21,7 +21,7 @@ import { FREE_TOOLS, toolHref } from "@/lib/tools/catalog";
  * focus clavier.
  */
 
-interface MenuItem {
+export interface MenuItem {
   id: string;
   href: string;
   title: string;
@@ -101,10 +101,10 @@ function buildGroups(): { title: string; items: MenuItem[] }[] {
   return groups.filter((g) => g.items.length > 0);
 }
 
-const MENU_GROUPS = buildGroups();
+export const MENU_GROUPS = buildGroups();
 const FIRST = MENU_GROUPS[0]!.items[0]!;
 
-function Thumb({ image, title }: { image?: StaticImageData; title: string }) {
+export function Thumb({ image, title }: { image?: StaticImageData; title: string }) {
   if (!image) {
     return (
       <span
