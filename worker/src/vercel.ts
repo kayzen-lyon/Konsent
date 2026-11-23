@@ -32,7 +32,7 @@ async function readBody(req: IncomingMessage): Promise<string | null> {
 async function launchOptions() {
   // Import paresseux : le module n'existe que dans la fonction déployée.
   const { default: chromium } = await import("@sparticuz/chromium");
-  return { executablePath: await chromium.executablePath(), args: chromium.args };
+  return { executablePath: await chromium.executablePath(), args: chromium.args, parallel: true };
 }
 
 export default async function handler(req: IncomingMessage, res: ServerResponse): Promise<void> {

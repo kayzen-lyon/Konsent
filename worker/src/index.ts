@@ -308,23 +308,40 @@ async function runPhase(
 export interface LaunchOptions {
   executablePath?: string;
   args?: readonly string[];
+  /**
+   * Phases lancées en parallèle. Elles sont indépendantes (chacune dans son
+   * propre navigateur) et passent l'essentiel de leur temps à attendre le
+   * réseau : en parallèle, la durée totale est celle de la phase la plus
+   * longue. Activé sur Vercel, où le délai est compté.
+   */
+  parallel?: boolean;
 }
 
 export async function runThreePhaseScan(url: string, launch: LaunchOptions = {}) {
-  const browser = await chromium.launch({
-    args: [...(launch.args ?? []), "--disable-dev-shm-usage"],
-    ...(launch.executablePath ? { executablePath: launch.executablePath } : {}),
-  });
+  // Un navigateur neuf PAR PHASE. Isolation maximale, et condition du
+  // Chromium allégé des fonctions Vercel, lancé en processus unique : y
+  // fermer le contexte de la phase A ferme le navigateur entier.
+  const inOwnBrowser = async <T,>(fn: (browser: Browser) => Promise<T>): Promise<T> => {
+    const browser = await chromium.launch({
+      args: [...(launch.args ?? []), "--disable-dev-shm-usage"],
+      ...(launch.executablePath ? { executablePath: launch.executablePath } : {}),
+    });
+    try {
+      return await fn(browser);
+    } finally {
+      await browser.close().catch(() => {});
+    }
+  };
 
-  try {
+  {
     // Phase A — aucune interaction avec le bandeau.
-    const a = await runPhase(browser, url, "A");
+    const phaseA = () => inOwnBrowser((browser) => runPhase(browser, url, "A"));
 
     // Phase B — refus, puis navigation interne pour tester la persistance.
     // Le refus a-t-il réellement été cliqué ? Sans clic, la phase B n'est
     // qu'une seconde phase A : rien de ce qu'elle observe ne vaut « après refus ».
     let refusalClicked = false;
-    const b = await runPhase(browser, url, "B", async (page) => {
+    const phaseB = () => inOwnBrowser((browser) => runPhase(browser, url, "B", async (page) => {
       const clicked = await clickByLexicon(page, REJECT_WORDS);
       refusalClicked = Boolean(clicked);
       if (clicked) {
@@ -340,12 +357,16 @@ export async function runThreePhaseScan(url: string, launch: LaunchOptions = {})
           await page.goto(internal, { waitUntil: "domcontentloaded", timeout: 20_000 }).catch(() => {});
         }
       }
-    });
+    }));
 
     // Phase C — acceptation globale, pour l'inventaire exhaustif.
-    const c = await runPhase(browser, url, "C", async (page) => {
+    const phaseC = () => inOwnBrowser((browser) => runPhase(browser, url, "C", async (page) => {
       await clickByLexicon(page, ACCEPT_WORDS);
-    });
+    }));
+
+    const [a, b, c] = launch.parallel
+      ? await Promise.all([phaseA(), phaseB(), phaseC()])
+      : [await phaseA(), await phaseB(), await phaseC()];
 
     return {
       url,
@@ -356,8 +377,6 @@ export async function runThreePhaseScan(url: string, launch: LaunchOptions = {})
       banner: a.banner,
       snapshots: [a.snapshot, b.snapshot, c.snapshot],
     };
-  } finally {
-    await browser.close();
   }
 }
 
