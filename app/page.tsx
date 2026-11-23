@@ -1,13 +1,12 @@
 import Link from "next/link";
-import CountUp from "@/components/bits/CountUp";
 import FadeContent from "@/components/bits/FadeContent";
 import { Faq } from "@/components/Faq";
 import { JsonLd } from "@/components/JsonLd";
 import { FineSimulator } from "@/components/FineSimulator";
 import { ScanForm } from "@/components/ScanForm";
-import { HeroMotion } from "@/components/HeroMotion";
+import { ConsentDemo } from "@/components/hero/ConsentDemo";
+import { HeroPreview } from "@/components/hero/HeroPreview";
 import { DefileOutils, SceneOutils } from "@/components/immersive/SceneOutils";
-import { Heart, Scale, ShieldCheck, Zap } from "@/components/site/icons";
 import { RULEPACK } from "@/lib/rulepack";
 import { FREE_TOOLS } from "@/lib/tools/catalog";
 import { COOKIES } from "@/lib/seo/cookies";
@@ -150,55 +149,16 @@ export default function HomePage() {
       />
 
       {/* ═══════════════════════ HÉROS ═══════════════════════
-          Gabarit Nexus : surtitres en pilule, promesse avec une phrase en
-          terracotta, formulaire dans le héros, réassurances, signature, et
-          à droite la démonstration animée d'un audit. */}
-      <section className="border-b border-line bg-paper px-4 pb-12 pt-10 sm:px-6 md:pb-16 md:pt-16 lg:px-8">
-        <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-16">
-          <div className="rise">
-            <ul className="mb-6 flex flex-wrap gap-2.5">
-              <li className="font-display inline-flex items-center gap-1.5 rounded-full border border-line px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider text-ink-2">
-                <Zap className="h-3.5 w-3.5 text-flame" />
-                Gratuit, sans inscription
-              </li>
-              <li className="font-display inline-flex items-center gap-1.5 rounded-full bg-flame-bg px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider text-flame-deep">
-                <Heart className="h-3.5 w-3.5" />
-                Conçu à Lyon par KAYZEN
-              </li>
-            </ul>
-
-            <h1 className="hero-title text-balance text-ink-2">
-              Votre bandeau gère le consentement.{" "}
-              <span className="text-flame">Konsent vérifie ce qui passe derrière.</span>
-            </h1>
-
-            <p className="mt-5 max-w-xl text-pretty text-lg leading-relaxed text-muted md:text-xl">
-              Konsent observe votre site comme le ferait un contrôleur : ce qui se dépose avant
-              que vos visiteurs aient pu répondre, qui reçoit leurs données, et sous quelle
-              juridiction. Constats factuels, références à l&apos;appui.
-            </p>
-
-            <div id="scan" className="mt-8 max-w-xl scroll-mt-28">
-              <ScanForm />
-            </div>
-
-            <ul className="mt-6 flex flex-wrap gap-2.5">
-              {[
-                { Icon: ShieldCheck, text: "Indépendant de toute CMP" },
-                { Icon: Zap, text: "Aucune inscription requise" },
-                { Icon: Scale, text: `${RULEPACK.total} règles publiques` },
-              ].map(({ Icon, text }) => (
-                <li
-                  key={text}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-surface-low px-3 py-1.5 text-sm text-ink-2"
-                >
-                  <Icon className="h-3.5 w-3.5 text-flame" />
-                  {text}
-                </li>
-              ))}
-            </ul>
-
-            <dl className="mt-8 grid max-w-xl grid-cols-2 gap-px overflow-hidden rounded-xl bg-line ring-1 ring-line sm:grid-cols-4">
+          Le visiteur répond lui-même à un bandeau et voit ce qui part
+          malgré sa réponse ; le formulaire d'audit reste au-dessus. */}
+      <HeroPreview
+        title="Votre bandeau gère le consentement. Konsent vérifie ce qui passe derrière."
+        subtitle="Ce qui se dépose avant la réponse de vos visiteurs, ce qui continue après leur refus, et qui reçoit leurs données. Constats factuels, références à l'appui."
+        action={<ScanForm />}
+        preview={<ConsentDemo />}
+        footer={
+          <>
+            <dl className="mt-8 grid w-full grid-cols-2 gap-px overflow-hidden rounded-xl bg-line ring-1 ring-line sm:grid-cols-4">
               {[
                 [RULEPACK.total, "règles publiques"],
                 [TRACKERS.length, "destinataires décrits"],
@@ -208,13 +168,13 @@ export default function HomePage() {
                 <div key={label} className="bg-surface px-4 py-3">
                   <dt className="tech text-[9px] text-muted">{label}</dt>
                   <dd className="tabular display mt-1 text-2xl text-secondary">
-                    <CountUp to={n as number} />
+                    {n}
                   </dd>
                 </div>
               ))}
             </dl>
 
-            <p className="mt-6 text-sm text-muted">
+            <p className="mt-6 text-center text-sm text-muted">
               Développé par{" "}
               <a
                 href="https://www.kayzen-lyon.com"
@@ -226,13 +186,9 @@ export default function HomePage() {
               </a>{" "}
               — agence web &amp; IA à Lyon
             </p>
-          </div>
-
-          <div className="rise order-last" style={{ animationDelay: "120ms" }}>
-            <HeroMotion />
-          </div>
-        </div>
-      </section>
+          </>
+        }
+      />
 
       {/* ═══════════════ COMPATIBLE AVEC TOUTES LES CMP ═══════════════ */}
       <section aria-labelledby="cmp-titre" className="border-b border-line bg-surface-low">
