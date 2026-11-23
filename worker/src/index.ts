@@ -1,4 +1,4 @@
-import { chromium, type Browser, type BrowserContext } from "playwright";
+import { chromium, type Browser, type BrowserContext } from "playwright-core";
 import { isReachablePublicHost } from "./network.ts";
 import { ACCEPT_WORDS, REJECT_WORDS, clickByLexicon, resolveBanner, type BannerInfo } from "./banner.ts";
 
@@ -300,8 +300,21 @@ async function runPhase(
   return { snapshot, banner };
 }
 
-export async function runThreePhaseScan(url: string) {
-  const browser = await chromium.launch({ args: ["--disable-dev-shm-usage"] });
+/**
+ * Lancement du navigateur. Par défaut, le Chromium installé par Playwright
+ * (poste de travail, conteneur Docker) ; sur une fonction Vercel, un Chromium
+ * allégé fourni par `@sparticuz/chromium` (voir `src/vercel.ts`).
+ */
+export interface LaunchOptions {
+  executablePath?: string;
+  args?: readonly string[];
+}
+
+export async function runThreePhaseScan(url: string, launch: LaunchOptions = {}) {
+  const browser = await chromium.launch({
+    args: [...(launch.args ?? []), "--disable-dev-shm-usage"],
+    ...(launch.executablePath ? { executablePath: launch.executablePath } : {}),
+  });
 
   try {
     // Phase A — aucune interaction avec le bandeau.
