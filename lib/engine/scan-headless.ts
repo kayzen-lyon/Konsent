@@ -49,11 +49,30 @@ export async function assembleHeadlessScan(
   // aussi les requêtes de la phase C (après acceptation) reprochait à un site
   // conforme les mesures d'audience qu'il ne déclenche qu'après accord.
   // L'observation complète reste celle du rapport (inventaire, chronologie).
-  const base = evaluate({
+  const beforeConsent = evaluate({
     ...observation,
     requests: observation.requests.filter((r) => r.phase === "A"),
     cookies: observation.cookies.filter((c) => c.phase === "A"),
   });
+  // En revanche, transferts, information et sous-traitants se jugent sur tous
+  // les services, y compris ceux qui n'apparaissent qu'après acceptation : un
+  // accord du visiteur ne dispense ni d'informer ni d'encadrer un transfert.
+  const allPhases = evaluate(observation);
+  const onAllPhases = (id: string) =>
+    id !== "KZC-TRANSFER-001" &&
+    /^KZC-(TRANSFER|DOC|VENDOR)-/.test(id);
+  const base = {
+    findings: [
+      ...beforeConsent.findings.filter(
+        (f) => !onAllPhases(f.ruleId) && f.ruleId !== "KZC-BANNER-014",
+      ),
+      ...allPhases.findings.filter((f) => onAllPhases(f.ruleId)),
+    ],
+    notEvaluatedRuleIds: [
+      ...beforeConsent.notEvaluatedRuleIds.filter((id) => !onAllPhases(id)),
+      ...allPhases.notEvaluatedRuleIds.filter(onAllPhases),
+    ],
+  };
   const comparison = comparePhases(output);
   const phaseFindings = evaluatePhases(comparison);
   const tcf = evaluateTcfPhases(output);
@@ -84,6 +103,10 @@ export async function assembleHeadlessScan(
   // sait pas que le navigateur a tourné) : on n'en retient que les statiques.
   const staticIds = new Set(RULES.filter((r) => r.engine === "static").map((r) => r.id));
   const undecided = new Set<string>([
+    // L'absence de page « cookies » ne prouve pas l'absence de moyen de
+    // retrait : une icône permanente du bandeau suffit, et le worker ne la
+    // cherche pas. Indécidable, jamais « satisfaite ».
+    "KZC-BANNER-014",
     ...base.notEvaluatedRuleIds.filter((id) => staticIds.has(id)),
     ...tcf.undecided,
     ...phaseUndecided(comparison),

@@ -24,6 +24,7 @@ import type { ScanResult } from "@/lib/engine/types";
 import { readingLevel, type ReadingLevel } from "@/lib/report/levels";
 import { publicReportUrl } from "@/lib/report/links";
 import { createBaseline, encodeBaseline } from "@/lib/monitoring/baseline";
+import { verifiedByFamily } from "@/lib/report/coverage";
 import { RULEPACK, getRule } from "@/lib/rulepack";
 import { siteOrigin } from "@/lib/security/origin";
 
@@ -136,7 +137,7 @@ export function ReportView({
                 </li>
                 <li aria-hidden="true">›</li>
                 <li>
-                  <Link href="/scan" className="hover:text-flame">
+                  <Link href="/" className="hover:text-flame">
                     Audit RGPD
                   </Link>
                 </li>
@@ -241,7 +242,16 @@ export function ReportView({
             >
               Relancer l&apos;analyse
             </a>
-            <PrintReportButton />
+            {frozen ? (
+              <PrintReportButton />
+            ) : (
+              <a
+                href={`/scan/rapport?url=${encodeURIComponent(target)}`}
+                className="font-display inline-flex min-h-10 items-center rounded-full border-2 border-flame px-4 text-[13px] font-bold text-flame"
+              >
+                Rapport PDF
+              </a>
+            )}
           </div>
         </div>
         {/* Les actions du rapport relancent une analyse : sur un rapport figé,
@@ -265,6 +275,7 @@ export function ReportView({
               ["#constats", `Constats (${result.findings.length})`],
               ["#destinataires", "Destinataires"],
               ["#perspective", "Exposition"],
+              ["#verifies", `Vérifiés (${evaluatedCount})`],
               ["#limites", "Limites"],
             ].map(([href, label]) => (
               <li key={href}>
@@ -296,8 +307,8 @@ export function ReportView({
                 Ce que cela change : seules les vérifications possibles sans ouvrir le site dans un
                 navigateur ont été faites. Les {RULEPACK.headlessCount} autres (traceurs déposés,
                 respect du refus, bandeau…) n&apos;ont pas été regardées : elles ne sont ni
-                conformes ni non conformes, et le score n&apos;en tient pas compte. Relancer
-                l&apos;analyse suffit le plus souvent.
+                conformes ni non conformes, et le score n&apos;en tient pas compte. Vous pouvez relancer
+                l&apos;analyse.
               </p>
               {frozen ? null : (
                 <a
@@ -316,7 +327,7 @@ export function ReportView({
         {/* ═══════════ SYNTHÈSE ═══════════ */}
         <section id="synthese" className="scroll-mt-28">
           <div className="space-y-4">
-            <div className="grid gap-3 sm:grid-cols-3">
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <Stat
                 label="Écarts relevés"
                 value={String(result.findings.length)}
@@ -330,9 +341,15 @@ export function ReportView({
                 tone={result.outsideEea.length > 0 ? "danger" : "ok"}
               />
               <Stat
-                label="Points à vérifier à la main"
+                label="Points vérifiés"
+                value={String(evaluatedCount)}
+                hint={`sur ${RULEPACK.total}, liste complète plus bas`}
+                tone="neutral"
+              />
+              <Stat
+                label="Points non vérifiés"
                 value={String(notEvaluated.length)}
-                hint="hors de portée d'un outil automatique — jamais comptés conformes"
+                hint="ni conformes ni non conformes, hors du score"
                 tone="warn"
               />
             </div>
@@ -432,12 +449,43 @@ export function ReportView({
           <ExposureBox findings={result.findings} />
         </section>
 
+        {/* ═══════════ POINTS VÉRIFIÉS ═══════════ */}
+        <section id="verifies" className="mt-20 scroll-mt-28">
+          <SectionTitle
+            eyebrow="Couverture de cette analyse"
+            title={`${evaluatedCount} points vérifiés`}
+            description="Chaque point contrôlé et son résultat. « Non constaté » signifie que l’écart décrit n’a pas été détecté, pas que le point est certifié."
+          />
+          <div className="grid gap-5 md:grid-cols-2">
+            {verifiedByFamily(result).map((g) => (
+              <div key={g.family} className="rounded-3xl bg-surface p-6 ring-1 ring-line shadow-md">
+                <h3 className="display text-lg text-ink-2">
+                  {g.family} ({g.items.length})
+                </h3>
+                <ul className="mt-3 space-y-2">
+                  {g.items.map(({ rule, raised }) => (
+                    <li key={rule.id} className="text-[13px] leading-snug text-muted">
+                      <strong className={raised ? "text-flame" : "text-ok"}>
+                        {raised ? "Constaté" : "Non constaté"}
+                      </strong>{" "}
+                      ·{" "}
+                      <Link href={`/regles/${rule.id.toLowerCase()}`} className="underline">
+                        {rule.title}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </section>
+
         {/* ═══════════ LIMITES ═══════════ */}
         <section id="limites" className="mt-20 scroll-mt-28">
           <SectionTitle
             eyebrow="Limites de cette analyse"
-            title={`${notEvaluated.length} points que l'outil ne peut pas trancher seul`}
-            description="Ce n'est pas un défaut de votre site. Un outil automatique ne voit pas tout : certains points demandent de lire un contrat, d'interroger un prestataire ou d'observer le site dans la durée. Plutôt que de les compter comme conformes sans les avoir vérifiés, nous les listons : c'est ce qu'il vous reste à contrôler."
+            title={`${notEvaluated.length} points n'ont pas été vérifiés`}
+            description="Ce n'est pas un défaut de votre site. Selon les cas, notre moteur ne sait pas encore contrôler ce point, l'analyse n'a pas obtenu de quoi conclure, ou il faut une vérification humaine. Nous les listons plutôt que de les compter comme conformes."
           />
           <div className="rounded-3xl bg-surface p-6 ring-1 ring-line shadow-md">
             <p className="text-sm leading-relaxed text-ink-2">
