@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Outfit, Plus_Jakarta_Sans } from "next/font/google";
+import localFont from "next/font/local";
 import { EDITOR } from "@/lib/disclaimer";
 import { MotionProvider } from "@/components/bits/MotionProvider";
 import { Header } from "@/components/site/Header";
@@ -13,25 +13,38 @@ import "@/components/immersive/immersive.css";
 import "./typographie.css";
 
 /**
- * next/font télécharge et auto-héberge les fichiers de police au moment du
- * build. Aucune requête n'est émise vers un serveur tiers à l'exécution —
- * condition non négociable pour un produit qui signale précisément ce
- * comportement chez les autres (KZC-DEPOT-009).
+ * Polices auto-hébergées, servies depuis notre propre domaine : aucune
+ * requête vers un serveur tiers, ni à l'exécution — condition non négociable
+ * pour un produit qui signale précisément ce comportement chez les autres
+ * (KZC-DEPOT-009) — ni au build : les fichiers viennent des paquets
+ * @fontsource-variable (licence OFL-1.1), pas de Google Fonts. Le
+ * téléchargement depuis Google au build échouait par intermittence et
+ * bloquait la CI.
  *
  * Outfit porte les titres et les libellés, Plus Jakarta Sans le corps de
  * texte : c'est l'appariement du système Kayzen Web, et le porteur principal
- * de la cohérence entre les sites de l'agence.
+ * de la cohérence entre les sites de l'agence. Fontes variables : toutes les
+ * graisses dans un seul fichier.
  */
-const outfit = Outfit({
-  subsets: ["latin"],
-  weight: ["600", "700", "800"],
+const outfit = localFont({
+  src: "../node_modules/@fontsource-variable/outfit/files/outfit-latin-wght-normal.woff2",
+  weight: "100 900",
   variable: "--font-outfit",
   display: "swap",
 });
 
-const jakarta = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+const jakarta = localFont({
+  src: [
+    {
+      path: "../node_modules/@fontsource-variable/plus-jakarta-sans/files/plus-jakarta-sans-latin-wght-normal.woff2",
+      style: "normal",
+    },
+    {
+      path: "../node_modules/@fontsource-variable/plus-jakarta-sans/files/plus-jakarta-sans-latin-wght-italic.woff2",
+      style: "italic",
+    },
+  ],
+  weight: "200 800",
   variable: "--font-jakarta",
   display: "swap",
 });
