@@ -562,7 +562,10 @@ export default function HomePage() {
       </section>
 
       {/* ═══════════════════ APPEL FINAL ═══════════════════ */}
-      <section className="bg-ink-2 [content-visibility:auto] [contain-intrinsic-size:auto_420px] print:[content-visibility:visible]">
+      {/* `bg-navy-deep` et non `bg-ink-2` : ink-2 est une couleur de TEXTE,
+          inversée en thème sombre (#f3f6fb), ce qui rendait ce bandeau blanc
+          sous un titre blanc. Le marine reste foncé dans les deux thèmes. */}
+      <section className="bg-navy-deep [content-visibility:auto] [contain-intrinsic-size:auto_420px] print:[content-visibility:visible]">
         <div className="mx-auto max-w-3xl px-5 py-20 text-center">
           <h2 className="display text-3xl text-white sm:text-4xl">
             Vous saurez en moins d&apos;une minute.

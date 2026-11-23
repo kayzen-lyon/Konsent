@@ -326,6 +326,34 @@ export const FIXTURES: readonly Fixture[] = [
     positive: (o) => withSignals(o, without("cnil")),
   },
   {
+    ruleId: "KZC-DOC-007",
+    scenario: "La politique n'énonce aucune finalité.",
+    positive: (o) => withSignals(o, without("purposes")),
+  },
+  {
+    ruleId: "KZC-DOC-008",
+    scenario: "La politique parle de consentement mais ne nomme jamais les bases légales.",
+    positive: (o) => withSignals(o, without("legal_basis_explicit")),
+  },
+  {
+    ruleId: "KZC-DOC-010",
+    scenario: "La politique ne cite aucune catégorie de destinataires.",
+    positive: (o) => withSignals(o, without("recipients")),
+  },
+  {
+    ruleId: "KZC-DOC-014",
+    scenario: "Les droits sont énumérés, mais aucun canal pour les exercer n'est indiqué.",
+    positive: (o) => withSignals(o, without("contact_channel")),
+    // Sans droits énumérés, c'est KZC-DOC-012 qui porte le manque : la règle
+    // sur les modalités ne doit pas doubler le constat.
+    negative: (o) => withSignals(o, without("rights")),
+  },
+  {
+    ruleId: "KZC-DOC-015",
+    scenario: "La politique ne porte ni date de mise à jour ni numéro de version.",
+    positive: (o) => withSignals(o, without("dated")),
+  },
+  {
     ruleId: "KZC-SEC-001",
     scenario: "L'en-tête HSTS est absent.",
     positive: (o) => ({ ...o, headers: { ...o.headers, hsts: null } }),

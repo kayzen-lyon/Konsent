@@ -34,6 +34,69 @@ export interface TcfContext {
   currentVendorListVersion?: number;
   /** Identifiants de CMP enregistrés connus. Vide = contrôle non exécuté. */
   registeredCmpIds?: readonly number[];
+  /** Horloge de référence, injectable pour les tests. */
+  now?: Date;
+}
+
+/**
+ * Finalités pour lesquelles la politique TCF 2.2 interdit l'intérêt légitime
+ * (stockage et finalités de personnalisation). Une chaîne qui les porte en
+ * intérêt légitime est invalide au sens de la spécification.
+ */
+export const LI_FORBIDDEN_BY_SPEC: readonly number[] = [1, 3, 4, 5, 6];
+
+/** Première version de politique acceptée depuis le 30 septembre 2023 (TCF 2.2). */
+export const MIN_TCF_POLICY_VERSION = 4;
+
+/** Tolérance d'horloge avant de juger une date de création « dans le futur ». */
+const CLOCK_SKEW_MS = 24 * 3_600_000;
+
+/** Écarts à la spécification lisibles dans la chaîne elle-même. */
+export function specViolations(core: TcfCore, now: Date): Evidence[] {
+  const out: Evidence[] = [];
+
+  if (core.tcfPolicyVersion < MIN_TCF_POLICY_VERSION) {
+    out.push({
+      kind: "note",
+      label: `Version de politique TCF ${core.tcfPolicyVersion}`,
+      detail: `Les chaînes antérieures à la version ${MIN_TCF_POLICY_VERSION} (TCF 2.2) ne sont plus valides depuis le 30 septembre 2023.`,
+    });
+  }
+
+  // L'intérêt légitime sur les finalités 1, 3 à 6 est AUSSI une invalidité de
+  // spécification, mais KZC-TCF-006 le porte déjà (et le dit) : le reprendre
+  // ici compterait deux fois le même fait au score.
+
+  const created = Date.parse(core.created);
+  if (Number.isFinite(created) && created > now.getTime() + CLOCK_SKEW_MS) {
+    out.push({
+      kind: "note",
+      label: "Date de création dans le futur",
+      detail: `created = ${core.created}. Une horloge de CMP fausse rend la date du consentement inopposable.`,
+    });
+  }
+
+  // `UseNonStandardTexts` est prévu par la spécification : ce n'est pas une
+  // invalidité, et il n'a donc pas sa place ici.
+
+  return out;
+}
+
+/**
+ * Ce qu'une chaîne relevée APRÈS un refus explicite autorise encore.
+ * Une chaîne vide de tout consentement est le comportement attendu : sa seule
+ * présence ne prouve rien.
+ */
+export function activeAfterRefusal(core: TcfCore): {
+  purposes: readonly number[];
+  vendors: number;
+  specialFeatures: readonly number[];
+} {
+  return {
+    purposes: core.purposesConsent,
+    vendors: core.vendorConsents.length,
+    specialFeatures: core.specialFeatureOptIns,
+  };
 }
 
 function finding(ruleId: string, evidence: readonly Evidence[], occurrences = 1): Finding {
@@ -71,7 +134,10 @@ export function auditTcf(ctx: TcfContext): TcfAuditResult {
   const decide = (id: string) => notEvaluated.delete(id);
 
   // KZC-TCF-001 — des vendors TCF sont sollicités sans interface exposée.
-  decide("KZC-TCF-001");
+  // Décidable seulement si l'interface est présente (la règle ne peut alors
+  // pas se déclencher) ou si l'on sait quels partenaires ont été contactés.
+  // Sans l'un ni l'autre, « aucun constat » voudrait dire « non regardé ».
+  if (ctx.apiPresent || ctx.vendorsContacted.length > 0) decide("KZC-TCF-001");
   if (!ctx.apiPresent && ctx.vendorsContacted.length > 0) {
     findings.push(
       finding("KZC-TCF-001", [
@@ -109,6 +175,14 @@ export function auditTcf(ctx: TcfContext): TcfAuditResult {
 
   const core = decoded.core;
 
+  // KZC-TCF-002 (suite) — chaîne lisible mais invalide au regard de la
+  // spécification. Ces écarts rendent la chaîne inexploitable par les
+  // partenaires qui appliquent la politique TCF à la lettre.
+  const violations = specViolations(core, ctx.now ?? new Date());
+  if (violations.length > 0) {
+    findings.push(finding("KZC-TCF-002", violations, violations.length));
+  }
+
   // KZC-TCF-008 — consentement transmis avant toute action.
   decide("KZC-TCF-008");
   if (ctx.observedBeforeInteraction && core.purposesConsent.length > 0) {
@@ -135,23 +209,30 @@ export function auditTcf(ctx: TcfContext): TcfAuditResult {
         abusiveLi.map((p) => ({
           kind: "note" as const,
           label: `Finalité ${p} portée en intérêt légitime`,
-          detail: purposeLabel(p),
+          // Deux situations très différentes, à ne pas confondre devant un
+          // client : l'une est refusée par le TCF lui-même, l'autre est
+          // admise par le TCF mais fragile au regard du droit.
+          detail: LI_FORBIDDEN_BY_SPEC.includes(p)
+            ? `${purposeLabel(p)} — interdit par la politique TCF 2.2 elle-même.`
+            : `${purposeLabel(p)} — admis par le TCF, mais un intérêt purement commercial ne suffit pas (CJUE, C-621/22).`,
         })),
         abusiveLi.length,
       ),
     );
   }
 
-  // KZC-TCF-007 — aucune restriction éditeur.
+  // KZC-TCF-007 — aucune restriction éditeur ALORS QU'elle serait utile.
+  // L'absence de restriction est le cas normal et licite de la plupart des
+  // CMP : elle n'est un écart que si des finalités de ciblage sont laissées
+  // en intérêt légitime, que l'éditeur pouvait interdire.
   decide("KZC-TCF-007");
-  if (core.publisherRestrictions.length === 0) {
+  if (core.publisherRestrictions.length === 0 && abusiveLi.length > 0) {
     findings.push(
       finding("KZC-TCF-007", [
         {
           kind: "note",
           label: "Aucune restriction éditeur déclarée",
-          detail:
-            "Chaque partenaire applique donc sa propre lecture des finalités, sans encadrement de votre part.",
+          detail: `Les finalités ${abusiveLi.join(", ")} restent ouvertes à l'intérêt légitime, alors qu'une restriction éditeur permet de l'interdire.`,
         },
       ]),
     );

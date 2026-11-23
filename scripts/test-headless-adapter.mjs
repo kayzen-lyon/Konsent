@@ -6,6 +6,7 @@
  * phase A, survivants en phase B, empreinte du terminal, refus au second
  * niveau — et on contrôle que les constats attendus apparaissent.
  */
+import { evaluate } from "../lib/engine/evaluate.ts";
 import { assembleHeadlessScan } from "../lib/engine/scan-headless.ts";
 import { RULEPACK } from "../lib/rulepack/index.ts";
 
@@ -125,7 +126,7 @@ for (const f of scan.findings) {
 console.log("");
 console.log(
   `non évalué : ${scan.notEvaluatedRuleIds.length} règles sur ${RULEPACK.total} ` +
-    `(le mode statique en laissait 49)`,
+    `(hors ligne : sans pages légales ni en-têtes)`,
 );
 
 // Contrôles : les constats qui n'existent QUE grâce aux trois phases.
@@ -148,8 +149,15 @@ for (const [id, label] of expected) {
   console.log(`${ok ? "PASS" : "FAIL"}  ${id} — ${label}`);
 }
 
-const improved = scan.notEvaluatedRuleIds.length < 49;
-console.log(`${improved ? "PASS" : "FAIL"}  couverture améliorée par rapport au mode statique`);
+// Comparaison à observation égale : le mode statique appliqué à la même
+// observation. Un seuil écrit en dur comparait un scan en ligne (avec pages
+// légales) à ce JSON hors ligne, et ne mesurait rien.
+const staticOnly = evaluate(scan.observation).notEvaluatedRuleIds.length;
+const improved = scan.notEvaluatedRuleIds.length < staticOnly;
+console.log(
+  `${improved ? "PASS" : "FAIL"}  couverture améliorée par rapport au mode statique ` +
+    `(${scan.notEvaluatedRuleIds.length} non évaluées contre ${staticOnly})`,
+);
 if (!improved) failures += 1;
 
 process.exitCode = failures === 0 ? 0 : 1;

@@ -3,7 +3,8 @@ import { RULES } from "../rulepack";
 import { computeScore } from "../risk/score";
 import type { TrackerEntity } from "../trackers/types";
 import { evaluate } from "./evaluate";
-import { evaluatePhases, PHASE_RULE_IDS } from "./evaluate-phases";
+import { evaluatePhases, PHASE_RULE_IDS, phaseUndecided } from "./evaluate-phases";
+import { evaluateTcfPhases, TCF_RULE_IDS } from "./evaluate-tcf";
 import { comparePhases, observationFromWorker, type WorkerOutput } from "./headless-adapter";
 import { runStaticScan } from "./static";
 import type { ScanResult } from "./types";
@@ -44,12 +45,14 @@ export async function assembleHeadlessScan(
 
   const observation = observationFromWorker(output, staticContext);
   const base = evaluate(observation);
-  const phaseFindings = evaluatePhases(comparePhases(output));
+  const comparison = comparePhases(output);
+  const phaseFindings = evaluatePhases(comparison);
+  const tcf = evaluateTcfPhases(output);
 
   // Les constats de phase priment : ils reposent sur une observation réelle
   // du navigateur, là où le moteur statique ne pouvait que présumer.
   const byRule = new Map(base.findings.map((f) => [f.ruleId, f]));
-  for (const finding of phaseFindings) byRule.set(finding.ruleId, finding);
+  for (const finding of [...phaseFindings, ...tcf.findings]) byRule.set(finding.ruleId, finding);
   const findings = [...byRule.values()];
 
   const score = computeScore(findings);
@@ -65,11 +68,24 @@ export async function assembleHeadlessScan(
 
   // Ce mode couvre tout sauf les règles qui exigent encore un travail
   // manuel ou une phase D non implémentée. On les déclare, comme toujours.
+  // Une règle statique déclarée indécidable le reste quand le navigateur
+  // tourne : le compter « couvert » ici l'aurait fait passer pour satisfaite.
   const raised = new Set(findings.map((f) => f.ruleId));
-  const covered = new Set<string>([
-    ...RULES.filter((r) => r.engine === "static").map((r) => r.id),
-    ...PHASE_RULE_IDS,
+  // `evaluate` déclare aussi toutes les règles `headless` non évaluées (il ne
+  // sait pas que le navigateur a tourné) : on n'en retient que les statiques.
+  const staticIds = new Set(RULES.filter((r) => r.engine === "static").map((r) => r.id));
+  const undecided = new Set<string>([
+    ...base.notEvaluatedRuleIds.filter((id) => staticIds.has(id)),
+    ...tcf.undecided,
+    ...phaseUndecided(comparison),
   ]);
+  const covered = new Set<string>(
+    [
+      ...RULES.filter((r) => r.engine === "static").map((r) => r.id),
+      ...PHASE_RULE_IDS,
+      ...TCF_RULE_IDS,
+    ].filter((id) => !undecided.has(id)),
+  );
   const notEvaluatedRuleIds = RULES.filter((r) => !covered.has(r.id) && !raised.has(r.id)).map(
     (r) => r.id,
   );

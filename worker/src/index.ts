@@ -46,6 +46,12 @@ interface Snapshot {
   fingerprinting: Record<string, number>;
   consentMode: Record<string, unknown> | null;
   tcString: string | null;
+  /** `window.__tcfapi` exposé par la page. */
+  tcfApiPresent: boolean;
+  /** La CMP a répondu avec succès à au moins un appel. */
+  tcfResponded: boolean;
+  /** Origine de la chaîne : réponse de l'API ou cookie `euconsent-v2`. */
+  tcStringSource?: "api" | "cookie";
 }
 
 /**
@@ -121,7 +127,18 @@ async function capture(
   requests: CapturedRequest[],
   page: import("playwright").Page,
 ): Promise<Snapshot> {
-  const cookies = (await context.cookies()).map((c) => ({
+  const rawCookies = await context.cookies();
+  // Les valeurs de cookies ne sortent pas du worker, à une exception près :
+  // la chaîne TCF, qui n'identifie personne et constitue la preuve elle-même.
+  // Seul un cookie du site lui-même vaut : une chaîne posée par un tiers sur
+  // son propre domaine ne dit rien du consentement recueilli ici.
+  const pageHost = new URL(page.url()).hostname.replace(/^www\./, "");
+  const consentCookie =
+    rawCookies.find((c) => {
+      const d = c.domain.replace(/^./, "");
+      return c.name === "euconsent-v2" && (pageHost === d || pageHost.endsWith(`.${d}`) || d.endsWith(`.${pageHost}`) || d === `www.${pageHost}`);
+    })?.value ?? null;
+  const cookies = rawCookies.map((c) => ({
     name: c.name,
     domain: c.domain,
     path: c.path,
@@ -154,25 +171,74 @@ async function capture(
     return regs.map((r) => r.scope);
   });
 
-  const tcString = await page
+  // Chaîne TCF. `getTCData` peut renvoyer une chaîne transitoire (CMP encore
+  // en chargement) : on écoute d'abord les événements de la CMP et l'on ne
+  // retient qu'une chaîne `tcloaded` ou `useractioncomplete`, comme le
+  // prévoit la spécification CMP API v2. Repli sur le cookie `euconsent-v2`
+  // quand l'API est absente ou muette.
+  const tcf = await page
     .evaluate(
       () =>
-        new Promise<string | null>((resolve) => {
-          const api = (window as unknown as { __tcfapi?: Function }).__tcfapi;
-          if (typeof api !== "function") return resolve(null);
-          const timer = setTimeout(() => resolve(null), 2000);
+        new Promise<{ apiPresent: boolean; responded: boolean; tcString: string | null }>((resolve) => {
+          type TcData = { tcString?: string; eventStatus?: string; listenerId?: number };
+          const api = (window as unknown as {
+            __tcfapi?: (cmd: string, v: number, cb: (d: TcData, ok: boolean) => void, p?: unknown) => void;
+          }).__tcfapi;
+          if (typeof api !== "function") return resolve({ apiPresent: false, responded: false, tcString: null });
+
+          let settled = false;
+          // La CMP a-t-elle répondu avec succès au moins une fois ? Un simple
+          // stub `__tcfapi` qui ne répond jamais ne permet de rien conclure.
+          let responded = false;
+          let listenerId: number | undefined;
+          const finish = (tcString: string | null) => {
+            if (settled) return;
+            settled = true;
+            clearTimeout(timer);
+            if (listenerId !== undefined) {
+              try {
+                api("removeEventListener", 2, () => {}, listenerId);
+              } catch {
+                // Retrait best-effort : le contexte est fermé juste après.
+              }
+            }
+            resolve({ apiPresent: true, responded, tcString });
+          };
+          const timer = setTimeout(() => {
+            // Aucun événement final : dernière chance avec getTCData.
+            try {
+              api("getTCData", 2, (d, ok) => {
+                if (ok) responded = true;
+                finish(ok && d?.tcString ? d.tcString : null);
+              });
+              setTimeout(() => finish(null), 500);
+            } catch {
+              finish(null);
+            }
+          }, 2000);
           try {
-            api("getTCData", 2, (data: { tcString?: string }, ok: boolean) => {
-              clearTimeout(timer);
-              resolve(ok && data?.tcString ? data.tcString : null);
+            api("addEventListener", 2, (d, ok) => {
+              if (d?.listenerId !== undefined) listenerId = d.listenerId;
+              if (ok) responded = true;
+              if (!ok || !d?.tcString) return;
+              if (d.eventStatus === "tcloaded" || d.eventStatus === "useractioncomplete") {
+                finish(d.tcString);
+              }
             });
           } catch {
-            clearTimeout(timer);
-            resolve(null);
+            // L'API existe mais rejette l'écoute : le minuteur prend le relais.
           }
         }),
     )
-    .catch(() => null);
+    .catch(() => ({ apiPresent: false, responded: false, tcString: null }));
+
+  const cookieTcString = consentCookie;
+  const tcString = tcf.tcString ?? cookieTcString;
+  const tcStringSource: Snapshot["tcStringSource"] = tcf.tcString
+    ? "api"
+    : cookieTcString
+      ? "cookie"
+      : undefined;
 
   return {
     phase,
@@ -184,6 +250,9 @@ async function capture(
     fingerprinting: storage.fp,
     consentMode: storage.dataLayer ? { dataLayer: storage.dataLayer } : null,
     tcString,
+    tcfApiPresent: tcf.apiPresent,
+    tcfResponded: tcf.responded,
+    ...(tcStringSource ? { tcStringSource } : {}),
   };
 }
 
@@ -239,8 +308,12 @@ export async function runThreePhaseScan(url: string) {
     const a = await runPhase(browser, url, "A");
 
     // Phase B — refus, puis navigation interne pour tester la persistance.
+    // Le refus a-t-il réellement été cliqué ? Sans clic, la phase B n'est
+    // qu'une seconde phase A : rien de ce qu'elle observe ne vaut « après refus ».
+    let refusalClicked = false;
     const b = await runPhase(browser, url, "B", async (page) => {
       const clicked = await clickByLexicon(page, REJECT_WORDS);
+      refusalClicked = Boolean(clicked);
       if (clicked) {
         await page.waitForTimeout(2000);
         const internal = await page.evaluate(() => {
@@ -266,6 +339,7 @@ export async function runThreePhaseScan(url: string) {
       mode: "headless" as const,
       scannedAt: new Date().toISOString(),
       bannerResolution: a.banner.resolution,
+      refusalClicked,
       banner: a.banner,
       snapshots: [a.snapshot, b.snapshot, c.snapshot],
     };
