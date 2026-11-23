@@ -68,6 +68,22 @@ export interface WorkerBanner {
   clicksToReject: number | null;
   clicksToAccept: number | null;
   hasRejectAtFirstLevel: boolean;
+  /** Mesures du premier niveau (worker récent) ; absentes si non situées. */
+  metrics?: BannerMetrics;
+}
+
+export interface BannerButtonMetrics {
+  area: number;
+  prominence: number;
+  filled: boolean;
+  label: string;
+}
+
+export interface BannerMetrics {
+  accept: BannerButtonMetrics;
+  reject: BannerButtonMetrics | null;
+  policyLink: boolean;
+  textContrast: { ratio: number; threshold: number; sample: string } | null;
 }
 
 export interface WorkerOutput {
@@ -275,6 +291,8 @@ export interface PhaseComparison {
   tcStringAfterRefusal: string | null;
   /** Le refus a-t-il été cliqué en phase B ? */
   refusalClicked: boolean;
+  /** Mesures du premier niveau du bandeau, relevées en phase A. */
+  bannerMetrics: BannerMetrics | null;
   /**
    * Cookies vus en phase A ou C, dédoublonnés par nom et domaine. Sert aux
    * contrôles qui portent sur les attributs ou la durée d'un cookie, pas sur
@@ -350,6 +368,7 @@ export function comparePhases(output: WorkerOutput): PhaseComparison {
     // chaîne « après refus » : elle ne doit pas nourrir KZC-REFUS-006.
     tcStringAfterRefusal: output.refusalClicked === true ? (b?.tcString ?? null) : null,
     refusalClicked: output.refusalClicked === true,
+    bannerMetrics: output.banner.metrics ?? null,
     cookiesObserved: [
       ...new Map(
         [a, output.snapshots.find((s) => s.phase === "C")]

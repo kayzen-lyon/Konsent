@@ -46,7 +46,7 @@ en silence :
 
 | Fonction | Variables | Sans elles |
 |---|---|---|
-| Protocole en trois phases | `KONSENT_WORKER_URL`, `KONSENT_WORKER_SECRET` | 48 règles décidées au lieu de 70 au plus, et le rapport le dit |
+| Protocole en trois phases | `KONSENT_WORKER_URL`, `KONSENT_WORKER_SECRET` | 48 règles décidées au lieu de 75 au plus, et le rapport le dit |
 | Surveillance planifiée, comptes, sous-comptes agence | `DATABASE_URL` (Neon, posée par l'intégration Vercel), `CRON_SECRET` | Analyse sans trace, comptes et portefeuille persistant désactivés |
 | Alertes et liens de connexion | `RESEND_API_KEY`, `KONSENT_MAIL_FROM` | Aucun message ne part |
 | Souscription en ligne | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_*` | Paiement fermé |
@@ -72,9 +72,9 @@ Une analyse passe par le **protocole en trois phases** — avant consentement,
 après refus, après acceptation — exécuté par Chromium sous Playwright dans
 [`worker/`](worker/README.md). Vercel ne convient pas à un navigateur de
 longue durée : l'application appelle donc le worker, qui observe, et applique
-elle-même le référentiel à ce qu'il rapporte. Ce chemin décide **jusqu'à 70
-des 139 règles** : 48 statiques, 17 lues dans l'écart entre les phases, et 5
-sur la chaîne TCF quand le site utilise une CMP compatible IAB (65 sinon).
+elle-même le référentiel à ce qu'il rapporte. Ce chemin décide **jusqu'à 75
+des 139 règles** : 48 statiques, 22 lues dans le navigateur (écart entre phases, bandeau), et 5
+sur la chaîne TCF quand le site utilise une CMP compatible IAB (70 sinon).
 
 Quand le worker n'est pas déployé, ne répond pas, ou sature, l'application
 retombe sur le **moteur statique** : document servi, en-têtes HTTP, chaînes
@@ -192,8 +192,8 @@ classe en probabilité élevée et impact fort. Trois contrôles bloquants dans
    avant consentement et qui respecte le refus, pour le protocole en trois
    phases. Si un constat sort de là, il ne dépend pas de ce qu'il prétend
    observer, et il sortira chez tous les clients.
-2. **Chacune des 65 règles décidables a un cas positif et un cas négatif** —
-   48 statiques, 17 en navigateur ; les règles TCF ont les leurs dans
+2. **Chacune des 70 règles décidables a un cas positif et un cas négatif** —
+   48 statiques, 22 en navigateur ; les règles TCF ont les leurs dans
    `scripts/test-tcf.mjs`. Le négatif est celui qui compte : il prouve
    qu'on distingue une situation conforme d'une situation voisine en écart. Un
    destinataire américain réellement certifié DPF de celui qui ne l'est pas ;

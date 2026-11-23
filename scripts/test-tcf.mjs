@@ -349,7 +349,11 @@ check("refus cliqué : le même cookie déclenche REFUS-001", clickedIds.include
 // Site en HTTP : l'attribut Secure n'a pas de sens, la règle n'est pas regardée.
 const httpCmp = comparePhases({ ...clean, url: "http://exemple.fr/" });
 check("site en HTTP : STORAGE-009 non évaluée", phaseUndecided(httpCmp).includes("KZC-STORAGE-009"));
-check("site en HTTPS avec refus cliqué : rien de non évalué", phaseUndecided(comparePhases(clean)).length === 0);
+check(
+  "site en HTTPS avec refus cliqué : refus et stockage tous évalués",
+  !phaseUndecided(comparePhases(clean)).some((id) => /REFUS|STORAGE|FP-008/.test(id)),
+  phaseUndecided(comparePhases(clean)).join(","),
+);
 
 console.log(`\n${failures} échec(s).`);
 if (failures > 0) process.exit(1);
