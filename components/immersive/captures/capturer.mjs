@@ -49,6 +49,7 @@ const PAGES = {
   comparatif: "/comparatif",
   tarifs: "/tarifs",
   "analyse-en-lot": "/analyse-en-lot",
+  secteurs: "/secteurs",
 };
 
 mkdirSync(join(OUT, "mur"), { recursive: true });

@@ -50,6 +50,8 @@ import g23 from "./captures/traceurs.webp";
 import m23 from "./captures/mur/traceurs.webp";
 import g24 from "./captures/verificateur-preuve.webp";
 import m24 from "./captures/mur/verificateur-preuve.webp";
+import g25 from "./captures/secteurs.webp";
+import m25 from "./captures/mur/secteurs.webp";
 
 /** 960 × 540, par identifiant de page. */
 export const CAPTURES: Record<string, StaticImageData> = {
@@ -78,6 +80,7 @@ export const CAPTURES: Record<string, StaticImageData> = {
   "testeur-cookie": g22,
   "traceurs": g23,
   "verificateur-preuve": g24,
+  "secteurs": g25,
 };
 
 /** 480 × 270, pour le mur. */
@@ -108,3 +111,33 @@ export const VIGNETTES: StaticImageData[] = [
   m23,
   m24,
 ];
+
+/** 480 × 270, par identifiant de page : vignettes du menu « Outils gratuits ». */
+export const VIGNETTE_PAR_ID: Record<string, StaticImageData> = {
+  "analyse-en-lot": m0,
+  "auto-evaluation": m1,
+  "badge": m2,
+  "comparatif": m3,
+  "comparer": m4,
+  "cookies": m5,
+  "decodeur-tcf": m6,
+  "duree-conservation": m7,
+  "en-tetes-securite": m8,
+  "fonctionnalites": m9,
+  "generateur-bandeau": m10,
+  "generateur-confidentialite": m11,
+  "generateur-mentions-legales": m12,
+  "glossaire": m13,
+  "methodologie": m14,
+  "procedure-cnil": m15,
+  "registre-traitements": m16,
+  "regles": m17,
+  "reponse-droits": m18,
+  "simulateur": m19,
+  "surveillance": m20,
+  "tarifs": m21,
+  "testeur-cookie": m22,
+  "traceurs": m23,
+  "verificateur-preuve": m24,
+  "secteurs": m25,
+};
