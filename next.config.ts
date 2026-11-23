@@ -53,6 +53,12 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  // L'emblème des images de partage est lu sur disque (`lib/seo/og.tsx`) :
+  // sans cette déclaration, Vercel ne l'embarque pas dans les fonctions, et
+  // les images de partage rendues à la demande ne le trouvent pas.
+  outputFileTracingIncludes: {
+    "/**": ["./lib/seo/og-embleme.png"],
+  },
   // RFC 9116 : security.txt est attendu sous /.well-known/, dossier que
   // l'App Router ne sert pas. La route vit en /securite.txt.
   async rewrites() {
