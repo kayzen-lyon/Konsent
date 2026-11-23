@@ -2,6 +2,7 @@ import { ScanForm } from "@/components/ScanForm";
 import { runVerdictScan } from "@/lib/engine/orchestrate";
 import { ScanError } from "@/lib/engine/scan";
 import { isWorkerConfigured } from "@/lib/engine/worker-client";
+import { ScanProgress } from "./ScanProgress";
 
 /**
  * États communs aux vues d'un rapport (rapport, présentation, synthèse) :
@@ -9,22 +10,7 @@ import { isWorkerConfigured } from "@/lib/engine/worker-client";
  */
 
 export function ScanSkeleton({ target }: { target: string }) {
-  return (
-    <div className="mx-auto max-w-7xl px-5 py-16" role="status" aria-busy="true">
-      <div className="pulse-soft space-y-4" aria-hidden="true">
-        <div className="h-3 w-52 rounded bg-line" />
-        <div className="h-10 w-80 max-w-full rounded bg-line" />
-        <div className="mt-8 h-40 w-40 rounded-full bg-line" />
-        <div className="h-28 w-full rounded-xl bg-line" />
-      </div>
-      <p className="mt-8 font-mono text-sm text-muted">
-        Analyse de <span className="font-bold text-ink-2">{target}</span> —{" "}
-        {isWorkerConfigured()
-          ? "trois chargements en navigateur : avant consentement, après refus, après acceptation. Comptez une quarantaine de secondes."
-          : "chargement du document, résolution DNS, lecture des pages légales…"}
-      </p>
-    </div>
-  );
+  return <ScanProgress target={target} headless={isWorkerConfigured()} />;
 }
 
 export function ErrorPanel({ title, message }: { title: string; message: string }) {

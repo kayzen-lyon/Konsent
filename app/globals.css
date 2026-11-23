@@ -683,3 +683,42 @@ html[data-motion="reduce"] *::after {
 .dark .logo-auto .logo-sombre {
   display: block;
 }
+
+/* ═══════════════════ Écran d'attente d'une analyse ═══════════════════════
+ * Barre qui parcourt la piste (indéterminée : aucun pourcentage prétendu)
+ * et fondu du libellé qui change. Aplats, aucun dégradé. Coupés si le
+ * visiteur réduit les animations. */
+@keyframes scan-bar {
+  0% {
+    transform: translateX(-110%);
+  }
+  100% {
+    transform: translateX(330%);
+  }
+}
+.scan-bar {
+  animation: scan-bar 1.6s ease-in-out infinite;
+}
+@keyframes scan-fade {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.scan-fade {
+  animation: scan-fade 0.4s ease-out both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .scan-bar,
+  .scan-fade {
+    animation: none;
+  }
+  .scan-bar {
+    width: 100%;
+    opacity: 0.35;
+  }
+}
