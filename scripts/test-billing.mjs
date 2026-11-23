@@ -12,7 +12,7 @@
  */
 import { createHmac } from "node:crypto";
 import { verifyWebhookSignature } from "../lib/billing/stripe.ts";
-import { PLANS } from "../lib/billing/plans.ts";
+import { ALL_FEATURES_FREE, PLANS } from "../lib/billing/plans.ts";
 import { allReadiness, isSellable } from "../lib/billing/readiness.ts";
 
 let failures = 0;
@@ -96,7 +96,8 @@ for (const state of allReadiness()) {
   }
   check(
     `${plan.name} — l'ouverture de la vente suit l'état réel`,
-    isSellable(plan.id) === sellable,
+    // Konsent gratuit : la vente reste fermée, quel que soit l'état de l'offre.
+    isSellable(plan.id) === (sellable && !ALL_FEATURES_FREE),
   );
 }
 

@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Article, LegalPage, PendingReview } from "@/components/Legal";
-import { PLANS } from "@/lib/billing/plans";
+import { ALL_FEATURES_FREE, PLANS } from "@/lib/billing/plans";
+import { isSellable } from "@/lib/billing/readiness";
 import { EDITOR } from "@/lib/disclaimer";
 
 export const metadata: Metadata = {
@@ -33,6 +34,13 @@ export default function SalesTermsPage() {
       intro={
         <>
           <PendingReview />
+          {ALL_FEATURES_FREE ? (
+            <p className="mt-4 rounded-lg border border-line bg-surface p-4 text-ink-2">
+              <strong>{EDITOR.product} est aujourd&apos;hui entièrement gratuit</strong> : aucune
+              offre n&apos;est en vente et aucun paiement n&apos;est demandé. Les conditions
+              ci-dessous ne s&apos;appliqueraient qu&apos;à une éventuelle offre payante future.
+            </p>
+          ) : null}
           <p className="mt-4">
             Les présentes conditions régissent la <strong>vente</strong> des abonnements{" "}
             {EDITOR.product}. L&apos;usage du service, y compris gratuit, relève des{" "}
@@ -86,7 +94,7 @@ export default function SalesTermsPage() {
             </thead>
             <tbody>
               {paidPlans.map((plan) => {
-                const sellable = plan.features.every((f) => f.delivered);
+                const sellable = isSellable(plan.id);
                 return (
                   <tr key={plan.id} className="border-b border-line">
                     <th scope="row" className="py-2.5 text-left font-medium text-ink-2">
@@ -97,7 +105,11 @@ export default function SalesTermsPage() {
                       {sellable ? (
                         "ouverte"
                       ) : (
-                        <span className="text-warn">fermée — promesses non encore tenues</span>
+                        <span className="text-warn">
+                          {ALL_FEATURES_FREE
+                            ? "fermée — le service est gratuit"
+                            : "fermée — promesses non encore tenues"}
+                        </span>
                       )}
                     </td>
                   </tr>

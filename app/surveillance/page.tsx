@@ -152,7 +152,7 @@ async function DiffReport({ url, token }: { url: string; token: string }) {
           <p className="mt-2 text-[15px] leading-relaxed text-white">{alert}</p>
           <p className="mt-3 text-[12px] text-white/45">
             C&apos;est le message que la surveillance automatique enverrait par courriel, Slack
-            ou webhook sur un abonnement Pro.
+            ou webhook avec un compte gratuit.
           </p>
         </div>
       ) : diff.conclusive ? (
@@ -279,8 +279,8 @@ export default async function MonitoringPage({
               <p className="mt-5 rounded-lg bg-paper p-4 text-[13px] leading-relaxed text-muted">
                 <strong className="text-ink-2">Pourquoi un jeton et pas un compte ?</strong> Notre
                 politique de confidentialité annonce que nous ne conservons aucun résultat
-                d&apos;analyse. Nous nous y tenons : la référence reste chez vous. Sur un
-                abonnement Pro, la surveillance est planifiée et l&apos;historique conservé — avec
+                d&apos;analyse. Nous nous y tenons : la référence reste chez vous. Avec un
+                compte gratuit, la surveillance est planifiée et l&apos;historique conservé — avec
                 votre accord explicite et un contrat de sous-traitance.
               </p>
             </section>

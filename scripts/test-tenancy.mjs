@@ -59,7 +59,9 @@ const domaine = (id, accountId) => ({ id, accountId });
 console.log("Qualification des comptes");
 
 check("un compte agence de premier niveau est une agence", isAgency(agence));
-check("un compte pro n'est pas une agence", !isAgency(isole));
+// Konsent gratuit (ALL_FEATURES_FREE) : chaque compte de premier niveau a
+// les droits de l'offre Agence ; un sous-compte, jamais.
+check("Konsent gratuit : un compte pro a les droits d'agence", isAgency(isole));
 check("un client est un sous-compte", isSubAccount(clientA));
 check("une agence n'est pas un sous-compte", !isSubAccount(agence));
 
@@ -148,8 +150,8 @@ console.log("\nOuverture de sous-comptes");
 
 check("une agence peut ouvrir un sous-compte", canCreateSubAccount(agence, enfantsAg1).allowed);
 check(
-  "une offre Pro ne le peut pas",
-  canCreateSubAccount(isole, []).refusal === "NOT_AN_AGENCY",
+  "Konsent gratuit : un compte de premier niveau peut ouvrir un sous-compte",
+  canCreateSubAccount(isole, []).allowed,
 );
 check(
   "un sous-compte ne peut pas déléguer à son tour",
@@ -192,7 +194,8 @@ check("un client ne se détache pas lui-même", !canDetach(clientA, clientA));
 console.log("\nQuotas de domaines");
 
 check("l'offre Agence porte 25 domaines", domainQuotaFor(agence) === DOMAIN_QUOTA.agence);
-check("l'offre Pro en porte 5", domainQuotaFor(isole) === DOMAIN_QUOTA.pro);
+check("la grille Pro reste écrite à 5", DOMAIN_QUOTA.pro === 5);
+check("Konsent gratuit : tout compte de premier niveau porte 25 domaines", domainQuotaFor(isole) === DOMAIN_QUOTA.agence);
 // Sans cette règle, un seul client consomme les 25 domaines de l'agence et
 // prive les 24 autres.
 check(
@@ -200,7 +203,7 @@ check(
   domainQuotaFor(clientA) === 1,
 );
 
-const cinq = Array.from({ length: 5 }, () => ({ accountId: "solo" }));
+const cinq = Array.from({ length: DOMAIN_QUOTA.agence }, () => ({ accountId: "solo" }));
 check("au quota, aucun domaine de plus", !canAddDomain(isole, cinq));
 check("sous le quota, l'ajout passe", canAddDomain(isole, cinq.slice(1)));
 check(

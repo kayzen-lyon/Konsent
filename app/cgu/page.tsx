@@ -27,8 +27,9 @@ export default function TermsOfUsePage() {
           <PendingReview />
           <p className="mt-4">
             Les présentes conditions régissent l&apos;<strong>accès et l&apos;usage</strong> du
-            service {EDITOR.product}. Les conditions de <strong>vente</strong> des abonnements font
-            l&apos;objet d&apos;un document distinct :{" "}
+            service {EDITOR.product}. Le service est aujourd&apos;hui gratuit ; les conditions de <strong>vente</strong>,
+            qui s&apos;appliqueraient à une éventuelle offre payante, font l&apos;objet d&apos;un
+            document distinct :{" "}
             <Link href="/cgv" className="text-flame hover:underline">
               conditions générales de vente
             </Link>

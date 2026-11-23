@@ -2,6 +2,7 @@
   "name": "konsent",
   "version": "0.1.0",
   "private": true,
+  "license": "FSL-1.1-MIT",
   "description": "Konsent — audit automatisé RGPD / cookies / traceurs. Édité par KAYZEN (Tarek BELHADJ, entrepreneur individuel).",
   "scripts": {
     "dev": "next dev",

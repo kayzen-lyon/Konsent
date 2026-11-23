@@ -1,4 +1,4 @@
-import type { PlanId } from "../billing/plans";
+import { effectivePlan, type PlanId } from "../billing/plans";
 
 /**
  * Cloisonnement des sous-comptes agence.
@@ -39,7 +39,7 @@ export interface OwnedResource {
  * ouvrir une chaîne de privilèges. Le plan seul ne fait pas l'autorité.
  */
 export function isAgency(actor: Actor): boolean {
-  return actor.plan === "agence" && actor.parentId === null;
+  return effectivePlan(actor.plan) === "agence" && actor.parentId === null;
 }
 
 export function isSubAccount(actor: Actor): boolean {
@@ -141,7 +141,7 @@ export function canCreateSubAccount(
   if (!isAgency(actor)) return refused("NOT_AN_AGENCY");
 
   const owned = existing.filter((c) => c.parentId === actor.id);
-  if (owned.length >= SUB_ACCOUNT_QUOTA[actor.plan]) return refused("QUOTA_REACHED");
+  if (owned.length >= SUB_ACCOUNT_QUOTA[effectivePlan(actor.plan)]) return refused("QUOTA_REACHED");
 
   return { allowed: true };
 }
@@ -177,7 +177,7 @@ export const DOMAIN_QUOTA: Record<PlanId, number> = {
 export function domainQuotaFor(actor: Actor): number {
   // Un sous-compte est servi au titre de l'offre de son agence, mais domaine
   // par domaine : un client, un domaine, sauf décision contraire de l'agence.
-  return isSubAccount(actor) ? 1 : DOMAIN_QUOTA[actor.plan];
+  return isSubAccount(actor) ? 1 : DOMAIN_QUOTA[effectivePlan(actor.plan)];
 }
 
 export function canAddDomain(actor: Actor, owned: readonly OwnedResource[]): boolean {

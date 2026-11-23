@@ -336,8 +336,8 @@ export default async function AgencyPage({
                   d: "Ajoutez le nom et la couleur de votre agence à l'adresse : l'en-tête du rapport portefeuille reprend votre identité.",
                 },
                 {
-                  t: "Marge revendeur",
-                  d: "L'abonnement Agence couvre 25 domaines. Revendu autour de 79 € par client, il dégage une marge nette confortable.",
+                  t: "Gratuit, donc revendable",
+                  d: "L'espace agence est gratuit et couvre 25 domaines. Vous facturez vos clients comme vous l'entendez : Konsent ne prélève rien.",
                 },
                 {
                   t: "Devis à votre grille",

@@ -1,4 +1,4 @@
-import { PLANS, type Plan, type PlanId } from "./plans";
+import { ALL_FEATURES_FREE, PLANS, type Plan, type PlanId } from "./plans";
 
 /**
  * Contrôle de sincérité commerciale.
@@ -58,6 +58,8 @@ export function allReadiness(): readonly PlanReadiness[] {
 }
 
 export function isSellable(id: PlanId): boolean {
+  // Konsent est gratuit : rien n'est à vendre tant que l'interrupteur est levé.
+  if (ALL_FEATURES_FREE) return false;
   const plan = PLANS.find((p) => p.id === id);
   if (!plan || plan.amountCents === null) return false;
   return readiness(plan).sellable;
@@ -70,6 +72,7 @@ export function isSellable(id: PlanId): boolean {
  * configuré sur une offre incomplète reste fermé.
  */
 export function purchasablePlans(): readonly Plan[] {
+  if (ALL_FEATURES_FREE) return [];
   return PLANS.filter((plan) => {
     if (plan.amountCents === null || !plan.priceEnvVar) return false;
     if (!readiness(plan).sellable) return false;

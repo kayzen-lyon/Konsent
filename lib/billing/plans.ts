@@ -85,8 +85,9 @@ export const PLANS: readonly Plan[] = [
       { label: "Historique de score conservé 13 mois", delivered: true },
       {
         label: "Protocole complet en trois phases",
-        delivered: false,
-        gap: "Le worker Playwright existe et alimente le même évaluateur, mais n'est pas hébergé : le client devrait l'exécuter lui-même. Ce n'est pas un service.",
+        // Hébergé depuis le 23/11/2026 (projet Vercel konsent-worker).
+        delivered: true,
+        requiresEnv: ["KONSENT_WORKER_URL", "KONSENT_WORKER_SECRET"],
       },
       {
         label: "6 documents générés",
@@ -156,7 +157,88 @@ export const PLANS: readonly Plan[] = [
   },
 ];
 
+/* ═══════════════════════════ Konsent gratuit ═══════════════════════════════
+ *
+ * Décision de l'éditeur (23/11/2026) : tout Konsent est gratuit, pour tous,
+ * sans abonnement. Le code source est public sous licence FSL-1.1-MIT.
+ *
+ * Les grilles ci-dessus restent écrites (et testées) pour pouvoir revenir à
+ * des offres payantes sans tout réécrire ; tant que l'interrupteur est levé,
+ * chaque compte reçoit les droits de l'offre la plus complète et le paiement
+ * en ligne est fermé. */
+export const ALL_FEATURES_FREE = true;
+
+/** L'offre dont un compte reçoit réellement les droits. */
+export function effectivePlan(id: PlanId): PlanId {
+  return ALL_FEATURES_FREE ? "agence" : id;
+}
+
+/**
+ * L'offre gratuite, telle qu'elle est présentée (tarifs, accueil, espace
+ * client). Même règle que les autres offres : `delivered` se remplit en
+ * regardant le code et le déploiement, jamais la feuille de route.
+ */
+export const FREE_PLAN: Plan = {
+  id: "agence",
+  name: "Konsent, gratuit",
+  amountCents: null,
+  pitch: "Toutes les fonctionnalités, pour tous, sans abonnement ni carte bancaire.",
+  features: [
+    { label: "Analyse à la demande, sans inscription", delivered: true },
+    {
+      label: "Protocole complet en trois phases, dans un vrai navigateur",
+      delivered: true,
+      requiresEnv: ["KONSENT_WORKER_URL", "KONSENT_WORKER_SECRET"],
+    },
+    {
+      label: "Captures d'écran de chaque phase",
+      delivered: true,
+      requiresEnv: ["KONSENT_WORKER_URL", "KONSENT_WORKER_SECRET"],
+    },
+    { label: "Rapport complet à l'écran, en trois niveaux de lecture", delivered: true },
+    { label: "Archive de preuve signée Ed25519", delivered: true },
+    { label: "Outils libres, référentiel et base des traceurs", delivered: true },
+    { label: "Brouillon de politique cookies et 6 documents générés", delivered: true },
+    {
+      label: "Surveillance de 25 domaines, propriété vérifiée",
+      delivered: true,
+      requiresEnv: ["DATABASE_URL"],
+    },
+    { label: "Analyse planifiée et détection de régression", delivered: true, requiresEnv: ["DATABASE_URL"] },
+    { label: "Historique de score conservé 13 mois", delivered: true, requiresEnv: ["DATABASE_URL"] },
+    {
+      label: "Alerte par e-mail en cas de nouveau traceur",
+      delivered: true,
+      requiresEnv: ["RESEND_API_KEY", "KONSENT_MAIL_FROM"],
+    },
+    {
+      label: "Vue portefeuille et sous-comptes clients cloisonnés",
+      delivered: true,
+      requiresEnv: ["DATABASE_URL"],
+    },
+    { label: "Marque blanche par URL et devis à votre grille", delivered: true },
+    { label: "API publique, sans clé", delivered: true },
+    {
+      label: "Analyse de plusieurs pages par site",
+      delivered: false,
+      gap: "Le crawl multi-pages n'est pas écrit : le moteur analyse la page d'accueil et les pages légales.",
+    },
+    {
+      label: "24 documents générés",
+      delivered: false,
+      gap: "15 gabarits existent ; les plus exposés (CGU, CGV, AIPD, annexes CCT) ne sont pas encore livrés.",
+    },
+    {
+      label: "Clés d'API avec quotas dédiés",
+      delivered: false,
+      gap: "Les clés existent, mais les routes restent ouvertes sans clé : la clé n'apporte pas encore d'avantage.",
+    },
+  ],
+  highlighted: true,
+};
+
 export function getPlan(id: string): Plan | undefined {
+  if (ALL_FEATURES_FREE && PLANS.some((p) => p.id === id)) return FREE_PLAN;
   return PLANS.find((p) => p.id === id);
 }
 
