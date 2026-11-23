@@ -150,9 +150,10 @@ export function Header() {
             <div className="ml-1 hidden items-center gap-2 sm:flex">
               <Link
                 href="/connexion"
+                title="Facultatif : surveillance, alertes et historique de vos sites"
                 className="font-display hidden min-h-11 items-center whitespace-nowrap rounded-full px-3 text-sm font-semibold text-ink-2 transition-colors hover:text-flame xl:flex"
               >
-                Connexion
+                Mon espace
               </Link>
               <Link
                 href="/#scan"
@@ -217,7 +218,7 @@ export function Header() {
               onClick={close}
               className="font-display flex h-12 flex-1 items-center justify-center rounded-full border border-line-2 text-sm font-semibold text-ink-2 transition-colors hover:bg-surface-low"
             >
-              Connexion
+              Mon espace
             </Link>
             <Link
               href="/#scan"

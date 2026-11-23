@@ -45,7 +45,7 @@ export default function LoginForm() {
         <p className="font-medium text-ok">Demande enregistrée</p>
         <p className="mt-2 text-[15px] leading-relaxed text-ink-2">{message}</p>
         <p className="mt-3 text-sm text-muted">
-          Le lien expire dans 15 minutes et ne fonctionne qu&apos;une fois.
+          Le lien expire dans 15 minutes et ne fonctionne qu&apos;une fois, <strong>dans ce navigateur</strong> : ouvrez l&apos;e-mail ici, sans changer d&apos;appareil.
         </p>
       </div>
     );
