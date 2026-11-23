@@ -48,11 +48,12 @@ export function isWorkerConfigured(): boolean {
  * Il est délibérément plus court que le plafond du worker : si le worker
  * s'accorde 120 s, l'application qui l'attend doit rendre la main avant, ou
  * c'est la requête de l'utilisateur qui expire. Le §5.5 vise ~35 s pour un
- * scan `quick`, et `maxDuration` vaut 60 s sur les routes concernées.
+ * scan `quick` ; un site lourd peut en demander davantage, d'où 110 s ici et
+ * `maxDuration` à 150 s sur les routes concernées.
  */
 function budgetMs(): number {
   const configured = Number(process.env["KONSENT_WORKER_TIMEOUT_MS"]);
-  return Number.isFinite(configured) && configured > 0 ? configured : 45_000;
+  return Number.isFinite(configured) && configured > 0 ? configured : 110_000;
 }
 
 function looksLikeWorkerOutput(value: unknown): value is WorkerOutput {

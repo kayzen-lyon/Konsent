@@ -19,6 +19,22 @@ export function ExposureBox({
 }) {
   const e = computeExposure({ findings, ...(revenueEur ? { revenueEur } : {}) });
 
+  // Aucun écart critique ni majeur : il n'y a rien à chiffrer. Afficher le
+  // plafond de 20 M€ à côté d'un rapport sans écart inquiète sans informer.
+  if (e.criticalCount + e.majorCount === 0) {
+    return (
+      <div className="rounded-xl bg-surface p-5 ring-1 ring-line shadow-md">
+        <p className="font-display text-[16px] font-bold text-ok">Rien à chiffrer</p>
+        <p className="mt-2 text-sm leading-relaxed text-ink-2">
+          Aucun écart critique ou majeur n&apos;a été relevé : ce rapport ne met en évidence
+          aucune exposition à une sanction. Les montants de référence (plafond du RGPD, amendes
+          de la procédure simplifiée de la CNIL) ne s&apos;affichent que lorsqu&apos;un écart
+          le justifie.
+        </p>
+      </div>
+    );
+  }
+
   const rows = [
     {
       label: "Plafond légal théorique",

@@ -243,13 +243,26 @@ export function ReportView({
           <div className="mb-8 overflow-hidden rounded-xl bg-surface ring-1 ring-line shadow-md">
             <div className="hazard-top h-1.5" />
             <div className="p-5">
-              <p className="tech text-[10px] text-warn">Analyse dégradée</p>
+              <p className="tech text-[10px] text-warn">Rapport partiel</p>
+              <p className="font-display mt-2 text-[17px] font-bold text-ink-2">
+                L&apos;analyse complète n&apos;a pas pu aller au bout cette fois-ci.
+              </p>
               <p className="mt-2 text-sm leading-relaxed text-ink-2">{degraded.reason}</p>
               <p className="mt-2 text-[13px] leading-relaxed text-muted">
-                Conséquence concrète : {RULEPACK.headlessCount} règles du référentiel exigent un
-                navigateur et ressortent ci-dessous en « non évalué ». Elles ne sont pas comptées
-                comme satisfaites, et le score n&apos;en tient pas compte.
+                Ce que cela change : seules les vérifications possibles sans ouvrir le site dans un
+                navigateur ont été faites. Les {RULEPACK.headlessCount} autres (traceurs déposés,
+                respect du refus, bandeau…) n&apos;ont pas été regardées : elles ne sont ni
+                conformes ni non conformes, et le score n&apos;en tient pas compte. Relancer
+                l&apos;analyse suffit le plus souvent.
               </p>
+              {frozen ? null : (
+                <a
+                  href={`/scan?url=${encodeURIComponent(target)}&vue=${level}`}
+                  className="font-display btn-primary mt-4 inline-flex min-h-10 items-center rounded-full bg-flame px-4 text-[13px] font-bold text-on-primary print:hidden"
+                >
+                  Relancer l&apos;analyse complète
+                </a>
+              )}
             </div>
           </div>
         ) : null}
@@ -258,13 +271,18 @@ export function ReportView({
 
         {/* ═══════════ SYNTHÈSE ═══════════ */}
         <section id="synthese" className="grid scroll-mt-28 gap-5 lg:grid-cols-[auto_1fr]">
-          <div className="rise flex items-center justify-center rounded-xl bg-surface p-6 ring-1 ring-line shadow-md">
+          <div className="rise flex flex-col items-center justify-center rounded-xl bg-surface p-6 ring-1 ring-line shadow-md">
             <ScoreGauge
               score={result.score}
               grade={result.grade}
               gradeLabel={result.gradeLabel}
               animate
             />
+            {headless ? null : (
+              <p className="mt-3 max-w-[14rem] text-center text-[12px] leading-snug text-muted">
+                Score partiel : calculé sur {evaluatedCount} règles sur {RULEPACK.total}.
+              </p>
+            )}
           </div>
 
           <div className="space-y-4">
@@ -282,9 +300,9 @@ export function ReportView({
                 tone={result.outsideEea.length > 0 ? "danger" : "ok"}
               />
               <Stat
-                label="Règles non évaluées"
+                label="Points à vérifier à la main"
                 value={String(notEvaluated.length)}
-                hint="navigateur requis — jamais comptées comme conformes"
+                hint="hors de portée d'un outil automatique — jamais comptés conformes"
                 tone="warn"
               />
             </div>
@@ -388,8 +406,8 @@ export function ReportView({
         <section id="limites" className="mt-14 scroll-mt-28">
           <SectionTitle
             eyebrow="Limites de cette analyse"
-            title={`${notEvaluated.length} règles n'ont pas pu être évaluées`}
-            description="Nous préférons le dire plutôt que de les compter comme satisfaites. Elles supposent l'exécution du site dans un navigateur réel, ou la lecture d'un contenu que ce mode n'a pas obtenu."
+            title={`${notEvaluated.length} points que l'outil ne peut pas trancher seul`}
+            description="Ce n'est pas un défaut de votre site. Un outil automatique ne voit pas tout : certains points demandent de lire un contrat, d'interroger un prestataire ou d'observer le site dans la durée. Plutôt que de les compter comme conformes sans les avoir vérifiés, nous les listons : c'est ce qu'il vous reste à contrôler."
           />
           <div className="rounded-xl bg-surface p-5 ring-1 ring-line shadow-md">
             <p className="text-sm leading-relaxed text-ink-2">

@@ -15,7 +15,7 @@ import { executiveSummary } from "@/lib/report/summary";
 import { PILLARS, getRule, pillarOfFamily } from "@/lib/rulepack";
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 60;
+export const maxDuration = 150;
 
 export const metadata: Metadata = {
   title: "Présentation du rapport",

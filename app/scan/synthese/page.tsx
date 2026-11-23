@@ -16,7 +16,7 @@ import { getRule } from "@/lib/rulepack";
 import { siteOrigin } from "@/lib/security/origin";
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 60;
+export const maxDuration = 150;
 
 export const metadata: Metadata = {
   title: "Synthèse dirigeant",
