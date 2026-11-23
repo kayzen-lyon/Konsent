@@ -14,12 +14,23 @@ export const OG_SIZE = { width: 1200, height: 630 };
 export const OG_CONTENT_TYPE = "image/png";
 
 /**
- * Emblème Konsent, variante pour fond marine (399 × 320), lu au build et
- * embarqué en data URL : le moteur de rendu ne fait aucune requête.
+ * Emblème Konsent, variante pour fond marine (399 × 320), embarqué en data
+ * URL : le moteur de rendu ne fait aucune requête.
+ *
+ * Lu À LA DEMANDE, jamais au chargement du module. Une page dynamique charge
+ * les modules `opengraph-image` pour calculer ses métadonnées (alt, taille) ;
+ * une lecture de fichier au niveau du module y faisait échouer le rendu de
+ * /contact, /scan et /connexion en production, où le PNG n'était pas embarqué
+ * dans la fonction. Le fichier est en outre déclaré dans
+ * `outputFileTracingIncludes` (next.config.ts).
  */
-export const OG_EMBLEM_SRC = `data:image/png;base64,${readFileSync(
-  join(process.cwd(), "lib/seo/og-embleme.png"),
-).toString("base64")}`;
+let emblemSrc: string | undefined;
+export function ogEmblemSrc(): string {
+  emblemSrc ??= `data:image/png;base64,${readFileSync(
+    join(process.cwd(), "lib/seo/og-embleme.png"),
+  ).toString("base64")}`;
+  return emblemSrc;
+}
 
 const NAVY = "#132944";
 const TERRACOTTA = "#B7481F";
@@ -80,7 +91,7 @@ export function toolOgImage(tool: string | OgTool): ImageResponse {
       >
         <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={OG_EMBLEM_SRC} width={70} height={56} alt="" />
+          <img src={ogEmblemSrc()} width={70} height={56} alt="" />
           <div style={{ fontSize: 30, fontWeight: 800, letterSpacing: -1 }}>KONSENT</div>
           <div
             style={{

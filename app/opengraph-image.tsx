@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { OG_EMBLEM_SRC } from "@/lib/seo/og";
+import { ogEmblemSrc } from "@/lib/seo/og";
 
 /**
  * Image de partage (Open Graph, Twitter), rendue au build.
@@ -31,7 +31,7 @@ export default function OpenGraphImage() {
       >
         <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={OG_EMBLEM_SRC} width={75} height={60} alt="" />
+          <img src={ogEmblemSrc()} width={75} height={60} alt="" />
           <div style={{ fontSize: 34, fontWeight: 800, letterSpacing: -1 }}>KONSENT</div>
         </div>
 
@@ -45,7 +45,7 @@ export default function OpenGraphImage() {
             </div>
           </div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={OG_EMBLEM_SRC} width={299} height={240} alt="" />
+          <img src={ogEmblemSrc()} width={299} height={240} alt="" />
         </div>
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
