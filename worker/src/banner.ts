@@ -18,6 +18,32 @@ export interface BannerInfo {
   clicksToReject: number | null;
   clicksToAccept: number | null;
   hasRejectAtFirstLevel: boolean;
+  /**
+   * Mesures du premier niveau du bandeau, sans aucune interaction. Absentes
+   * quand le conteneur ou l'un des deux boutons n'a pas pu être situé (iframe,
+   * shadow DOM, bandeau introuvable) : les règles correspondantes restent
+   * alors non évaluées.
+   */
+  metrics?: BannerMetrics;
+}
+
+export interface ButtonMetrics {
+  /** Surface affichée, en px². */
+  area: number;
+  /** Contraste du fond du bouton contre le fond du bandeau (saillance). */
+  prominence: number;
+  /** Le bouton a-t-il un fond ou une bordure visibles ? */
+  filled: boolean;
+  label: string;
+}
+
+export interface BannerMetrics {
+  accept: ButtonMetrics;
+  reject: ButtonMetrics | null;
+  /** Un lien vers une politique (cookies, confidentialité) dans le conteneur. */
+  policyLink: boolean;
+  /** Plus faible ratio de contraste du texte du bandeau, et son seuil applicable. */
+  textContrast: { ratio: number; threshold: number; sample: string } | null;
 }
 
 const API_SIGNATURES: readonly { key: string; name: string }[] = [
@@ -166,6 +192,121 @@ async function classifyButtons(page: Page): Promise<{
   };
 }
 
+/**
+ * Mesure le premier niveau du bandeau : surfaces et saillance des boutons
+ * accepter / refuser, lien vers la politique, contraste du texte.
+ *
+ * Tout est calculé dans la page, sur les styles réellement appliqués. Aucune
+ * interaction : la mesure a lieu en phase A, avant tout choix du visiteur.
+ */
+async function measureBanner(page: Page): Promise<BannerMetrics | undefined> {
+  const result = await page
+    .evaluate(
+      ({ acceptWords, rejectWords, containerSelectors }) => {
+        const norm = (s: string) =>
+          s.toLowerCase().replace(/[‘’]/g, "'").normalize("NFD").replace(/\p{Diacritic}/gu, "").replace(/\s+/g, " ").trim();
+
+        type RGBA = [number, number, number, number];
+        const parse = (c: string): RGBA | null => {
+          const m = c.match(/rgba?\(([^)]+)\)/);
+          if (!m) return null;
+          const p = m[1]!.split(/[ ,/]+/).filter(Boolean).map(Number);
+          return [p[0] ?? 0, p[1] ?? 0, p[2] ?? 0, p[3] ?? 1];
+        };
+        const lum = ([r, g, b]: RGBA) => {
+          const ch = (v: number) => {
+            const s = v / 255;
+            return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+          };
+          return 0.2126 * ch(r) + 0.7152 * ch(g) + 0.0722 * ch(b);
+        };
+        const ratio = (a: RGBA, b: RGBA) => {
+          const [l1, l2] = [lum(a), lum(b)].sort((x, y) => y - x) as [number, number];
+          return (l1 + 0.05) / (l2 + 0.05);
+        };
+        /** Fond effectif : premier ancêtre au fond opaque, blanc à défaut. */
+        const bgOf = (el: Element | null): RGBA => {
+          for (let n = el; n; n = n.parentElement) {
+            const c = parse(getComputedStyle(n).backgroundColor);
+            if (c && c[3] > 0.5) return c;
+          }
+          return [255, 255, 255, 1];
+        };
+        const visible = (el: Element) => {
+          const r = el.getBoundingClientRect();
+          const cs = getComputedStyle(el);
+          return r.width > 0 && r.height > 0 && cs.visibility !== "hidden" && cs.display !== "none" && Number(cs.opacity) > 0.05;
+        };
+        const clickables = Array.from(
+          document.querySelectorAll<HTMLElement>("button, a[href], [role='button'], input[type='button'], input[type='submit']"),
+        ).filter(visible);
+        const labelOf = (el: HTMLElement) => norm(el.innerText || (el as HTMLInputElement).value || el.getAttribute("aria-label") || "");
+        const accept = clickables.find((el) => acceptWords.some((w: string) => labelOf(el).includes(w)));
+        if (!accept) return null;
+
+        // Conteneur : sélecteur connu, sinon premier ancêtre fixe, collant
+        // ou boîte de dialogue.
+        let container: HTMLElement | null = null;
+        for (const sel of containerSelectors) {
+          const c = document.querySelector<HTMLElement>(sel);
+          if (c && c.contains(accept)) { container = c; break; }
+        }
+        for (let n: HTMLElement | null = accept.parentElement; !container && n && n !== document.body; n = n.parentElement) {
+          const cs = getComputedStyle(n);
+          if (cs.position === "fixed" || cs.position === "sticky" || n.getAttribute("role") === "dialog" || n.tagName === "DIALOG") container = n;
+        }
+        if (!container) return null;
+
+        const reject = clickables.find((el) => container!.contains(el) && rejectWords.some((w: string) => labelOf(el).includes(w))) ?? null;
+        const panelBg = bgOf(container);
+
+        const measure = (el: HTMLElement) => {
+          const r = el.getBoundingClientRect();
+          const cs = getComputedStyle(el);
+          const own = parse(cs.backgroundColor);
+          const ownBg: RGBA = own && own[3] > 0.5 ? own : bgOf(el);
+          const border = parseFloat(cs.borderTopWidth) > 0 && (parse(cs.borderTopColor)?.[3] ?? 0) > 0.5;
+          return {
+            area: Math.round(r.width * r.height),
+            prominence: Math.round(ratio(ownBg, panelBg) * 100) / 100,
+            filled: Boolean(own && own[3] > 0.5 && ratio(own, panelBg) > 1.1) || border,
+            label: (el.innerText || el.getAttribute("aria-label") || "").trim().slice(0, 60),
+          };
+        };
+
+        const policyLink = Array.from(container.querySelectorAll<HTMLAnchorElement>("a[href]")).some((a) =>
+          /cookie|confidentialit|privacy|politique|donnees personnelles|vie privee/.test(norm(`${a.innerText} ${a.getAttribute("href") ?? ""}`)),
+        );
+
+        // Contraste du texte : plus faible ratio parmi les blocs de texte
+        // visibles du bandeau (seuil 3:1 pour un grand texte, 4,5:1 sinon).
+        let worst: { ratio: number; threshold: number; sample: string } | null = null;
+        for (const el of Array.from(container.querySelectorAll<HTMLElement>("p, span, div, li, label, h1, h2, h3, h4"))) {
+          if (!visible(el)) continue;
+          const own = Array.from(el.childNodes).filter((n) => n.nodeType === 3).map((n) => n.textContent ?? "").join("").trim();
+          if (own.length < 15) continue;
+          const cs = getComputedStyle(el);
+          const fg = parse(cs.color);
+          if (!fg) continue;
+          const size = parseFloat(cs.fontSize);
+          const large = size >= 24 || (size >= 18.66 && Number(cs.fontWeight) >= 700);
+          const r = Math.round(ratio(fg, bgOf(el)) * 100) / 100;
+          const threshold = large ? 3 : 4.5;
+          if (!worst || r / threshold < worst.ratio / worst.threshold) worst = { ratio: r, threshold, sample: own.slice(0, 60) };
+        }
+
+        return { accept: measure(accept), reject: reject ? measure(reject) : null, policyLink, textContrast: worst };
+      },
+      {
+        acceptWords: ACCEPT_WORDS as unknown as string[],
+        rejectWords: REJECT_WORDS as unknown as string[],
+        containerSelectors: CONTAINER_SELECTORS as unknown as string[],
+      },
+    )
+    .catch(() => null);
+  return result ?? undefined;
+}
+
 export async function resolveBanner(page: Page): Promise<BannerInfo> {
   const apiName = await detectApi(page);
 
@@ -184,8 +325,10 @@ export async function resolveBanner(page: Page): Promise<BannerInfo> {
   }
 
   const buttons = await classifyButtons(page);
+  const metrics = resolution === "UNRESOLVED" ? undefined : await measureBanner(page);
 
   return {
+    ...(metrics ? { metrics } : {}),
     resolution,
     ...(apiName ? { cmpName: apiName } : {}),
     // Un refus atteignable au premier niveau coûte un clic ; sinon il faut

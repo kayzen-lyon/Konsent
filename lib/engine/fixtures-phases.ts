@@ -1,5 +1,5 @@
 import { encodeTcStringForTests } from "../tcf/decode";
-import type { WorkerOutput, WorkerSnapshot } from "./headless-adapter";
+import type { BannerMetrics, WorkerOutput, WorkerSnapshot } from "./headless-adapter";
 
 /**
  * Fixtures du protocole en trois phases.
@@ -103,6 +103,21 @@ const withBanner = (o: WorkerOutput, patch: Partial<WorkerOutput["banner"]>): Wo
   banner: { ...o.banner, ...patch },
 });
 
+/** Bouton plein, bien contrasté : la référence d'un bandeau symétrique. */
+const GOOD_BUTTON = { area: 6_000, prominence: 5, filled: true, label: "Tout accepter" };
+
+/** Bandeau mesuré et conforme, corrigé par `patch`. */
+const withMetrics = (o: WorkerOutput, patch: Partial<BannerMetrics>): WorkerOutput =>
+  withBanner(o, {
+    metrics: {
+      accept: GOOD_BUTTON,
+      reject: { ...GOOD_BUTTON, label: "Tout refuser" },
+      policyLink: true,
+      textContrast: { ratio: 9, threshold: 4.5, sample: "Nous utilisons des cookies" },
+      ...patch,
+    },
+  });
+
 export const PHASE_FIXTURES: readonly PhaseFixture[] = [
   /* ═══════════════ Phase A — dépôt avant toute interaction ═══════════════ */
 
@@ -188,6 +203,51 @@ export const PHASE_FIXTURES: readonly PhaseFixture[] = [
       setPhase(o, "C", {
         cookies: [cookie("app_session_id"), { ...cookie("uid", ".tiers.example"), secure: false }],
       }),
+  },
+
+  /* ═══════════ Bandeau — dark patterns mesurés au premier niveau ═══════════ */
+
+  {
+    ruleId: "KZC-BANNER-004",
+    scenario: "Le bouton « Tout accepter » est deux fois plus grand que « Tout refuser ».",
+    positive: (o) => withMetrics(o, { reject: { ...GOOD_BUTTON, label: "Tout refuser", area: 3_000 } }),
+    // Écart de 20 % : sous le seuil de 1,3, ce n'est pas une asymétrie.
+    negative: (o) => withMetrics(o, { reject: { ...GOOD_BUTTON, label: "Tout refuser", area: 5_000 } }),
+  },
+  {
+    ruleId: "KZC-BANNER-005",
+    scenario: "Le refus est un bouton gris pâle, à peine distinct du fond du bandeau.",
+    positive: (o) => withMetrics(o, { reject: { ...GOOD_BUTTON, label: "Tout refuser", prominence: 1.4 } }),
+    // Même pâleur, mais l'accepter l'est aussi : symétrique.
+    negative: (o) =>
+      withMetrics(o, {
+        accept: { ...GOOD_BUTTON, prominence: 1.6 },
+        reject: { ...GOOD_BUTTON, label: "Tout refuser", prominence: 1.4 },
+      }),
+  },
+  {
+    ruleId: "KZC-BANNER-006",
+    scenario: "Le refus est un simple lien texte face à un bouton plein.",
+    positive: (o) =>
+      withMetrics(o, { reject: { ...GOOD_BUTTON, label: "Continuer sans accepter", prominence: 1, filled: false } }),
+    alsoExpected: ["KZC-BANNER-005"],
+    // Bouton plein des deux côtés.
+    negative: (o) => withMetrics(o, {}),
+  },
+  {
+    ruleId: "KZC-BANNER-013",
+    scenario: "Le bandeau ne renvoie vers aucune politique cookies ni de confidentialité.",
+    positive: (o) => withMetrics(o, { policyLink: false }),
+    negative: (o) => withMetrics(o, { policyLink: true }),
+  },
+  {
+    ruleId: "KZC-BANNER-021",
+    scenario: "Le texte du bandeau est gris clair sur blanc, à 2,7:1.",
+    positive: (o) =>
+      withMetrics(o, { textContrast: { ratio: 2.7, threshold: 4.5, sample: "Nous et nos partenaires utilisons" } }),
+    // 3,5:1 suffit pour un grand texte (seuil 3:1).
+    negative: (o) =>
+      withMetrics(o, { textContrast: { ratio: 3.5, threshold: 3, sample: "Votre vie privée compte" } }),
   },
 
   /* ═══════════════════ Bandeau — symétrie du refus ═══════════════════════ */

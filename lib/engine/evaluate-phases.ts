@@ -119,6 +119,58 @@ export function evaluatePhases(cmp: PhaseComparison): readonly Finding[] {
     ]);
   }
 
+  // ── Bandeau : dark patterns mesurés au premier niveau (phase A) ──
+  // Seuils repris des règles. Une mesure douteuse (bouton « accepter » non
+  // reconnu comme plein, refus introuvable) laisse la règle non évaluée :
+  // voir `phaseUndecided`.
+  const m = cmp.bannerMetrics;
+  if (m?.reject) {
+    const surface = m.accept.area / Math.max(1, m.reject.area);
+    if (surface > BANNER_SURFACE_RATIO) {
+      add("KZC-BANNER-004", [
+        {
+          kind: "dom",
+          label: `« ${m.accept.label} » ${round(surface)} fois plus grand que « ${m.reject.label} »`,
+          detail: `Surfaces : ${m.accept.area} px² contre ${m.reject.area} px² (seuil : ${BANNER_SURFACE_RATIO}).`,
+        },
+      ]);
+    }
+    if (m.accept.filled) {
+      const delta = m.accept.prominence - m.reject.prominence;
+      if (delta > BANNER_CONTRAST_DELTA) {
+        add("KZC-BANNER-005", [
+          {
+            kind: "dom",
+            label: `Contraste du bouton : ${m.accept.prominence}:1 pour accepter, ${m.reject.prominence}:1 pour refuser`,
+            detail: `Écart de ${round(delta)} (seuil : ${BANNER_CONTRAST_DELTA}). Le refus se distingue moins du fond du bandeau.`,
+          },
+        ]);
+      }
+      if (!m.reject.filled) {
+        add("KZC-BANNER-006", [
+          {
+            kind: "dom",
+            label: `« ${m.reject.label} » sans fond ni bordure, face à « ${m.accept.label} » en bouton plein`,
+          },
+        ]);
+      }
+    }
+  }
+  if (m && !m.policyLink) {
+    add("KZC-BANNER-013", [
+      { kind: "dom", label: "Aucun lien vers une politique cookies ou de confidentialité dans le bandeau" },
+    ]);
+  }
+  if (m?.textContrast && m.textContrast.ratio < m.textContrast.threshold) {
+    add("KZC-BANNER-021", [
+      {
+        kind: "dom",
+        label: `Texte du bandeau à ${m.textContrast.ratio}:1 (seuil : ${m.textContrast.threshold}:1)`,
+        detail: `« ${m.textContrast.sample}… »`,
+      },
+    ]);
+  }
+
   // ── Stockage alternatif ──
   add(
     "KZC-STORAGE-001",
@@ -268,7 +320,17 @@ export const PHASE_RULE_IDS: readonly string[] = [
   "KZC-FP-008",
   "KZC-EXEMPT-003",
   "KZC-STORAGE-009",
+  "KZC-BANNER-004",
+  "KZC-BANNER-005",
+  "KZC-BANNER-006",
+  "KZC-BANNER-013",
+  "KZC-BANNER-021",
 ];
+
+/** Seuils des règles bandeau (repris de leur `messageTech`). */
+const BANNER_SURFACE_RATIO = 1.3;
+const BANNER_CONTRAST_DELTA = 2;
+const round = (n: number) => Math.round(n * 10) / 10;
 
 /**
  * 13 mois, plafond de durée de vie d'un traceur de mesure exempté. Treize
@@ -285,6 +347,14 @@ export function phaseUndecided(cmp: PhaseComparison): readonly string[] {
   const out: string[] = [];
   if (!cmp.https) out.push("KZC-STORAGE-009");
   if (!cmp.refusalClicked) out.push("KZC-REFUS-001", "KZC-REFUS-002", "KZC-REFUS-006", "KZC-FP-008");
+  const m = cmp.bannerMetrics;
+  if (!m) {
+    out.push("KZC-BANNER-004", "KZC-BANNER-005", "KZC-BANNER-006", "KZC-BANNER-013", "KZC-BANNER-021");
+  } else {
+    if (!m.reject) out.push("KZC-BANNER-004", "KZC-BANNER-005", "KZC-BANNER-006");
+    else if (!m.accept.filled) out.push("KZC-BANNER-005", "KZC-BANNER-006");
+    if (!m.textContrast) out.push("KZC-BANNER-021");
+  }
   return out;
 }
 
