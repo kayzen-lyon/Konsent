@@ -1,0 +1,123 @@
+/* ═══════════════ Typographie des sites du groupe Kayzen ═══════════════
+ *
+ * Validée sur aperçu le 23/11/2026. Chargée par app/layout.tsx APRÈS
+ * globals.css, hors de toute couche CSS : elle l'emporte donc sur les
+ * utilitaires Tailwind (rangés dans @layer utilities) quelle que soit leur
+ * spécificité. C'est voulu : elle corrige d'un seul endroit les tailles
+ * posées en dur dans les composants (text-[10px], text-sm…), qui
+ * rendaient Konsent plus petit et plus « technique » que les autres sites
+ * du groupe.
+ *
+ * Pour un nouveau composant : écrire directement aux tailles ci-dessous
+ * plutôt que de compter sur ces corrections.
+ *
+ * Référence : profil mesuré sur www.kayzen-lyon.com (23/11/2026) et fichier
+ * DESIGN fourni par le groupe.
+ *   Texte courant ...... Plus Jakarta Sans 400, 16 px, interligne 1,65
+ *   Texte secondaire ... Plus Jakarta Sans 400, 14 px
+ *   Surtitres .......... Outfit 600, 14 px, capitales, +1,4 px
+ *   Annotations ........ Outfit 700, 12 px, capitales, +1,2 px (jamais < 12 px)
+ *   H2 de section ...... Outfit 700, 36 → 48 px, −0,025 em
+ *   Titres de carte .... Outfit 800, 24 px, −0,02 em
+ *   Boutons ............ Outfit 600, 16 px (14 px en petit), −0,34 px, sans capitales
+ *   Menu ............... Outfit 600, 14 px
+ */
+
+/* ── Annotations : plus rien sous 12 px ─────────────────────────────────────── */
+:is(.text-\[9px\], .text-\[10px\], .text-\[11px\]) {
+  font-size: 12px;
+  line-height: 1.33;
+}
+.tech {
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+/* ── Surtitres de section : 14 px, Outfit 600 ───────────────────────────────── */
+:is(p, h2, h3, h4, dt).tech:not(:is(button, a, [role="tab"]) *) {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  line-height: 1.43;
+}
+
+/* ── Texte courant : 16 px ─────────────────────────────────────────────────── */
+:is(p, li, dd, blockquote):is(.text-sm, .text-\[13px\], .text-\[15px\]) {
+  font-size: 16px;
+  line-height: 1.65;
+}
+/* Texte secondaire (notes, métadonnées) : 14 px, jamais 9 à 13. Les
+ * capitales techniques (.tech) restent des annotations à 12 px. */
+:is(p, li, dd):is(.text-\[9px\], .text-\[10px\], .text-\[11px\]):not(.tech),
+:is(p, li, dd, td, th, span, label):is(.text-xs, .text-\[12px\], .text-\[13px\]):not(.tech) {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ── Titres ────────────────────────────────────────────────────────────────── */
+/* Tout titre est en Outfit : une dizaine de H1 et une trentaine de H2 étaient
+ * écrits en Plus Jakarta Sans semi-gras, hors de la classe `.display`. */
+h1:not(.sr-only) {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.08;
+}
+h2:not(.sr-only):not(.uppercase):not(.tech):not(.display) {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+h2:not(.sr-only):not(.uppercase):not(.tech):not(.display).text-lg {
+  font-size: 1.375rem;
+  line-height: 1.3;
+}
+/* Petits H2 (titres de carte) d'abord, grands H2 de section ensuite : un
+ * titre qui porte les deux (text-2xl sm:text-3xl) prend la grande taille. */
+h2.display:is(.text-xl, .text-2xl) {
+  font-size: 1.5rem;
+  letter-spacing: -0.022em;
+}
+h2.display:is(.text-3xl, .text-4xl, [class*="sm:text-3xl"], [class*="sm:text-4xl"], [class*="sm:text-5xl"]) {
+  font-size: clamp(2.25rem, 1.65rem + 2.2vw, 3rem);
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+}
+/* Titres de carte et de bloc : Outfit 800, jamais Plus Jakarta Sans. */
+h3:not(.tech):not(.sr-only),
+h4:not(.tech):not(.sr-only) {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+h3:not(.tech):not(.sr-only):is(.display, .text-lg, .text-xl, .text-2xl, .text-\[18px\], .text-\[20px\], .text-\[22px\]) {
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+h3:not(.tech):not(.sr-only):is(.text-sm, .text-base, .text-\[15px\]) {
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+/* ── Boutons : Outfit 600, casse normale, 16 px (14 px pour les petits) ───── */
+.btn-primary {
+  text-transform: none;
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: -0.021em;
+}
+:is(a, button).rounded-full:not(.btn-primary):is(.text-\[10px\], .text-\[11px\], .text-\[12px\], .text-\[13px\], .text-xs) {
+  text-transform: none;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0;
+}
+
+/* ── Menu principal : Outfit 600, 14 px ────────────────────────────────────── */
+header nav > ul > li > :is(a, button) {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 14px;
+}
