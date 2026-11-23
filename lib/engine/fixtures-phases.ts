@@ -285,8 +285,12 @@ export const PHASE_FIXTURES: readonly PhaseFixture[] = [
   },
   {
     ruleId: "KZC-STORAGE-003",
-    scenario: "Un Service Worker est enregistré avant tout accord du visiteur.",
-    positive: (o) => setPhase(o, "A", { serviceWorkers: [`https://${HOST}/sw.js`] }),
+    scenario: "Un Service Worker est enregistré avant tout accord, à côté d'un traceur déjà déposé.",
+    positive: (o) =>
+      setPhase(o, "A", { serviceWorkers: [`https://${HOST}/sw.js`], cookies: [cookie("_ga")] }),
+    alsoExpected: ["KZC-DEPOT-001", "KZC-DEPOT-002"],
+    // Seul, un Service Worker propre au site (hors ligne) ne prouve aucun suivi.
+    negative: (o) => setPhase(o, "A", { serviceWorkers: [`https://${HOST}/sw.js`] }),
   },
 
   /* ═══════════════════ Empreinte du terminal ═════════════════════════════ */

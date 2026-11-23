@@ -44,7 +44,16 @@ export async function assembleHeadlessScan(
   }
 
   const observation = observationFromWorker(output, staticContext);
-  const base = evaluate(observation);
+  // Les règles de l'évaluateur commun décrivent ce que la page fait AVANT
+  // tout choix du visiteur. On ne lui confie donc que la phase A : lui passer
+  // aussi les requêtes de la phase C (après acceptation) reprochait à un site
+  // conforme les mesures d'audience qu'il ne déclenche qu'après accord.
+  // L'observation complète reste celle du rapport (inventaire, chronologie).
+  const base = evaluate({
+    ...observation,
+    requests: observation.requests.filter((r) => r.phase === "A"),
+    cookies: observation.cookies.filter((c) => c.phase === "A"),
+  });
   const comparison = comparePhases(output);
   const phaseFindings = evaluatePhases(comparison);
   const tcf = evaluateTcfPhases(output);
