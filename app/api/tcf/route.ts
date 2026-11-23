@@ -1,8 +1,7 @@
 import { DISCLAIMER_SHORT } from "@/lib/disclaimer";
 import { withApiAuth } from "@/lib/api/auth";
-import { summarizeTcf } from "@/lib/tcf/audit";
+import { auditTcf, summarizeTcf } from "@/lib/tcf/audit";
 import { decodeTcString } from "@/lib/tcf/decode";
-import { TCF_PURPOSES } from "@/lib/tcf/purposes";
 
 export const dynamic = "force-dynamic";
 
@@ -41,8 +40,17 @@ async function handlePOST(request: Request) {
     );
   }
 
-  const targeting = TCF_PURPOSES.filter((p) => !p.legitimateInterestDefensible).map((p) => p.id);
-  const abusiveLi = result.core.purposesLegitimateInterest.filter((p) => targeting.includes(p));
+  // Même logique que le moteur d'analyse : une chaîne seule, hors de tout
+  // site, ne dit ni quand elle a été émise ni quels partenaires ont été
+  // contactés. Les règles qui en dépendent (TCF-001, 003, 004, 005, 008)
+  // sont donc déclarées non évaluées, jamais réputées satisfaites.
+  const audit = auditTcf({
+    tcString: body.tcString ?? "",
+    apiPresent: true,
+    vendorsContacted: [],
+    observedBeforeInteraction: false,
+  });
+  const standalone = new Set(["KZC-TCF-001", "KZC-TCF-008"]);
 
   return Response.json(
     {
@@ -50,19 +58,17 @@ async function handlePOST(request: Request) {
       decoded: true,
       summary: summarizeTcf(result.core),
       core: result.core,
-      observations: [
-        ...(abusiveLi.length > 0
-          ? [
-              {
-                ruleId: "KZC-TCF-006",
-                detail: `${abusiveLi.length} finalité(s) de ciblage activée(s) en intérêt légitime.`,
-              },
-            ]
-          : []),
-        ...(result.core.publisherRestrictions.length === 0
-          ? [{ ruleId: "KZC-TCF-007", detail: "Aucune restriction éditeur déclarée." }]
-          : []),
-      ],
+      observations: audit.findings.map((f) => ({
+        ruleId: f.ruleId,
+        severity: f.severity,
+        title: f.title,
+        detail: f.evidence
+          .map((e) => (e.detail ? `${e.label} — ${e.detail}` : e.label))
+          .join(" · "),
+      })),
+      notEvaluated: [...new Set([...audit.notEvaluated, ...standalone])].sort(),
+      notEvaluatedNote:
+        "Ces règles exigent d'observer le site lui-même (moment d'émission de la chaîne, partenaires réellement contactés, registres IAB). Lancez une analyse complète du site pour les trancher.",
       scope:
         "Le TCF est un cadre privé de l'IAB Europe, sans valeur normative propre. Un écart au TCF n'est pas en soi un manquement au RGPD, et une conformité au TCF ne vaut pas conformité au RGPD.",
     },
