@@ -53,9 +53,9 @@ function FrozenBanner({ frozen, target }: { frozen: FrozenReport; target: string
   return (
     <div
       role="note"
-      className="mb-8 overflow-hidden rounded-xl bg-surface ring-1 ring-line shadow-md"
+      className="mb-8 overflow-hidden rounded-3xl bg-surface ring-1 ring-line shadow-md"
     >
-      <div className="hazard-top h-1.5" />
+      <div className="h-1 bg-flame" />
       <div className="flex flex-wrap items-center justify-between gap-4 p-5">
         <p className="max-w-3xl text-sm leading-relaxed text-ink-2">
           <strong>
@@ -105,6 +105,13 @@ export function ReportView({
     .map((id) => getRule(id))
     .filter((r): r is NonNullable<typeof r> => Boolean(r));
   const evaluatedCount = RULEPACK.total - result.notEvaluatedRuleIds.length;
+  const verdictLine = degraded
+    ? "rapport partiel, à relancer"
+    : criticalCount > 0
+      ? `${criticalCount} écart${criticalCount > 1 ? "s" : ""} critique${criticalCount > 1 ? "s" : ""} à corriger`
+      : result.findings.length > 0
+        ? `${result.findings.length} point${result.findings.length > 1 ? "s" : ""} à améliorer`
+        : "aucun écart relevé";
   const spec = readingLevel(level);
   const scannedAt = new Date(result.scannedAt);
   const onlineUrl = frozen
@@ -113,65 +120,102 @@ export function ReportView({
 
   return (
     <>
-      {/* ═══════════ EN-TÊTE SOMBRE ═══════════ */}
-      <section className="grid-bg-dark bg-ink">
-        <div className="mx-auto max-w-7xl px-5 py-10">
-          <div className="flex flex-wrap items-start justify-between gap-6">
-            <div className="min-w-0">
-              <p className="tech text-[10px] text-flame-soft">Rapport d&apos;audit technique</p>
-              <h1 className="display mt-2 break-all text-3xl text-white sm:text-4xl">
-                {observation.hostname}
-              </h1>
-              {/* L'horodatage est une donnée de preuve : un rapport décrit un
-                  instant, pas un état permanent du site. */}
-              <p className="font-display mt-3 text-[15px] font-semibold text-white">
-                Analyse du{" "}
-                <time dateTime={result.scannedAt}>
-                  {scannedAt.toLocaleString("fr-FR", {
-                    dateStyle: "full",
-                    timeStyle: "short",
-                    timeZone: "Europe/Paris",
-                  })}
-                </time>
-              </p>
-              <p className="mt-1 font-mono text-[12px] text-white/70">
-                réf. {result.id} · référentiel {result.rulepackVersion} · {result.durationMs} ms ·{" "}
-                {observation.pagesAnalyzed} page(s)
-              </p>
-              {/* Le moteur qui a tourné détermine ce que le rapport a pu voir.
-                  Il se lit dès l'en-tête, pas dans une note de bas de page. */}
-              <p className="tech mt-3 text-[10px] text-white/60">
-                {headless ? (
-                  <>
-                    <span className="mr-2 rounded bg-ok px-2 py-1 text-white">
-                      Protocole en trois phases
-                    </span>
-                    avant consentement · après refus · après acceptation, navigateur réel
-                  </>
-                ) : (
-                  <>
-                    <span className="mr-2 rounded bg-warn px-2 py-1 text-white">
-                      Analyse statique
-                    </span>
-                    document servi, en-têtes, DNS et pages légales — aucun JavaScript exécuté
-                  </>
-                )}
-              </p>
-            </div>
+      {/* ═══════════ EN-TÊTE ═══════════
+          Héros clair à la manière des pages Kayzen : surtitre terracotta,
+          titre bicolore (le site, puis le verdict), pastilles de statut et
+          score posé dans une carte surélevée. */}
+      <section className="relative overflow-hidden border-b border-line bg-paper">
+        <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-5 py-12 sm:py-16 lg:grid-cols-[minmax(0,1fr)_auto]">
+          <div className="min-w-0">
+            <nav aria-label="Fil d'Ariane" className="text-[13px] text-muted print:hidden">
+              <ol className="flex flex-wrap items-center gap-1.5">
+                <li>
+                  <Link href="/" className="hover:text-flame">
+                    Accueil
+                  </Link>
+                </li>
+                <li aria-hidden="true">›</li>
+                <li>
+                  <Link href="/scan" className="hover:text-flame">
+                    Audit RGPD
+                  </Link>
+                </li>
+                <li aria-hidden="true">›</li>
+                <li aria-current="page" className="truncate text-ink-2">
+                  {observation.hostname}
+                </li>
+              </ol>
+            </nav>
+            <p className="tech mt-6 text-[12px] text-flame">Rapport d&apos;audit RGPD</p>
+            <h1 className="display mt-3 break-words text-4xl leading-[1.08] text-accent sm:text-5xl">
+              {observation.hostname}
+              <span className="mt-1 block text-flame">{verdictLine}</span>
+            </h1>
+            {/* L'horodatage est une donnée de preuve : un rapport décrit un
+                instant, pas un état permanent du site. */}
+            <p className="mt-5 max-w-2xl text-[17px] leading-relaxed text-muted">
+              Analyse du{" "}
+              <time dateTime={result.scannedAt} className="font-semibold text-ink-2">
+                {scannedAt.toLocaleString("fr-FR", {
+                  dateStyle: "full",
+                  timeStyle: "short",
+                  timeZone: "Europe/Paris",
+                })}
+              </time>
+              {headless
+                ? ", dans un vrai navigateur : avant tout choix, après refus, après acceptation."
+                : ", sans navigateur : document servi, en-têtes, DNS et pages légales."}
+            </p>
+            {/* Le moteur qui a tourné détermine ce que le rapport a pu voir.
+                Il se lit dès l'en-tête, pas dans une note de bas de page. */}
+            <ul className="mt-6 flex flex-wrap gap-2">
+              <li
+                className={`font-display inline-flex min-h-9 items-center gap-2 rounded-full px-4 text-[13px] font-bold ${
+                  headless ? "bg-ok-bg text-ok" : "bg-warn-bg text-warn"
+                }`}
+              >
+                <span
+                  aria-hidden="true"
+                  className={`h-2 w-2 rounded-full ${headless ? "bg-ok" : "bg-warn"}`}
+                />
+                {headless ? "Analyse complète en trois phases" : "Analyse partielle, sans navigateur"}
+              </li>
+              <li
+                className={`font-display inline-flex min-h-9 items-center rounded-full px-4 text-[13px] font-bold ${
+                  criticalCount > 0
+                    ? "bg-crit-bg text-crit-text"
+                    : "bg-surface-low text-ink-2 ring-1 ring-line"
+                }`}
+              >
+                {criticalCount > 0
+                  ? `${criticalCount} constat${criticalCount > 1 ? "s" : ""} critique${criticalCount > 1 ? "s" : ""}`
+                  : "Aucun constat critique"}
+              </li>
+              <li className="font-display inline-flex min-h-9 items-center rounded-full bg-surface-low px-4 text-[13px] font-bold text-ink-2 ring-1 ring-line">
+                {result.vendors.length} destinataire{result.vendors.length > 1 ? "s" : ""} tiers
+              </li>
+            </ul>
+            <p className="mt-5 font-mono text-[12px] text-muted">
+              réf. {result.id} · référentiel {result.rulepackVersion} ·{" "}
+              {observation.pagesAnalyzed} page(s)
+            </p>
+          </div>
 
-            <div className="flex shrink-0 items-start gap-4">
-            {criticalCount > 0 ? (
-              <span className="tech shrink-0 rounded bg-crit px-3 py-2 text-[10px] text-white">
-                {criticalCount} constat{criticalCount > 1 ? "s" : ""} critique
-                {criticalCount > 1 ? "s" : ""}
-              </span>
-            ) : (
-              <span className="tech shrink-0 rounded bg-ok px-3 py-2 text-[10px] text-white">
-                Aucun constat critique
-              </span>
-            )}
-            <ReportQr url={onlineUrl} />
+          <div className="flex items-center justify-center gap-6 rounded-3xl bg-surface p-8 ring-1 ring-line shadow-lg">
+            <div className="flex flex-col items-center">
+              <ScoreGauge
+                score={result.score}
+                grade={result.grade}
+                gradeLabel={result.gradeLabel}
+                animate
+              />
+              {headless ? null : (
+                <p className="mt-3 max-w-[14rem] text-center text-[12px] leading-snug text-muted">
+                  Score partiel : calculé sur {evaluatedCount} règles sur {RULEPACK.total}.
+                </p>
+              )}
             </div>
+            <ReportQr url={onlineUrl} />
           </div>
         </div>
       </section>
@@ -240,8 +284,8 @@ export function ReportView({
             taire reviendrait à présenter 96 règles non regardées comme
             satisfaites. On le dit avant le score, pas après. */}
         {degraded ? (
-          <div className="mb-8 overflow-hidden rounded-xl bg-surface ring-1 ring-line shadow-md">
-            <div className="hazard-top h-1.5" />
+          <div className="mb-8 overflow-hidden rounded-3xl bg-surface ring-1 ring-line shadow-md">
+            <div className="h-1 bg-flame" />
             <div className="p-5">
               <p className="tech text-[10px] text-warn">Rapport partiel</p>
               <p className="font-display mt-2 text-[17px] font-bold text-ink-2">
@@ -270,21 +314,7 @@ export function ReportView({
         <ExecutiveSummary result={result} />
 
         {/* ═══════════ SYNTHÈSE ═══════════ */}
-        <section id="synthese" className="grid scroll-mt-28 gap-5 lg:grid-cols-[auto_1fr]">
-          <div className="rise flex flex-col items-center justify-center rounded-xl bg-surface p-6 ring-1 ring-line shadow-md">
-            <ScoreGauge
-              score={result.score}
-              grade={result.grade}
-              gradeLabel={result.gradeLabel}
-              animate
-            />
-            {headless ? null : (
-              <p className="mt-3 max-w-[14rem] text-center text-[12px] leading-snug text-muted">
-                Score partiel : calculé sur {evaluatedCount} règles sur {RULEPACK.total}.
-              </p>
-            )}
-          </div>
-
+        <section id="synthese" className="scroll-mt-28">
           <div className="space-y-4">
             <div className="grid gap-3 sm:grid-cols-3">
               <Stat
@@ -310,8 +340,8 @@ export function ReportView({
             <PillarScores findings={result.findings} />
 
             {result.cappedBy ? (
-              <div className="overflow-hidden rounded-lg bg-surface ring-1 ring-line shadow-md">
-                <div className="hazard-top h-1.5" />
+              <div className="overflow-hidden rounded-2xl bg-surface ring-1 ring-line shadow-md">
+                <div className="h-1 bg-flame" />
                 <div className="p-4">
                   <p className="tech text-[10px] text-crit">Score plafonné</p>
                   <p className="mt-1.5 text-sm leading-relaxed text-ink-2">{result.cappedBy}</p>
@@ -319,7 +349,7 @@ export function ReportView({
               </div>
             ) : null}
 
-            <div className="rounded-lg bg-surface p-4 ring-1 ring-line shadow-md">
+            <div className="rounded-2xl bg-surface p-5 ring-1 ring-line shadow-md">
               <p className="tech text-[10px] text-muted">Mécanisme de consentement</p>
               <p className="mt-1.5 text-sm leading-relaxed text-ink-2">
                 {observation.cmp.detected
@@ -340,7 +370,7 @@ export function ReportView({
             La chronologie brute est de l'appareillage : elle sert à vérifier,
             pas à décider. La vue dirigeant en garde le FAIT — combien de
             services, combien hors EEE — et laisse le détail aux deux autres. */}
-        <section id="preuve" className="mt-14 scroll-mt-28">
+        <section id="preuve" className="mt-20 scroll-mt-28">
           <SectionTitle
             eyebrow="La preuve"
             title="Ce que votre page appelle"
@@ -355,7 +385,7 @@ export function ReportView({
           {spec.showRawEvidence ? (
             <Timeline observation={observation} />
           ) : (
-            <div className="rounded-xl bg-surface p-5 ring-1 ring-line shadow-md">
+            <div className="rounded-3xl bg-surface p-6 ring-1 ring-line shadow-md">
               <p className="text-sm leading-relaxed text-ink-2">
                 Votre page appelle <strong>{result.vendors.length} service(s) tiers</strong>
                 {result.outsideEea.length > 0 ? (
@@ -370,7 +400,7 @@ export function ReportView({
         </section>
 
         {/* ═══════════ PILIERS ═══════════ */}
-        <section id="constats" className="mt-14 scroll-mt-28">
+        <section id="constats" className="mt-20 scroll-mt-28">
           <SectionTitle
             eyebrow="Les constats"
             title={`${result.findings.length} écart${result.findings.length > 1 ? "s" : ""} relevé${result.findings.length > 1 ? "s" : ""}, en quatre piliers`}
@@ -384,7 +414,7 @@ export function ReportView({
         </section>
 
         {/* ═══════════ DESTINATAIRES ═══════════ */}
-        <section id="destinataires" className="mt-14 scroll-mt-28">
+        <section id="destinataires" className="mt-20 scroll-mt-28">
           <SectionTitle
             eyebrow="Souveraineté"
             title="Qui reçoit les données de vos visiteurs"
@@ -397,19 +427,19 @@ export function ReportView({
         </section>
 
         {/* ═══════════ EXPOSITION ═══════════ */}
-        <section id="perspective" className="mt-14 scroll-mt-28">
+        <section id="perspective" className="mt-20 scroll-mt-28">
           <SectionTitle eyebrow="Mise en perspective" title="Ce que cela représente" />
           <ExposureBox findings={result.findings} />
         </section>
 
         {/* ═══════════ LIMITES ═══════════ */}
-        <section id="limites" className="mt-14 scroll-mt-28">
+        <section id="limites" className="mt-20 scroll-mt-28">
           <SectionTitle
             eyebrow="Limites de cette analyse"
             title={`${notEvaluated.length} points que l'outil ne peut pas trancher seul`}
             description="Ce n'est pas un défaut de votre site. Un outil automatique ne voit pas tout : certains points demandent de lire un contrat, d'interroger un prestataire ou d'observer le site dans la durée. Plutôt que de les compter comme conformes sans les avoir vérifiés, nous les listons : c'est ce qu'il vous reste à contrôler."
           />
-          <div className="rounded-xl bg-surface p-5 ring-1 ring-line shadow-md">
+          <div className="rounded-3xl bg-surface p-6 ring-1 ring-line shadow-md">
             <p className="text-sm leading-relaxed text-ink-2">
               Cette analyse a décidé {evaluatedCount} règles sur {RULEPACK.total}.{" "}
               {headless
@@ -439,8 +469,8 @@ export function ReportView({
         </section>
 
         {/* ═══════════ SUITE ═══════════ */}
-        <section className="mt-14 grid gap-5 md:grid-cols-2">
-          <div className="rounded-xl bg-ink p-6">
+        <section className="mt-20 grid gap-5 md:grid-cols-2">
+          <div className="rounded-3xl bg-navy-deep p-7">
             <p className="tech text-[10px] text-flame-soft">Document</p>
             <h3 className="display mt-2 text-xl text-white">
               Politique cookies, alimentée par ce scan
@@ -457,7 +487,7 @@ export function ReportView({
             </Link>
           </div>
 
-          <div className="rounded-xl bg-surface p-6 ring-1 ring-line shadow-md">
+          <div className="rounded-3xl bg-surface p-7 ring-1 ring-line shadow-md">
             <p className="tech text-[10px] text-accent">Correction</p>
             <h3 className="display mt-2 text-xl text-ink-2">Estimer la remise en conformité</h3>
             <p className="mt-2 text-sm leading-relaxed text-muted">
@@ -472,7 +502,7 @@ export function ReportView({
             </Link>
           </div>
 
-          <div className="rounded-xl bg-surface p-6 ring-1 ring-line shadow-md">
+          <div className="rounded-3xl bg-surface p-7 ring-1 ring-line shadow-md">
             <p className="tech text-[10px] text-accent">Preuve</p>
             <h3 className="display mt-2 text-xl text-ink-2">Archive signée</h3>
             <p className="mt-2 text-sm leading-relaxed text-muted">
@@ -488,7 +518,7 @@ export function ReportView({
             </a>
           </div>
 
-          <div className="rounded-xl bg-surface p-6 ring-1 ring-line shadow-md">
+          <div className="rounded-3xl bg-surface p-7 ring-1 ring-line shadow-md">
             <p className="tech text-[10px] text-accent">Surveillance</p>
             <h3 className="display mt-2 text-xl text-ink-2">Détecter les régressions</h3>
             <p className="mt-2 text-sm leading-relaxed text-muted">
@@ -540,7 +570,7 @@ export function ReportView({
           <Disclaimer />
         </section>
 
-        <section className="mt-8 rounded-xl bg-surface p-5 ring-1 ring-line shadow-md">
+        <section className="mt-8 rounded-3xl bg-surface p-6 ring-1 ring-line shadow-md">
           <p className="tech text-[10px] text-muted">Analyser un autre site</p>
           <div className="mt-3">
             <ScanForm />
