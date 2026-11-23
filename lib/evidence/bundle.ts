@@ -165,11 +165,17 @@ export function buildEvidenceBundle(scan: ScanResult): EvidenceBundle {
 
   const report = renderMarkdownReport(scan);
 
-  const files: readonly { name: string; content: string }[] = [
+  const files: readonly { name: string; content: string | Buffer }[] = [
     { name: "findings.json", content: JSON.stringify(findings, null, 2) },
     { name: "observation.json", content: JSON.stringify(observation, null, 2) },
     { name: "vendors.json", content: JSON.stringify(vendors, null, 2) },
     { name: "report.md", content: report },
+    // Preuve visuelle : ce que voyait le navigateur à chaque phase. Les
+    // images sont couvertes par SHA256SUMS et donc par la signature.
+    ...(scan.screenshots ?? []).map((s) => ({
+      name: `captures/phase-${s.phase.toLowerCase()}.jpg`,
+      content: Buffer.from(s.jpegBase64, "base64"),
+    })),
   ];
 
   const checksums: Record<string, string> = {};
@@ -254,6 +260,7 @@ findings.json      Constats structurés, avec leurs références normatives.
 observation.json   Ce qui a été observé, sans interprétation.
 vendors.json       Destinataires identifiés et leur juridiction effective.
 report.md          Rapport lisible.
+captures/          Captures d'écran par phase (protocole complet seulement).
 SHA256SUMS         Empreintes de chaque fichier.
 SHA256SUMS.sig     Signature Ed25519 détachée du fichier ci-dessus.
 public-key.pem     Clé publique correspondante.

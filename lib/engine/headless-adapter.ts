@@ -60,6 +60,8 @@ export interface WorkerSnapshot {
   tcfResponded?: boolean;
   /** Origine de la chaîne : réponse de l'API, ou repli sur le cookie `euconsent-v2`. */
   tcStringSource?: "api" | "cookie";
+  /** Capture de l'écran visible (JPEG, base64), si le worker l'a produite. */
+  screenshot?: string;
 }
 
 export interface WorkerBanner {

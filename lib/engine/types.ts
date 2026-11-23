@@ -145,4 +145,22 @@ export interface ScanResult {
   vendors: readonly TrackerEntity[];
   /** Destinataires dont la juridiction effective est hors EEE. */
   outsideEea: readonly TrackerEntity[];
+  /**
+   * Captures d'écran par phase (protocole complet seulement). Jointes à
+   * l'archive de preuve et affichées dans le rapport ; jamais stockées en
+   * base (voir `withoutScreenshots`).
+   */
+  screenshots?: readonly PhaseScreenshot[];
+}
+
+export interface PhaseScreenshot {
+  phase: "A" | "B" | "C";
+  /** JPEG encodé en base64. */
+  jpegBase64: string;
+}
+
+/** Le même résultat, sans les captures : pour tout ce qui est stocké ou exposé en JSON. */
+export function withoutScreenshots(result: ScanResult): ScanResult {
+  if (!result.screenshots) return result;
+  return { ...result, screenshots: undefined };
 }

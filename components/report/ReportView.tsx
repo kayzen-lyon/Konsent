@@ -9,6 +9,7 @@ import { ReportQr } from "@/components/report/ReportQr";
 import { ShareReportButton } from "@/components/report/ShareReportButton";
 import { ScoreGauge } from "@/components/ScoreGauge";
 import { PhaseTimeline, Timeline } from "@/components/Timeline";
+import { PhaseScreenshots } from "./PhaseScreenshots";
 import { ExecutiveSummary } from "@/components/report/ExecutiveSummary";
 import { GoFurther } from "@/components/report/GoFurther";
 import { PillarScores } from "@/components/report/PillarScores";
@@ -332,6 +333,7 @@ export function ReportView({
             }
           />
           <PhaseTimeline observation={observation} />
+          {result.screenshots ? <PhaseScreenshots screenshots={result.screenshots} /> : null}
           {spec.showRawEvidence ? (
             <Timeline observation={observation} />
           ) : (

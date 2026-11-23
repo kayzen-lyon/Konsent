@@ -52,7 +52,16 @@ interface Snapshot {
   tcfResponded: boolean;
   /** Origine de la chaîne : réponse de l'API ou cookie `euconsent-v2`. */
   tcStringSource?: "api" | "cookie";
+  /**
+   * Capture de l'écran visible au moment de l'instantané (JPEG, base64).
+   * C'est la preuve visuelle : le bandeau tel que le visiteur l'a vu en
+   * phase A, la page après refus en B, après acceptation en C.
+   */
+  screenshot?: string;
 }
+
+/** Qualité JPEG des captures : lisibles, ~60 à 150 Ko à 1440 × 900. */
+const SCREENSHOT_QUALITY = 55;
 
 /**
  * Instrumentation injectée avant tout script de la page. On compte les
@@ -165,6 +174,13 @@ async function capture(
     };
   });
 
+  // Capture d'écran visible. Un échec (page qui se ferme, rendu bloqué)
+  // n'empêche pas l'instantané : la preuve visuelle est un complément.
+  const screenshot = await page
+    .screenshot({ type: "jpeg", quality: SCREENSHOT_QUALITY, timeout: 8_000 })
+    .then((buf) => buf.toString("base64"))
+    .catch(() => null);
+
   const serviceWorkers = await page.evaluate(async () => {
     if (!navigator.serviceWorker) return [];
     const regs = await navigator.serviceWorker.getRegistrations();
@@ -252,6 +268,7 @@ async function capture(
     tcString,
     tcfApiPresent: tcf.apiPresent,
     tcfResponded: tcf.responded,
+    ...(screenshot ? { screenshot } : {}),
     ...(tcStringSource ? { tcStringSource } : {}),
   };
 }

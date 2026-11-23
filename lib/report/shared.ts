@@ -1,7 +1,7 @@
 import { randomBytes } from "node:crypto";
 import { getSql, iso } from "../db";
 import type { VerdictScan } from "../engine/orchestrate";
-import type { ScanResult } from "../engine/types";
+import { withoutScreenshots, type ScanResult } from "../engine/types";
 import { siteOrigin } from "../security/origin";
 
 /**
@@ -70,7 +70,7 @@ export async function createSharedReport(
   const sql = getSql();
   await sql`
     insert into shared_reports (id, hostname, result, degraded, created_at, expires_at)
-    values (${id}, ${verdict.result.hostname}, ${JSON.stringify(verdict.result)}::jsonb,
+    values (${id}, ${verdict.result.hostname}, ${JSON.stringify(withoutScreenshots(verdict.result))}::jsonb,
             ${verdict.degraded ? JSON.stringify(verdict.degraded) : null}::jsonb,
             ${now.toISOString()}, ${expiresAt.toISOString()})`;
   return { id, expiresAt: expiresAt.toISOString() };
