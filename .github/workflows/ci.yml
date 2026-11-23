@@ -75,6 +75,11 @@ jobs:
       - name: Serveur MCP
         run: npm run test:mcp
 
+      # Les captures d'écran arrivent dans le rapport et dans l'archive
+      # signée ; toute valeur qui n'est pas un JPEG est écartée.
+      - name: Captures d'écran et archive de preuve
+        run: npm run test:screenshots
+
       - name: Build
         run: npm run build
 

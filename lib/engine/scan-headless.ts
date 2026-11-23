@@ -90,6 +90,12 @@ export async function assembleHeadlessScan(
     (r) => r.id,
   );
 
+  // Captures du worker, phase par phase. Seuls des JPEG base64 plausibles
+  // passent : la valeur finit dans un attribut `src` du rapport.
+  const screenshots = output.snapshots
+    .filter((s) => typeof s.screenshot === "string" && /^\/9j\/[A-Za-z0-9+/=]+$/.test(s.screenshot))
+    .map((s) => ({ phase: s.phase, jpegBase64: s.screenshot as string }));
+
   return {
     id: `hl-${observation.hostname.replace(/[^a-z0-9]/gi, "-").slice(0, 24)}-${Date.now().toString(36)}`,
     url: output.url,
@@ -108,5 +114,6 @@ export async function assembleHeadlessScan(
     observation,
     vendors,
     outsideEea: vendors.filter((v) => v.adequacy !== "EEA"),
+    ...(screenshots.length > 0 ? { screenshots } : {}),
   };
 }
