@@ -284,7 +284,7 @@ export const MAX_EXEMPT_LIFETIME_DAYS = 397;
 export function phaseUndecided(cmp: PhaseComparison): readonly string[] {
   const out: string[] = [];
   if (!cmp.https) out.push("KZC-STORAGE-009");
-  if (!cmp.refusalClicked) out.push("KZC-REFUS-006");
+  if (!cmp.refusalClicked) out.push("KZC-REFUS-001", "KZC-REFUS-002", "KZC-REFUS-006", "KZC-FP-008");
   return out;
 }
 
