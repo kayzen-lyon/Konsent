@@ -34,7 +34,9 @@ export function executiveSummary(
         : "Aucun écart n'a été relevé par ce mode d'analyse";
   const vendorPart =
     vendors.length === 0
-      ? "aucun destinataire tiers n'a été identifié"
+      ? partial
+        ? "les destinataires que charge un navigateur n'ont pas été observés"
+        : "aucun destinataire tiers n'a été identifié"
       : outsideEea.length > 0
         ? `${outsideEea.length} des ${plural(vendors.length, "destinataire")} identifié${vendors.length > 1 ? "s" : ""} relève${outsideEea.length > 1 ? "nt" : ""} d'une juridiction hors Espace économique européen`
         : `les ${plural(vendors.length, "destinataire")} identifié${vendors.length > 1 ? "s" : ""} relève${vendors.length > 1 ? "nt" : ""} de l'Espace économique européen`;
