@@ -18,6 +18,22 @@ const USER_AGENT =
 
 const SETTLE_MS = 6_000;
 const SCREENSHOT_TIMEOUT_MS = 12_000;
+/** Attente dans la file et capture comprises : au-delà, la phase s'en passe. */
+const SCREENSHOT_BUDGET_MS = 20_000;
+/** Fermer un navigateur bloqué ne doit pas retenir une analyse terminée. */
+const CLOSE_TIMEOUT_MS = 3_000;
+
+/** Attend la promesse au plus `ms`, puis rend la main sans échouer. */
+async function settleWithin(promise: Promise<unknown>, ms: number): Promise<void> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  await Promise.race([
+    promise.catch(() => {}),
+    new Promise<void>((resolve) => {
+      timer = setTimeout(resolve, ms);
+    }),
+  ]);
+  clearTimeout(timer);
+}
 
 interface CapturedRequest {
   url: string;
@@ -146,13 +162,19 @@ function inScreenshotQueue<T>(task: () => Promise<T>): Promise<T> {
 async function takeScreenshot(
   page: import("playwright").Page,
   phase: Snapshot["phase"],
+  deadline: number,
 ): Promise<string | null> {
   const started = Date.now();
+  const remaining = Math.min(SCREENSHOT_TIMEOUT_MS, deadline - started);
+  if (remaining < 1_000) {
+    process.stderr.write(`capture ${phase} : abandonnée, délai épuisé dans la file\n`);
+    return null;
+  }
   try {
     const buf = await page.screenshot({
       type: "jpeg",
       quality: SCREENSHOT_QUALITY,
-      timeout: SCREENSHOT_TIMEOUT_MS,
+      timeout: remaining,
     });
     return buf.toString("base64");
   } catch (error) {
@@ -206,10 +228,6 @@ async function capture(
       dataLayer: (window as unknown as { dataLayer?: unknown[] }).dataLayer ?? null,
     };
   });
-
-  // Capture d'écran visible. Un échec (page qui se ferme, rendu bloqué)
-  // n'empêche pas l'instantané : la preuve visuelle est un complément.
-  const screenshot = await inScreenshotQueue(() => takeScreenshot(page, phase));
 
   const serviceWorkers = await page.evaluate(async () => {
     if (!navigator.serviceWorker) return [];
@@ -286,6 +304,12 @@ async function capture(
       ? "cookie"
       : undefined;
 
+  // Capture d'écran visible, en DERNIER : un rendu bloqué peut figer la page,
+  // et toute lecture qui suivrait attendrait sans limite. Un échec n'empêche
+  // pas l'instantané : la preuve visuelle est un complément.
+  const deadline = Date.now() + SCREENSHOT_BUDGET_MS;
+  const screenshot = await inScreenshotQueue(() => takeScreenshot(page, phase, deadline));
+
   return {
     phase,
     requests: [...requests],
@@ -343,7 +367,7 @@ async function runPhase(
   await page.waitForTimeout(SETTLE_MS);
 
   const snapshot = await capture(context, phase, requests, page);
-  await context.close();
+  await settleWithin(context.close(), CLOSE_TIMEOUT_MS);
   return { snapshot, banner };
 }
 
@@ -376,7 +400,7 @@ export async function runThreePhaseScan(url: string, launch: LaunchOptions = {})
     try {
       return await fn(browser);
     } finally {
-      await browser.close().catch(() => {});
+      await settleWithin(browser.close(), CLOSE_TIMEOUT_MS);
     }
   };
 

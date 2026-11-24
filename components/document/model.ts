@@ -53,15 +53,27 @@ function phaseItems(ranked: readonly RankedFinding[], severities: readonly Sever
     .map((r) => ({ title: r.rule.title, effort: formatDuration(findingMinutes(r.rule)).short }));
 }
 
-function buildPhases(ranked: readonly RankedFinding[], outOfReachCount: number): ActionPhase[] {
+function buildPhases(
+  ranked: readonly RankedFinding[],
+  outOfReachCount: number,
+  partial: boolean,
+): ActionPhase[] {
   const phases: ActionPhase[] = [];
+  if (partial) {
+    phases.push({
+      label: "Phase 1",
+      when: "Maintenant",
+      intro: "L'analyse en navigateur n'a pas abouti.",
+      items: [{ title: "Relancer l'analyse complète avant toute décision" }],
+    });
+  }
   const critical = phaseItems(ranked, ["CRITICAL"]);
   const major = phaseItems(ranked, ["MAJOR"]);
   const minor = phaseItems(ranked, ["MODERATE", "MINOR", "INFO"]);
 
   if (critical.length > 0) {
     phases.push({
-      label: "Phase 1",
+      label: `Phase ${phases.length + 1}`,
       when: "Sous 7 jours",
       intro: "Les écarts critiques : à traiter en premier.",
       items: critical,
@@ -103,11 +115,15 @@ function buildDiagnosis(
   result: ScanResult,
   ranked: readonly RankedFinding[],
   evaluatedCount: number,
-  degraded: boolean,
+  degraded: VerdictScan["degraded"] | null,
 ): string[] {
   const { findings, vendors, outsideEea } = result;
   const critical = findings.filter((f) => f.severity === "CRITICAL").length;
   const lines: string[] = [];
+
+  if (degraded) {
+    lines.push("Rapport partiel : relancez l'analyse avant de vous y fier.", degraded.reason);
+  }
 
   if (findings.length === 0) {
     lines.push(
@@ -124,7 +140,9 @@ function buildDiagnosis(
 
   lines.push(
     vendors.length === 0
-      ? "Aucun destinataire tiers n'a été identifié par cette analyse."
+      ? degraded
+        ? "Aucun destinataire tiers n'apparaît dans le document servi. Ceux que charge un navigateur n'ont pas été observés."
+        : "Aucun destinataire tiers n'a été identifié par cette analyse."
       : `${vendors.length} destinataire${pluralS(vendors.length)} tiers identifié${pluralS(vendors.length)}${
           outsideEea.length > 0
             ? `, dont ${outsideEea.length} relevant d'une juridiction hors de l'Espace économique européen.`
@@ -132,11 +150,6 @@ function buildDiagnosis(
         }`,
   );
 
-  if (degraded) {
-    lines.push(
-      "Attention : l'analyse en navigateur n'a pas pu aller au bout. Ce rapport est partiel ; relancez-la avant de vous y fier.",
-    );
-  }
   return lines;
 }
 
@@ -177,8 +190,8 @@ export function buildDocumentModel(
     criticalCount,
     headless: result.mode === "headless",
     verdict,
-    diagnosis: buildDiagnosis(result, ranked, evaluatedCount, Boolean(degraded)),
-    phases: buildPhases(ranked, notEvaluated.length),
+    diagnosis: buildDiagnosis(result, ranked, evaluatedCount, degraded),
+    phases: buildPhases(ranked, notEvaluated.length, Boolean(degraded)),
     outOfReach: [...byFamily.entries()].map(([family, rules]) => ({ family, rules })),
     references,
   };

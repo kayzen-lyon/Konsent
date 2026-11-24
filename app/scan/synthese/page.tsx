@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { PrintReportButton } from "@/components/PrintReportButton";
 import { ScoreGauge } from "@/components/ScoreGauge";
+import { NotRated } from "@/components/report/NotRated";
 import { SeverityBadge } from "@/components/primitives";
 import { ReportQr } from "@/components/report/ReportQr";
 import { ErrorPanel, ScanSkeleton, runScanOrPanel } from "@/components/report/ScanStates";
@@ -72,13 +73,13 @@ function Block({ title, children }: { title: string; children: React.ReactNode }
 async function Synthese({ target }: { target: string }) {
   const outcome = await runScanOrPanel(target);
   if (!outcome.ok) return outcome.panel;
-  const { result } = outcome.verdict;
+  const { result, degraded } = outcome.verdict;
 
   const top = rankFindings(result.findings).slice(0, 3);
   const exposure = computeExposure({ findings: result.findings });
   const quote = buildQuote(result);
   const minutes = formatDuration(totalMinutes(result.findings, getRule));
-  const [scoreSentence] = executiveSummary(result);
+  const [scoreSentence] = executiveSummary(result, Boolean(degraded));
   const date = new Date(result.scannedAt).toLocaleString("fr-FR", {
     dateStyle: "long",
     timeStyle: "short",
@@ -121,7 +122,7 @@ async function Synthese({ target }: { target: string }) {
         </header>
 
         <div className="grid items-center gap-4 sm:grid-cols-[auto_1fr]">
-          <ScoreGauge score={result.score} grade={result.grade} gradeLabel={result.gradeLabel} />
+          {degraded ? <NotRated /> : <ScoreGauge score={result.score} grade={result.grade} gradeLabel={result.gradeLabel} />}
           <p className="text-[14px] leading-relaxed text-ink-2">{scoreSentence}</p>
         </div>
 

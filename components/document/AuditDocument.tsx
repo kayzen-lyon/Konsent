@@ -28,14 +28,18 @@ function Cover({ m }: { m: DocumentModel }) {
         </h1>
         <p className="kzd-site">{result.hostname}</p>
         <div className="kzd-cover-score">
-          <span className="kzd-big">
-            {result.score}
-            <small> / 100</small>
-          </span>
+          {m.degraded ? null : (
+            <span className="kzd-big">
+              {result.score}
+              <small> / 100</small>
+            </span>
+          )}
           <span>
             <strong>{m.verdict}</strong>
             <br />
-            Score indicatif, calculé sur {m.evaluatedCount} des {RULEPACK.total} points du référentiel
+            {m.degraded
+              ? `Site non noté : ${m.evaluatedCount} points vérifiés sur ${RULEPACK.total}. Relancez l'analyse.`
+              : `Score indicatif, calculé sur ${m.evaluatedCount} des ${RULEPACK.total} points du référentiel`}
           </span>
         </div>
         <dl className="kzd-cover-meta">
@@ -82,7 +86,7 @@ function Summary({ m }: { m: DocumentModel }) {
   return (
     <section className="kzd-section">
       <p className="kzd-eyebrow">Synthèse</p>
-      <h2>Le diagnostic en une phrase</h2>
+      <h2>L&apos;essentiel du diagnostic</h2>
       <div className="kzd-verdict">
         <p>
           <strong>{first}</strong>
@@ -102,6 +106,7 @@ function Summary({ m }: { m: DocumentModel }) {
           ))}
         </div>
       </div>
+      {m.degraded ? null : (
       <div className="kzd-section">
         <h3>Score par pilier</h3>
         <div className="kzd-pillars">
@@ -119,6 +124,7 @@ function Summary({ m }: { m: DocumentModel }) {
         </div>
         <p className="kzd-small kzd-note">Les points non vérifiés n&apos;entrent dans aucun score.</p>
       </div>
+      )}
     </section>
   );
 }

@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { ScoreGauge } from "@/components/ScoreGauge";
+import { NotRated } from "@/components/report/NotRated";
 import { SeverityBadge } from "@/components/primitives";
 import { JurisdictionChart } from "@/components/report/JurisdictionChart";
 import { PillarIcon } from "@/components/report/PillarIcon";
@@ -39,7 +40,7 @@ function Duration({ minutes }: { minutes: number }) {
 async function Presentation({ target }: { target: string }) {
   const outcome = await runScanOrPanel(target);
   if (!outcome.ok) return outcome.panel;
-  const { result } = outcome.verdict;
+  const { result, degraded } = outcome.verdict;
 
   const ranked = rankFindings(result.findings);
   const critical = result.findings.filter((f) => f.severity === "CRITICAL").length;
@@ -67,7 +68,7 @@ async function Presentation({ target }: { target: string }) {
             <p className="mt-2 font-mono text-[13px] text-muted">réf. {result.id}</p>
           </div>
           <div className="scale-125 justify-self-center md:mr-6">
-            <ScoreGauge score={result.score} grade={result.grade} gradeLabel={result.gradeLabel} />
+            {degraded ? <NotRated /> : <ScoreGauge score={result.score} grade={result.grade} gradeLabel={result.gradeLabel} />}
           </div>
         </div>
       ),
@@ -79,7 +80,7 @@ async function Presentation({ target }: { target: string }) {
           <Eyebrow>Synthèse</Eyebrow>
           <h2 className="display mt-3 text-3xl text-ink-2 sm:text-5xl">L&apos;essentiel en trois phrases</h2>
           <div className="mt-8 max-w-4xl space-y-4 text-xl leading-relaxed text-ink-2">
-            {executiveSummary(result).map((s, i) => (
+            {executiveSummary(result, Boolean(degraded)).map((s, i) => (
               <p key={i}>{s}</p>
             ))}
           </div>
@@ -118,8 +119,8 @@ async function Presentation({ target }: { target: string }) {
                 </div>
               </div>
               <p className="font-display tabular text-right text-5xl font-bold text-ink-2">
-                {score}
-                <span className="text-xl font-normal text-muted"> / 100</span>
+                {degraded ? "Non noté" : score}
+                {degraded ? null : <span className="text-xl font-normal text-muted"> / 100</span>}
               </p>
             </div>
             {list.length === 0 ? (

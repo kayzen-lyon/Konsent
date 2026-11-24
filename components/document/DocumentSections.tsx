@@ -25,7 +25,7 @@ function Head({ eyebrow, title, lead }: { eyebrow: string; title: string; lead?:
 
 export function Findings({ m }: Props) {
   return (
-    <section className="kzd-section kzd-break">
+    <section className={m.ranked.length > 0 ? "kzd-section kzd-break" : "kzd-section"}>
       <Head
         eyebrow="Constats"
         title="Diagnostic par gravité"
@@ -121,7 +121,7 @@ export function Plan({ m }: Props) {
           </div>
         ))}
       </div>
-      <p className="kzd-small kzd-note">{EFFORT_METHOD}</p>
+      {m.ranked.length > 0 ? <p className="kzd-small kzd-note">{EFFORT_METHOD}</p> : null}
     </section>
   );
 }
@@ -133,7 +133,11 @@ export function Recipients({ m }: Props) {
       <Head
         eyebrow="Souveraineté"
         title="Qui reçoit les données"
-        lead="Services observés sur l'ensemble de l'analyse, y compris après acceptation."
+        lead={
+          m.headless
+            ? "Services observés sur l'ensemble de l'analyse, y compris après acceptation."
+            : "Services repérés dans le document servi. Ceux que charge un navigateur n'ont pas été observés."
+        }
       />
       {vendors.length === 0 ? (
         <p className="kzd-lead">Aucun destinataire tiers connu n&apos;a été identifié.</p>
@@ -198,7 +202,11 @@ export function Verified({ m }: Props) {
       <Head
         eyebrow="Couverture"
         title={`${m.evaluatedCount} points vérifiés`}
-        lead="Chaque point contrôlé par cette analyse et son résultat. « Non constaté » signifie que l’écart décrit n’a pas été détecté, pas que le point est certifié."
+        lead={
+          m.headless
+            ? "Chaque point contrôlé par cette analyse et son résultat. « Non constaté » signifie que l’écart décrit n’a pas été détecté, pas que le point est certifié."
+            : "Points contrôlés sans navigateur. « Non détecté » vaut pour le document servi seulement : rien n’a été observé à l’exécution, ni après un refus ou une acceptation."
+        }
       />
       <div className="kzd-columns">
         {verifiedByFamily(m.result).map((g) => (
@@ -206,8 +214,8 @@ export function Verified({ m }: Props) {
             <h3>{g.family}</h3>
             {g.items.map(({ rule, raised }) => (
               <p key={rule.id}>
-                <span className={raised ? "kzd-ko" : "kzd-ok"}>{raised ? "Constaté" : "Non constaté"}</span>{" "}
-                <b>{rule.id}</b> {rule.title}
+                <span className={raised ? "kzd-ko" : "kzd-ok"}>{raised ? "Constaté" : m.headless ? "Non constaté" : "Non détecté"}</span>{" "}
+                {rule.title} <b>{rule.id}</b>
               </p>
             ))}
           </div>
@@ -219,7 +227,7 @@ export function Verified({ m }: Props) {
 
 export function Limits({ m }: Props) {
   return (
-    <section className="kzd-section kzd-break">
+    <section className="kzd-section">
       <Head
         eyebrow="Limites"
         title={`${m.result.notEvaluatedRuleIds.length} points non vérifiés`}
@@ -231,7 +239,7 @@ export function Limits({ m }: Props) {
             <h3>{g.family}</h3>
             {g.rules.map((r) => (
               <p key={r.id}>
-                <b>{r.id}</b> {r.title}
+                {r.title} <b>{r.id}</b>
               </p>
             ))}
           </div>

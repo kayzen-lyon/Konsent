@@ -8,6 +8,7 @@ import { JurisdictionChart } from "@/components/report/JurisdictionChart";
 import { ReportQr } from "@/components/report/ReportQr";
 import { ShareReportButton } from "@/components/report/ShareReportButton";
 import { ScoreGauge } from "@/components/ScoreGauge";
+import { NotRated } from "@/components/report/NotRated";
 import { PhaseTimeline, Timeline } from "@/components/Timeline";
 import { PhaseScreenshots } from "./PhaseScreenshots";
 import { ExecutiveSummary } from "@/components/report/ExecutiveSummary";
@@ -18,6 +19,7 @@ import { VendorTable } from "@/components/Vendors";
 import { Disclaimer, SectionTitle, Stat } from "@/components/primitives";
 import { ReportActions } from "@/components/ReportActions";
 import { PrintReportButton } from "@/components/PrintReportButton";
+import { PrintDocumentButton } from "@/components/document/PrintDocumentButton";
 import { PrintedLevelNotice, ReadingLevelPicker } from "@/components/ReadingLevelPicker";
 import type { VerdictScan } from "@/lib/engine/orchestrate";
 import type { ScanResult } from "@/lib/engine/types";
@@ -193,7 +195,9 @@ export function ReportView({
                   : "Aucun constat critique"}
               </li>
               <li className="font-display inline-flex min-h-9 items-center rounded-full bg-surface-low px-4 text-[13px] font-bold text-ink-2 ring-1 ring-line">
-                {result.vendors.length} destinataire{result.vendors.length > 1 ? "s" : ""} tiers
+                {degraded && result.vendors.length === 0
+                  ? "Destinataires non observés"
+                  : `${result.vendors.length} destinataire${result.vendors.length > 1 ? "s" : ""} tiers`}
               </li>
             </ul>
             <p className="mt-5 font-mono text-[12px] text-muted">
@@ -204,15 +208,19 @@ export function ReportView({
 
           <div className="flex items-center justify-center gap-6 rounded-3xl bg-surface p-8 ring-1 ring-line shadow-lg">
             <div className="flex flex-col items-center">
-              <ScoreGauge
-                score={result.score}
-                grade={result.grade}
-                gradeLabel={result.gradeLabel}
-                animate
-              />
+              {degraded ? (
+                <NotRated />
+              ) : (
+                <ScoreGauge
+                  score={result.score}
+                  grade={result.grade}
+                  gradeLabel={result.gradeLabel}
+                  animate
+                />
+              )}
               {headless ? null : (
                 <p className="mt-3 max-w-[14rem] text-center text-[12px] leading-snug text-muted">
-                  Score partiel : calculé sur {evaluatedCount} règles sur {RULEPACK.total}.
+                  {evaluatedCount} points vérifiés sur {RULEPACK.total}.
                 </p>
               )}
             </div>
@@ -245,12 +253,7 @@ export function ReportView({
             {frozen ? (
               <PrintReportButton />
             ) : (
-              <a
-                href={`/scan/rapport?url=${encodeURIComponent(target)}`}
-                className="font-display inline-flex min-h-10 items-center rounded-full border-2 border-flame px-4 text-[13px] font-bold text-flame"
-              >
-                Rapport PDF
-              </a>
+              <PrintDocumentButton />
             )}
           </div>
         </div>
@@ -307,7 +310,7 @@ export function ReportView({
                 Ce que cela change : seules les vérifications possibles sans ouvrir le site dans un
                 navigateur ont été faites. Les {RULEPACK.headlessCount} autres (traceurs déposés,
                 respect du refus, bandeau…) n&apos;ont pas été regardées : elles ne sont ni
-                conformes ni non conformes, et le score n&apos;en tient pas compte. Vous pouvez relancer
+                conformes ni non conformes, et aucun score n&apos;est donc affiché. Vous pouvez relancer
                 l&apos;analyse.
               </p>
               {frozen ? null : (
@@ -322,7 +325,7 @@ export function ReportView({
           </div>
         ) : null}
 
-        <ExecutiveSummary result={result} />
+        <ExecutiveSummary result={result} partial={Boolean(degraded)} />
 
         {/* ═══════════ SYNTHÈSE ═══════════ */}
         <section id="synthese" className="scroll-mt-28">
@@ -354,7 +357,7 @@ export function ReportView({
               />
             </div>
 
-            <PillarScores findings={result.findings} />
+            {degraded ? null : <PillarScores findings={result.findings} />}
 
             {result.cappedBy ? (
               <div className="overflow-hidden rounded-2xl bg-surface ring-1 ring-line shadow-md">
@@ -454,7 +457,11 @@ export function ReportView({
           <SectionTitle
             eyebrow="Couverture de cette analyse"
             title={`${evaluatedCount} points vérifiés`}
-            description="Chaque point contrôlé et son résultat. « Non constaté » signifie que l’écart décrit n’a pas été détecté, pas que le point est certifié."
+            description={
+              headless
+                ? "Chaque point contrôlé et son résultat. « Non constaté » signifie que l’écart décrit n’a pas été détecté, pas que le point est certifié."
+                : "Points contrôlés sans navigateur. « Non détecté » vaut pour le document servi seulement : rien n’a été observé à l’exécution."
+            }
           />
           <div className="grid gap-5 md:grid-cols-2">
             {verifiedByFamily(result).map((g) => (
@@ -466,7 +473,7 @@ export function ReportView({
                   {g.items.map(({ rule, raised }) => (
                     <li key={rule.id} className="text-[13px] leading-snug text-muted">
                       <strong className={raised ? "text-flame" : "text-ok"}>
-                        {raised ? "Constaté" : "Non constaté"}
+                        {raised ? "Constaté" : headless ? "Non constaté" : "Non détecté"}
                       </strong>{" "}
                       ·{" "}
                       <Link href={`/regles/${rule.id.toLowerCase()}`} className="underline">
