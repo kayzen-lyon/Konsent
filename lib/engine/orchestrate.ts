@@ -87,11 +87,15 @@ export async function runVerdictScan(
     };
   }
 
+  const started = Date.now();
   try {
     const output = await requestWorkerScan(url.toString(), signal);
     return { result: await assembleHeadlessScan(output) };
   } catch (error) {
     if (!(error instanceof WorkerError)) throw error;
+
+    // Motif et durée, jamais l'adresse analysée.
+    console.error(`worker : ${error.failure} après ${Date.now() - started} ms`);
 
     // Le worker a échoué, pas le site. On sert ce que l'on sait produire
     // sans navigateur, et on écrit pourquoi.

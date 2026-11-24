@@ -444,9 +444,9 @@
   columns: 2;
   column-gap: 8mm;
   margin-top: 4mm;
-  font-size: 8pt;
+  font-size: 9pt;
   line-height: 1.45;
-  color: var(--kzd-body);
+  color: var(--kzd-ink);
 }
 .kzd-columns p {
   break-inside: avoid;
@@ -454,8 +454,10 @@
 }
 .kzd-columns b {
   font-family: var(--font-mono);
-  font-weight: 600;
-  color: var(--kzd-ink);
+  font-weight: 400;
+  font-size: 7.5pt;
+  white-space: nowrap;
+  color: var(--kzd-body);
 }
 
 .kzd-signature {
@@ -553,7 +555,9 @@
 }
 @media print {
   /* Seul le document s'imprime : ni en-tête, ni pied du site. */
-  body:has(.kzd) > *:not(main) {
+  body:has(.kzd-desk) > *:not(main),
+  html[data-print="audit"] body > *:not(main),
+  html[data-print="audit"] .kzd-online {
     display: none !important;
   }
   html,
@@ -602,3 +606,7 @@
 .kzd-big { white-space: nowrap; }
 .kzd-big small { display: inline; }
 @media print { .kzd-break { margin-top: 0; } }
+
+/* Document joint au rapport en ligne : imprimé seul, et sur demande. */
+.kzd-embed { display: none; }
+@media print { html[data-print="audit"] .kzd-embed { display: block; } }

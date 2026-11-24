@@ -674,7 +674,7 @@ export const TRANSFER_EXTRA_RULES: readonly Rule[] = [
     weight: 8,
     phases: ["A"],
     engine: "static",
-    title: "Aucune information sur les garanties encadrant les transferts",
+    title: "Aucune information sur les garanties de transfert (CCT, BCR) mise à disposition",
     references: ["RGPD, articles 13(1)(f) et 46"],
     omnibusStatus: "Maintenu.",
     messageExec:

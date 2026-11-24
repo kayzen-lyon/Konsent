@@ -1,9 +1,12 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import { AuditDocument } from "@/components/document/AuditDocument";
+import { buildDocumentModel } from "@/components/document/model";
 import { ReportView } from "@/components/report/ReportView";
 import { ErrorPanel, ScanSkeleton, runScanOrPanel } from "@/components/report/ScanStates";
 import { dbConfigured } from "@/lib/db";
 import { parseReadingLevel, type ReadingLevel } from "@/lib/report/levels";
+import "./rapport/rapport.css";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 150;
@@ -19,13 +22,21 @@ async function ScanReport({ target, level }: { target: string; level: ReadingLev
 
   const { result, degraded } = outcome.verdict;
   return (
-    <ReportView
-      result={result}
-      degraded={degraded}
-      target={target}
-      level={level}
-      shareEnabled={dbConfigured()}
-    />
+    <>
+      <div className="kzd-online">
+        <ReportView
+          result={result}
+          degraded={degraded}
+          target={target}
+          level={level}
+          shareEnabled={dbConfigured()}
+        />
+      </div>
+      {/* Document PDF de CE résultat, visible à l'impression seulement. */}
+      <div className="kzd kzd-embed">
+        <AuditDocument model={buildDocumentModel(result, degraded ?? null)} />
+      </div>
+    </>
   );
 }
 

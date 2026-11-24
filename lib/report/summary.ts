@@ -9,14 +9,20 @@ import type { ScanResult } from "../engine/types";
  * qualifie jamais une infraction. Chaque phrase se déduit d'un champ du
  * résultat ; aucune ne peut dire autre chose que le rapport qui la suit.
  */
-export function executiveSummary(result: ScanResult): readonly string[] {
+export function executiveSummary(
+  result: ScanResult,
+  /** Analyse navigateur non aboutie : aucun score n'est avancé. */
+  partial = false,
+): readonly string[] {
   const { findings, vendors, outsideEea } = result;
   const staticMode = result.mode === "static";
   const critical = findings.filter((f) => f.severity === "CRITICAL").length;
   const plural = (n: number, word: string) => `${n} ${word}${n > 1 ? "s" : ""}`;
 
-  const first =
-    `L'analyse automatisée${staticMode ? " (mode statique, sans exécution du site)" : " en trois phases"} ` +
+  const first = partial
+    ? `Rapport partiel : l'analyse en navigateur de ${result.hostname} n'a pas abouti. ` +
+      "Le site n'est pas noté ; relancez l'analyse avant de vous y fier."
+    : `L'analyse automatisée${staticMode ? " (mode statique, sans exécution du site)" : " en trois phases"} ` +
     `attribue à ${result.hostname} un score indicatif de ${result.score} sur 100, note ${result.grade} — ` +
     `« ${result.gradeLabel} »${result.cappedBy ? ", score plafonné" : ""}.`;
 

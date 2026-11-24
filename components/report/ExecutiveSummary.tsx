@@ -2,8 +2,8 @@ import type { ScanResult } from "@/lib/engine/types";
 import { executiveSummary } from "@/lib/report/summary";
 
 /** Résumé exécutif : trois phrases tirées du résultat, en tête de rapport. */
-export function ExecutiveSummary({ result }: { result: ScanResult }) {
-  const sentences = executiveSummary(result);
+export function ExecutiveSummary({ result, partial = false }: { result: ScanResult; partial?: boolean }) {
+  const sentences = executiveSummary(result, partial);
   return (
     <section
       aria-labelledby="resume-executif"

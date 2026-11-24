@@ -130,12 +130,18 @@ export async function handleWorkerRequest(
     };
   }
 
+  const started = Date.now();
   try {
     const launch =
       typeof options.launch === "function" ? await options.launch() : options.launch;
     const output = await withTimeout(runThreePhaseScan(url.toString(), launch), SCAN_TIMEOUT_MS);
     return { status: 200, body: output };
   } catch (error) {
+    // Sans cette ligne, un échec ne laisse aucune trace. Première ligne
+    // seulement, adresses masquées : l'adresse analysée n'est pas journalisée.
+    const reason = error instanceof Error ? error.message.split("\n")[0] : "inconnue";
+    const masked = (reason ?? "").replace(/https?:\/\/\S+/g, "[adresse]");
+    process.stderr.write(`analyse : échec après ${Date.now() - started} ms (${masked})\n`);
     return {
       status: 502,
       body: { error: error instanceof Error ? error.message : "Analyse impossible." },
