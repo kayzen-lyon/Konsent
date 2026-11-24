@@ -159,6 +159,17 @@ function inScreenshotQueue<T>(task: () => Promise<T>): Promise<T> {
   return run;
 }
 
+/** Message d'erreur de capture sur une ligne : sans couleurs ni adresses, borné. */
+export function describeCaptureError(error: unknown): string {
+  if (!(error instanceof Error)) return "inconnue";
+  return error.message
+    .replace(/\u001b\[[0-9;]*m/g, "")
+    .replace(/(?:https?|wss?|blob|data|file):\S+/gi, "[adresse]")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 400);
+}
+
 async function takeScreenshot(
   page: import("playwright").Page,
   phase: Snapshot["phase"],
@@ -178,8 +189,9 @@ async function takeScreenshot(
     });
     return buf.toString("base64");
   } catch (error) {
-    // Durée et première ligne seulement : jamais l'adresse analysée.
-    const reason = error instanceof Error ? error.message.split("\n")[0] : "inconnue";
+    // Durée, motif et étapes de Playwright (polices, image…) : c'est l'étape
+    // bloquée qui renseigne. Adresses masquées : jamais le site analysé.
+    const reason = describeCaptureError(error);
     process.stderr.write(`capture ${phase} : échec après ${Date.now() - started} ms (${reason})\n`);
     return null;
   }
