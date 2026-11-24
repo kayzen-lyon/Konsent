@@ -20,8 +20,6 @@ const SETTLE_MS = 6_000;
 const SCREENSHOT_TIMEOUT_MS = 12_000;
 /** Attente dans la file et capture comprises : au-delà, la phase s'en passe. */
 const SCREENSHOT_BUDGET_MS = 20_000;
-/** Geler une page est un confort : jamais de quoi retenir l'analyse. */
-const LIFECYCLE_TIMEOUT_MS = 2_000;
 /** Fermer un navigateur bloqué ne doit pas retenir une analyse terminée. */
 const CLOSE_TIMEOUT_MS = 3_000;
 
@@ -310,18 +308,7 @@ async function capture(
   // et toute lecture qui suivrait attendrait sans limite. Un échec n'empêche
   // pas l'instantané : la preuve visuelle est un complément.
   const deadline = Date.now() + SCREENSHOT_BUDGET_MS;
-  // En attendant son tour, la page est gelée : ses animations ne disputent pas
-  // le processeur à la capture en cours. Ni style ni média modifiés, donc
-  // l'image reste fidèle (réduire les animations, lui, l'altère).
-  const cdp = await context.newCDPSession(page).catch(() => null);
-  const setState = async (state: "frozen" | "active") => {
-    if (cdp) await settleWithin(cdp.send("Page.setWebLifecycleState", { state }), LIFECYCLE_TIMEOUT_MS);
-  };
-  await setState("frozen");
-  const screenshot = await inScreenshotQueue(async () => {
-    await setState("active");
-    return takeScreenshot(page, phase, deadline);
-  });
+  const screenshot = await inScreenshotQueue(() => takeScreenshot(page, phase, deadline));
 
   return {
     phase,
