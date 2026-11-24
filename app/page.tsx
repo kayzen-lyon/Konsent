@@ -4,8 +4,7 @@ import { Faq } from "@/components/Faq";
 import { JsonLd } from "@/components/JsonLd";
 import { FineSimulator } from "@/components/FineSimulator";
 import { ScanForm } from "@/components/ScanForm";
-import { ConsentDemo } from "@/components/hero/ConsentDemo";
-import { HeroPreview } from "@/components/hero/HeroPreview";
+import { HeroCelestial } from "@/components/hero/HeroCelestial";
 import { DefileOutils, SceneOutils } from "@/components/immersive/SceneOutils";
 import { RULEPACK } from "@/lib/rulepack";
 import { FREE_TOOLS } from "@/lib/tools/catalog";
@@ -151,36 +150,35 @@ export default function HomePage() {
       {/* ═══════════════════════ HÉROS ═══════════════════════
           Le visiteur répond lui-même à un bandeau et voit ce qui part
           malgré sa réponse ; le formulaire d'audit reste au-dessus. */}
-      <HeroPreview
+      <HeroCelestial
         title="Votre bandeau gère le consentement. Konsent vérifie ce qui passe derrière."
         subtitle="Ce qui se dépose avant la réponse de vos visiteurs, ce qui continue après leur refus, et qui reçoit leurs données. Constats factuels, références à l'appui."
-        action={<ScanForm />}
-        preview={<ConsentDemo />}
+        action={<ScanForm tone="dark" />}
         footer={
           <>
-            <dl className="mt-8 grid w-full grid-cols-2 gap-px overflow-hidden rounded-xl bg-line ring-1 ring-line sm:grid-cols-4">
+            <dl className="mt-8 grid w-full grid-cols-2 gap-px overflow-hidden rounded-xl bg-[#34507a] ring-1 ring-[#34507a] sm:grid-cols-4">
               {[
                 [RULEPACK.total, "règles publiques"],
                 [TRACKERS.length, "destinataires décrits"],
                 [COOKIES.length, "cookies documentés"],
                 [3, "phases d'analyse"],
               ].map(([n, label]) => (
-                <div key={label} className="bg-surface px-4 py-3">
-                  <dt className="tech text-[9px] text-muted">{label}</dt>
-                  <dd className="tabular display mt-1 text-2xl text-secondary">
+                <div key={label} className="bg-[#12223a] px-4 py-3">
+                  <dt className="tech text-[9px] text-[#c3cedd]">{label}</dt>
+                  <dd className="tabular display mt-1 text-2xl text-[#a9c2e6]">
                     {n}
                   </dd>
                 </div>
               ))}
             </dl>
 
-            <p className="mt-6 text-center text-sm text-muted">
+            <p className="mt-6 text-center text-sm text-[#c3cedd]">
               Développé par{" "}
               <a
                 href="https://www.kayzen-lyon.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-semibold text-ink-2 underline underline-offset-2 transition-colors hover:text-flame"
+                className="font-semibold text-white underline underline-offset-2 transition-colors hover:text-flame-soft"
               >
                 KAYZEN<span className="sr-only"> (nouvel onglet)</span>
               </a>{" "}
